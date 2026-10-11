@@ -1,0 +1,264 @@
+[2026-10-06 08:21:13] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 08:21:13] ==== dashboard build (morning) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 08:21:29] FRED: 49 series 
+[2026-10-06 08:21:29] FRED: 49 series (cache, intraday run) 
+[2026-10-06 08:21:34] Treasury.gov: cache-by-design, curve through 2026-10-02 
+[2026-10-06 08:21:34] Yahoo daily: 35 symbols 
+[2026-10-06 08:21:52] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 08:22:36] Treasury.gov: fetched, curve through 2026-10-05 
+[2026-10-06 08:22:37] Yahoo daily: 35 symbols 
+[2026-10-06 08:22:43] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 8) 
+[2026-10-06 08:22:43] ==== finished OK ==== 
+[2026-10-06 08:22:54] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 08:23:48] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 9) 
+[2026-10-06 08:23:48] ==== finished OK ==== 
+[2026-10-06 08:35:39] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 08:35:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 08:35:41] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 08:35:41] Yahoo daily: 35 symbols 
+[2026-10-06 08:36:00] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 08:36:49] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 9) 
+[2026-10-06 08:36:49] ==== finished OK ==== 
+[2026-10-06 08:50:39] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 08:50:40] FRED: 49 series (cache, intraday run) 
+[2026-10-06 08:50:41] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 08:50:41] Yahoo daily: 35 symbols 
+[2026-10-06 08:50:59] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 08:51:48] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 9) 
+[2026-10-06 08:51:48] ==== finished OK ==== 
+[2026-10-06 09:05:39] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 09:05:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 09:05:41] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 09:05:41] Yahoo daily: 35 symbols 
+[2026-10-06 09:05:58] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 09:06:47] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 7) 
+[2026-10-06 09:06:47] ==== finished OK ==== 
+[2026-10-06 09:20:43] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 09:20:51] FRED: 49 series (cache, intraday run) 
+[2026-10-06 09:20:53] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 09:20:53] Yahoo daily: 35 symbols 
+[2026-10-06 09:21:12] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 09:22:06] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 7) 
+[2026-10-06 09:22:06] ==== finished OK ==== 
+[2026-10-06 09:35:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 09:35:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 09:35:42] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 09:35:42] Yahoo daily: 35 symbols 
+[2026-10-06 09:36:00] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 09:36:49] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 7) 
+[2026-10-06 09:36:49] ==== finished OK ==== 
+[2026-10-06 10:00:37] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 10:01:00] FRED: 49 series (cache, intraday run) 
+[2026-10-06 10:01:01] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 10:01:01] Yahoo daily: 35 symbols 
+[2026-10-06 10:01:22] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 10:02:50] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 3) 
+[2026-10-06 10:02:50] ==== finished OK ==== 
+[2026-10-06 10:05:43] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 10:05:51] FRED: 49 series (cache, intraday run) 
+[2026-10-06 10:05:52] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 10:05:52] Yahoo daily: 35 symbols 
+[2026-10-06 10:06:13] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 10:07:21] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 3) 
+[2026-10-06 10:07:21] ==== finished OK ==== 
+[2026-10-06 10:20:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 10:20:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 10:20:42] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 10:20:42] Yahoo daily: 35 symbols 
+[2026-10-06 10:21:04] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 10:22:12] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 4) 
+[2026-10-06 10:22:12] ==== finished OK ==== 
+[2026-10-06 10:35:51] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 10:35:59] FRED: 49 series (cache, intraday run) 
+[2026-10-06 10:36:02] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 10:36:02] Yahoo daily: 35 symbols 
+[2026-10-06 10:36:28] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 10:37:42] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 6) 
+[2026-10-06 10:37:42] ==== finished OK ==== 
+[2026-10-06 10:50:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 10:50:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 10:50:42] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 10:50:42] Yahoo daily: 35 symbols 
+[2026-10-06 10:51:03] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 10:52:07] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 6) 
+[2026-10-06 10:52:07] ==== finished OK ==== 
+[2026-10-06 11:05:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 11:05:42] FRED: 49 series (cache, intraday run) 
+[2026-10-06 11:05:42] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 11:05:42] Yahoo daily: 35 symbols 
+[2026-10-06 11:06:00] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 11:06:47] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 6) 
+[2026-10-06 11:06:47] ==== finished OK ==== 
+[2026-10-06 11:20:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 11:20:42] FRED: 49 series (cache, intraday run) 
+[2026-10-06 11:20:43] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 11:20:43] Yahoo daily: 35 symbols 
+[2026-10-06 11:21:01] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 11:21:46] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 8) 
+[2026-10-06 11:21:46] ==== finished OK ==== 
+[2026-10-06 11:35:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 11:35:42] FRED: 49 series (cache, intraday run) 
+[2026-10-06 11:35:43] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 11:35:43] Yahoo daily: 35 symbols 
+[2026-10-06 11:36:02] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 11:36:54] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 8) 
+[2026-10-06 11:36:54] ==== finished OK ==== 
+[2026-10-06 12:37:51] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 12:38:13] FRED: 49 series (cache, intraday run) 
+[2026-10-06 12:38:18] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 12:38:18] Yahoo daily: 35 symbols 
+[2026-10-06 12:38:48] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 12:39:43] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 10) 
+[2026-10-06 12:39:43] ==== finished OK ==== 
+[2026-10-06 12:50:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 12:50:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 12:50:42] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 12:50:42] Yahoo daily: 35 symbols 
+[2026-10-06 12:51:00] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 12:51:50] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 10) 
+[2026-10-06 12:51:50] ==== finished OK ==== 
+[2026-10-06 13:19:44] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 14:19:44] FRED: 49 series (cache, intraday run) 
+[2026-10-06 14:20:08] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 14:20:09] Yahoo daily: 35 symbols 
+[2026-10-06 14:32:35] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 14:34:08] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 10) 
+[2026-10-06 14:34:08] ==== finished OK ==== 
+[2026-10-06 14:35:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 14:35:42] FRED: 49 series (cache, intraday run) 
+[2026-10-06 14:35:42] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 14:35:42] Yahoo daily: 35 symbols 
+[2026-10-06 14:36:00] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 14:36:52] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 10) 
+[2026-10-06 14:36:52] ==== finished OK ==== 
+[2026-10-06 14:57:34] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 14:57:36] FRED: 49 series (cache, intraday run) 
+[2026-10-06 14:57:38] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 14:57:38] Yahoo daily: 35 symbols 
+[2026-10-06 14:57:58] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 14:59:02] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 10) 
+[2026-10-06 14:59:02] ==== finished OK ==== 
+[2026-10-06 15:05:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 15:05:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 15:05:42] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 15:05:42] Yahoo daily: 35 symbols 
+[2026-10-06 15:06:01] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 15:06:51] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 10) 
+[2026-10-06 15:06:51] ==== finished OK ==== 
+[2026-10-06 15:20:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 15:20:42] FRED: 49 series (cache, intraday run) 
+[2026-10-06 15:20:42] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 15:20:42] Yahoo daily: 35 symbols 
+[2026-10-06 15:21:02] Yahoo candles: 16 watchlist symbols 
+[2026-10-06 15:21:56] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 10) 
+[2026-10-06 15:21:56] ==== finished OK ==== 
+[2026-10-06 15:25:09] ==== dashboard build (morning) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 15:25:10] FRED: 49 series 
+[2026-10-06 15:26:12] Treasury.gov: fetched, curve through 2026-10-05 
+[2026-10-06 15:26:12] Yahoo daily: 119 symbols 
+[2026-10-06 15:26:21]   25 of 119 symbols done 
+[2026-10-06 15:26:33]   50 of 119 symbols done 
+[2026-10-06 15:26:45]   75 of 119 symbols done 
+[2026-10-06 15:27:00]   100 of 119 symbols done 
+[2026-10-06 15:27:09] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 15:28:33] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 20) 
+[2026-10-06 15:28:33] ==== finished OK ==== 
+[2026-10-06 15:35:39] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 15:35:40] FRED: 49 series (cache, intraday run) 
+[2026-10-06 15:35:41] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 15:35:41] Yahoo daily: 119 symbols 
+[2026-10-06 15:35:51]   25 of 119 symbols done 
+[2026-10-06 15:36:05]   50 of 119 symbols done 
+[2026-10-06 15:36:16]   75 of 119 symbols done 
+[2026-10-06 15:36:28]   100 of 119 symbols done 
+[2026-10-06 15:36:37] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 15:36:45] ==== dashboard build (morning) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 15:36:47] FRED: 49 series 
+[2026-10-06 15:37:50] Treasury.gov: fetched, curve through 2026-10-05 
+[2026-10-06 15:37:50] Yahoo daily: 528 symbols (parallel) 
+[2026-10-06 15:37:54] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 19) 
+[2026-10-06 15:37:54] ==== finished OK ==== 
+[2026-10-06 15:38:21] Yahoo daily: 528 fetched, 0 from cache, 0 failed 
+[2026-10-06 15:38:21] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 15:39:57] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 51) 
+[2026-10-06 15:39:57] ==== finished OK ==== 
+[2026-10-06 15:41:16] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 15:41:17] FRED: 49 series (cache, intraday run) 
+[2026-10-06 15:41:18] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 15:41:18] Yahoo daily: 528 symbols (parallel) 
+[2026-10-06 15:41:47] Yahoo daily: 528 fetched, 0 from cache, 0 failed 
+[2026-10-06 15:41:47] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 15:43:05] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 49) 
+[2026-10-06 15:43:05] ==== finished OK ==== 
+[2026-10-06 15:44:18] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 15:44:19] FRED: 49 series (cache, intraday run) 
+[2026-10-06 15:44:19] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 15:44:19] Yahoo daily: 528 symbols (parallel) 
+[2026-10-06 15:44:52] Yahoo daily: 528 fetched, 0 from cache, 0 failed 
+[2026-10-06 15:44:52] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 15:46:15] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 50) 
+[2026-10-06 15:46:15] ==== finished OK ==== 
+[2026-10-06 15:47:58] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 15:48:00] FRED: 49 series (cache, intraday run) 
+[2026-10-06 15:48:00] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 15:48:00] Yahoo daily: 528 symbols (parallel) 
+[2026-10-06 15:48:31] Yahoo daily: 528 fetched, 0 from cache, 0 failed 
+[2026-10-06 15:48:31] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 15:49:52] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 51) 
+[2026-10-06 15:49:52] ==== finished OK ==== 
+[2026-10-06 15:50:39] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 15:50:40] FRED: 49 series (cache, intraday run) 
+[2026-10-06 15:50:41] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 15:50:41] Yahoo daily: 528 symbols (parallel) 
+[2026-10-06 15:51:26] Yahoo daily: 528 fetched, 0 from cache, 0 failed 
+[2026-10-06 15:51:26] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 15:53:20] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 48) 
+[2026-10-06 15:53:20] ==== finished OK ==== 
+[2026-10-06 16:05:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 16:05:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 16:05:41] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 16:05:41] Yahoo daily: 528 symbols (parallel) 
+[2026-10-06 16:06:17] Yahoo daily: 528 fetched, 0 from cache, 0 failed 
+[2026-10-06 16:06:17] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 17:00:01] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 46) 
+[2026-10-06 17:00:01] ==== finished OK ==== 
+[2026-10-06 17:05:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 17:05:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 17:05:42] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 17:05:42] Yahoo daily: 528 symbols (parallel) 
+[2026-10-06 17:06:10] Yahoo daily: 528 fetched, 0 from cache, 0 failed 
+[2026-10-06 17:06:10] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 17:07:32] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 46) 
+[2026-10-06 17:07:32] ==== finished OK ==== 
+[2026-10-06 17:20:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 17:20:42] FRED: 49 series (cache, intraday run) 
+[2026-10-06 17:20:42] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 17:20:42] Yahoo daily: 528 symbols (parallel) 
+[2026-10-06 17:21:12] Yahoo daily: 528 fetched, 0 from cache, 0 failed 
+[2026-10-06 17:21:12] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 17:22:35] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 47) 
+[2026-10-06 17:22:35] ==== finished OK ==== 
+[2026-10-06 17:35:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 17:35:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 17:35:42] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 17:35:42] Yahoo daily: 528 symbols (parallel) 
+[2026-10-06 17:36:14] Yahoo daily: 528 fetched, 0 from cache, 0 failed 
+[2026-10-06 17:36:14] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 17:37:38] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 47) 
+[2026-10-06 17:37:38] ==== finished OK ==== 
+[2026-10-06 17:50:40] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 17:50:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 17:50:41] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 17:50:41] Yahoo daily: 528 symbols (parallel) 
+[2026-10-06 17:51:14] Yahoo daily: 528 fetched, 0 from cache, 0 failed 
+[2026-10-06 17:51:14] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 17:52:33] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 46) 
+[2026-10-06 17:52:33] ==== finished OK ==== 
+[2026-10-06 18:05:39] ==== dashboard build (intraday) started in C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard ==== 
+[2026-10-06 18:05:41] FRED: 49 series (cache, intraday run) 
+[2026-10-06 18:05:41] Treasury.gov: cache-by-design, curve through 2026-10-05 
+[2026-10-06 18:05:41] Yahoo daily: 528 symbols (parallel) 
+[2026-10-06 18:06:12] Yahoo daily: 528 fetched, 0 from cache, 0 failed 
+[2026-10-06 18:06:12] Yahoo candles: 25 detail symbols (intraday + weekly bars) 
+[2026-10-06 18:07:34] Built C:/Users/ferri/OneDrive/Documents/R Folder/market_dashboard/output/market_dashboard.html  (window: OPEN, health: 77 STABLE, alerts: 46) 
+[2026-10-06 18:07:34] ==== finished OK ==== 

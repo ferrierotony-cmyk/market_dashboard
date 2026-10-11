@@ -1,0 +1,8 @@
+issuer,bond,rating,yield,z_spread,duration,as_of,source,bbg_ticker
+Paramount,PARA 7.875 07/30/30,,6.494,250.4,3.57,2026-05-27,Bloomberg,PARA 7.875 07/30/30 Corp
+AT&T,,,6.157,176.1,14.26,2026-05-27,Bloomberg,
+Disney,,,5.443,112.8,10.77,2026-05-27,Bloomberg,
+Apple,AAPL 3.85 05/04/43,,5.407,110.6,12.06,2026-05-27,Bloomberg,AAPL 3.85 05/04/43 Corp
+JPMorgan,JPM 4.452 12/05/29,,4.846,77.9,2.36,2026-05-27,Bloomberg,JPM 4.452 12/05/29 Corp
+Johnson & Johnson,JNJ 2.45 09/01/60,,5.412,117.3,18.71,2026-05-27,Bloomberg,JNJ 2.45 09/01/60 Corp
+Exxon,XOM 3.452 04/15/51,,5.596,125.6,15.15,2026-05-27,Bloomberg,XOM 3.452 04/15/51 Corp

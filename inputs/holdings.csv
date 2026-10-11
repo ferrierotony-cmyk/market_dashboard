@@ -1,0 +1,8 @@
+id,name,issuer,asset_class,sector,rating,pricing,symbol,spread_index,quantity,cost_price,mark_price,mark_date,entry_date,duration,coupon,price_per_100
+UST2Y,UST 2Y (generic),US Treasury,US Treasury,Government,,model,2Y,,1000000,99.80,99.80,2026-05-27,2026-05-27,1.885476,,Y
+UST10Y,UST 10Y (generic),US Treasury,US Treasury,Government,,model,10Y,,1000000,99.10,99.10,2026-05-27,2026-05-27,8.168994,,Y
+UST30Y,UST 30Y (generic),US Treasury,US Treasury,Government,,model,30Y,,1000000,99.50,99.50,2026-05-27,2026-05-27,15.718282,,Y
+AAPL43,Apple 3.85% 2043,Apple,IG Corporate,Technology,,model,20Y,BAMLC8A0C15PY,1000000,83.50,82.871,2026-05-27,2026-05-27,12.05836,3.85,Y
+JPM29,JPMorgan 4.452% 2029,JPMorgan,IG Corporate,Financials,,model,3Y,BAMLC2A0C35Y,1000000,100.00,99.449,2026-05-27,2026-05-27,2.362958,4.452,Y
+JNJ60,J&J 2.45% 2060,Johnson & Johnson,IG Corporate,Health Care,,model,30Y,BAMLC8A0C15PY,1000000,55.00,54.049,2026-05-27,2026-05-27,18.71125,2.45,Y
+XOM51,Exxon 3.452% 2051,Exxon Mobil,IG Corporate,Energy,,model,30Y,BAMLC8A0C15PY,1000000,72.00,71.382,2026-05-27,2026-05-27,15.15154,3.452,Y
