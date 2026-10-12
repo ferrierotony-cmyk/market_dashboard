@@ -90,9 +90,11 @@ body.editing .w.bare>.wh{display:flex}
 body.editing .w{outline:1px dashed var(--axis);outline-offset:-1px}
 body.editing .grip,body.editing .rz{display:block}
 body.editing .wh{cursor:grab;background:var(--surface2)}
-.w.dragging{opacity:.4}
-.w.dropbefore{box-shadow:-3px 0 0 var(--s1)}
-.w.dropafter{box-shadow:3px 0 0 var(--s1)}
+.w.dragging{opacity:.85;outline:2px solid var(--s1);z-index:5}
+body.editing .wh{touch-action:none;user-select:none}
+body.editing .wh:focus{outline:2px solid var(--s1);outline-offset:-2px}
+.tray label.btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:6px;padding:3px 8px;cursor:pointer}
+.tray .hint{color:var(--chip-warn);opacity:.85}
 
 /* ---------- tiles & stats ---------- */
 .tiles,.ribbon{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--gap);height:100%}

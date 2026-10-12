@@ -8,7 +8,7 @@
   // candles come from market_data.js (written next to the page by the build)
   D.candles = window.MMD_CANDLES || D.candles || {};
   var haveCandles = Object.keys(D.candles).length > 0;
-  var LS_LAYOUT = 'mmd.layout.v2', LS_STATE = 'mmd.state.v2';
+  var LS_LAYOUT = 'mmd.layout.v3', LS_STATE = 'mmd.state.v2';
   function lsGet(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
   function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage blocked */ } }
 
@@ -565,6 +565,11 @@
   }
 
   // ------------------------------------------------------------------ layout engine
+  // Every visible widget owns a cell [x, y, w, h] on a 12-column grid. Dragging a
+  // widget drops it at the pointer's cell; whatever it lands on is pushed down and
+  // everything then floats up to close gaps. Layouts are {view: {pos: {id: [x,y,w,h]},
+  // hidden: [id]}} per name; the same JSON is exported for inputs/layouts.json.
+  var COLS = 12, MAX_ROWS = 400, LS_LAYOUT_OLD = 'mmd.layout.v2';
   var BUILTIN = {
     'Default': {},
     'Syndicate desk': { morning: {
@@ -576,28 +581,83 @@
       size: { 'm-kpis': [12, 2], 'm-curve': [4, 4], 'm-hist': [4, 4], 'm-slope': [4, 4], 'm-rates': [4, 5], 'm-credit': [4, 5], 'm-oas': [4, 5], 'm-risk': [4, 3], 'm-port': [4, 3], 'm-window': [4, 3] },
       hidden: ['m-pipe', 'm-comps'] } }
   };
+  // presets baked from inputs/layouts.json (shared across machines)
+  if (D.layouts) Object.keys(D.layouts).forEach(function (n) { if (D.layouts[n] && typeof D.layouts[n] === 'object') BUILTIN[n] = D.layouts[n]; });
   var MOBILE_H = { 'm-kpis': 5, 'x-ribbon': 9, 'p-summary': 6, 'c-candle': 10, 'c-side': 9, 'h-domains': 10, 'c-heat': 8 };
-  var LAY = lsGet(LS_LAYOUT, { current: 'Default', custom: {} });
+  var LAY = lsGet(LS_LAYOUT, null);
+  if (!LAY) { var old = lsGet(LS_LAYOUT_OLD, null); LAY = old && old.custom ? old : { current: 'Default', custom: {} }; }
   if (!LAY.custom) LAY.custom = {};
   if (!BUILTIN[LAY.current] && !LAY.custom[LAY.current]) LAY.current = 'Default';
+  function saveLayouts() { lsSet(LS_LAYOUT, LAY); }
   function layoutObj(name) { return LAY.custom[name] || BUILTIN[name] || {}; }
   function widgetsOf(view) { return Array.prototype.filter.call(view.children, function (e) { return e.classList.contains('w'); }); }
-  function setSize(w, cw, ch) {
-    w.style.gridColumn = 'span ' + cw; w.style.gridRow = 'span ' + ch;
-    w.dataset.cw = cw; w.dataset.ch = ch;
-    w.style.setProperty('--hm', MOBILE_H[w.dataset.id] || Math.max(ch, 4));
+  function byDefault(a, b) { return (+a.dataset.def) - (+b.dataset.def); }
+  function overlap(a, b) { return a[0] < b[0] + b[2] && b[0] < a[0] + a[2] && a[1] < b[1] + b[3] && b[1] < a[1] + a[3]; }
+  function fits(pos, cell, skip) { for (var id in pos) if (id !== skip && overlap(pos[id], cell)) return false; return true; }
+  function clampW(w) { return Math.max(1, Math.min(COLS, w | 0)); }
+  function clampH(h) { return Math.max(1, Math.min(40, h | 0)); }
+  // first free cell, row-major: what CSS auto-placement did before positions existed
+  function flowPlace(pos, id, w, h) {
+    w = clampW(w); h = clampH(h);
+    for (var y = 0; y < MAX_ROWS; y++) for (var x = 0; x + w <= COLS; x++) {
+      var c = [x, y, w, h]; if (fits(pos, c, id)) { pos[id] = c; return c; }
+    }
+    pos[id] = [0, MAX_ROWS, w, h]; return pos[id];
+  }
+  // push overlaps down (the pinned widget stays where it was dropped), then float up
+  function compact(pos, pinned) {
+    var ids = Object.keys(pos).sort(function (a, b) {
+      if (a === pinned) return -1; if (b === pinned) return 1;
+      return pos[a][1] - pos[b][1] || pos[a][0] - pos[b][0];
+    });
+    var out = {};
+    ids.forEach(function (id) { var c = pos[id].slice(); c[0] = Math.max(0, Math.min(COLS - c[2], c[0])); while (!fits(out, c)) c[1]++; out[id] = c; });
+    ids = Object.keys(out).sort(function (a, b) { return out[a][1] - out[b][1] || out[a][0] - out[b][0]; });
+    ids.forEach(function (id) { var c = out[id]; while (c[1] > 0 && fits(out, [c[0], c[1] - 1, c[2], c[3]], id)) c[1]--; });
+    return out;
+  }
+  // {order, size, hidden} from the old engine -> {pos, hidden}
+  function fromLegacy(conf, view) {
+    var ws = widgetsOf(view).slice().sort(byDefault), pos = {}, hidden = conf.hidden || [];
+    var rank = function (w) { var k = conf.order ? conf.order.indexOf(w.dataset.id) : -1; return k >= 0 ? k : 1000 + (+w.dataset.def); };
+    ws.sort(function (a, b) { return rank(a) - rank(b); }).forEach(function (w) {
+      if (hidden.indexOf(w.dataset.id) >= 0) return;
+      var sz = (conf.size && conf.size[w.dataset.id]) || [+w.dataset.w, +w.dataset.h];
+      flowPlace(pos, w.dataset.id, sz[0], sz[1]);
+    });
+    return { pos: pos, hidden: hidden.slice() };
+  }
+  function viewConf(name, view) {
+    var L = layoutObj(name), c = L[view.dataset.view];
+    if (!c) return null;
+    if (!c.pos && (c.order || c.size || c.hidden)) { c = fromLegacy(c, view); L[view.dataset.view] = c; }
+    return c;
+  }
+  function setCell(w, c) {
+    w.style.gridColumn = (c[0] + 1) + ' / span ' + c[2]; w.style.gridRow = (c[1] + 1) + ' / span ' + c[3];
+    w.dataset.cx = c[0]; w.dataset.cy = c[1]; w.dataset.cw = c[2]; w.dataset.ch = c[3];
+    w.style.setProperty('--hm', MOBILE_H[w.dataset.id] || Math.max(c[3], 4));
+  }
+  function paintView(view, reorder) {
+    var pos = view._pos, ws = widgetsOf(view);
+    ws.forEach(function (w) { if (!w.hidden && pos[w.dataset.id]) setCell(w, pos[w.dataset.id]); });
+    if (reorder === false) return;   // re-appending a node mid-drag would drop its pointer capture
+    // DOM order follows the grid so a phone (single column) reads top to bottom
+    ws.filter(function (w) { return !w.hidden; }).sort(function (a, b) { var p = pos[a.dataset.id], q = pos[b.dataset.id]; return p[1] - q[1] || p[0] - q[0]; })
+      .concat(ws.filter(function (w) { return w.hidden; })).forEach(function (w) { view.appendChild(w); });
   }
   function applyLayout() {
-    var L = layoutObj(LAY.current);
     $$('.view').forEach(function (view) {
-      var conf = L[view.dataset.view] || {}, ws = widgetsOf(view);
-      var rank = function (w) { var k = conf.order ? conf.order.indexOf(w.dataset.id) : -1; return k >= 0 ? k : 1000 + (+w.dataset.def); };
-      ws.sort(function (a, b) { return rank(a) - rank(b); }).forEach(function (w) { view.appendChild(w); });
+      var conf = viewConf(LAY.current, view), ws = widgetsOf(view).slice().sort(byDefault), pos = {};
       ws.forEach(function (w) {
-        var sz = (conf.size && conf.size[w.dataset.id]) || [+w.dataset.w, +w.dataset.h];
-        setSize(w, sz[0], sz[1]);
-        w.hidden = conf.hidden ? conf.hidden.indexOf(w.dataset.id) >= 0 : w.dataset.defHidden === '1';
+        var id = w.dataset.id;
+        w.hidden = conf && conf.hidden ? conf.hidden.indexOf(id) >= 0 : w.dataset.defHidden === '1';
+        if (!w.hidden && conf && conf.pos && conf.pos[id]) pos[id] = conf.pos[id].slice();
       });
+      pos = compact(pos);
+      // widgets the layout does not know (added since it was saved) flow in after the rest
+      ws.forEach(function (w) { if (!w.hidden && !pos[w.dataset.id]) flowPlace(pos, w.dataset.id, +w.dataset.w, +w.dataset.h); });
+      view._pos = pos; paintView(view);
     });
     fillLayoutSel(); renderTray(); rerenderAll();
   }
@@ -609,12 +669,26 @@
     }
     return LAY.custom[LAY.current];
   }
-  function captureView(view) {
-    var L = editableLayout(), ws = widgetsOf(view), size = {};
-    ws.forEach(function (w) { size[w.dataset.id] = [+w.dataset.cw, +w.dataset.ch]; });
-    L[view.dataset.view] = { order: ws.map(function (w) { return w.dataset.id; }), size: size,
-      hidden: ws.filter(function (w) { return w.hidden; }).map(function (w) { return w.dataset.id; }) };
-    lsSet(LS_LAYOUT, LAY); fillLayoutSel(); renderTray();
+  function commitView(view) {
+    var L = editableLayout(), pos = {};
+    widgetsOf(view).forEach(function (w) { if (!w.hidden && view._pos[w.dataset.id]) pos[w.dataset.id] = view._pos[w.dataset.id].slice(); });
+    L[view.dataset.view] = { pos: pos, hidden: widgetsOf(view).filter(function (w) { return w.hidden; }).map(function (w) { return w.dataset.id; }) };
+    saveLayouts(); fillLayoutSel(); renderTray();
+  }
+  function placeWidget(view, id, cell, save) {
+    var pos = view._pos; pos[id] = [Math.max(0, Math.min(COLS - cell[2], cell[0])), Math.max(0, cell[1]), clampW(cell[2]), clampH(cell[3])];
+    view._pos = compact(pos, id); paintView(view, save !== false);
+    if (save !== false) { commitView(view); rerenderAll(); }
+  }
+  function showWidget(view, w) {
+    w.hidden = false; flowPlace(view._pos, w.dataset.id, +w.dataset.w, +w.dataset.h); view._pos = compact(view._pos);
+    paintView(view); commitView(view); rerenderAll();
+  }
+  function hideWidget(view, w) { w.hidden = true; delete view._pos[w.dataset.id]; view._pos = compact(view._pos); paintView(view); commitView(view); rerenderAll(); }
+  function gridMetrics(view) {
+    var r = view.getBoundingClientRect(), cs = getComputedStyle(view), gap = parseFloat(cs.gap || cs.rowGap) || 7;
+    var rowH = parseFloat(cs.gridAutoRows) || 62;
+    return { left: r.left, top: r.top, colW: (r.width + gap) / COLS, rowH: rowH + gap };
   }
   var layoutSel = $('#layoutSel');
   function fillLayoutSel() {
@@ -624,7 +698,7 @@
     layoutSel.value = LAY.current;
     var del = $('#delLayoutBtn'); if (del) del.disabled = !LAY.custom[LAY.current];
   }
-  layoutSel.addEventListener('change', function () { LAY.current = layoutSel.value; lsSet(LS_LAYOUT, LAY); applyLayout(); });
+  layoutSel.addEventListener('change', function () { LAY.current = layoutSel.value; saveLayouts(); applyLayout(); });
   function currentView() { return $('.view[data-view="' + state.tab + '"]'); }
   function renderTray() {
     var items = $('#trayItems'); if (!items) return; items.textContent = '';
@@ -633,10 +707,11 @@
     if (!hidden.length) { var s = document.createElement('span'); s.textContent = 'none'; items.appendChild(s); }
     hidden.forEach(function (w) {
       var b = document.createElement('button'); b.type = 'button'; b.textContent = '+ ' + w.dataset.title;
-      b.addEventListener('click', function () { w.hidden = false; captureView(view); rerenderAll(); });
+      b.addEventListener('click', function () { showWidget(view, w); });
       items.appendChild(b);
     });
   }
+  function isEditing() { return document.body.classList.contains('editing'); }
   // widget controls
   function ctlBtn(text, label, cls, fn) {
     var b = document.createElement('button'); b.type = 'button'; b.textContent = text; b.title = label; b.setAttribute('aria-label', label);
@@ -645,7 +720,7 @@
   $$('.view').forEach(function (view) {
     widgetsOf(view).forEach(function (w, idx) {
       w.dataset.def = idx;
-      var ctl = $('.wctl', w), charts = $$('.chart', w);
+      var id = w.dataset.id, ctl = $('.wctl', w), charts = $$('.chart', w);
       if (charts.length) {
         var tb = ctlBtn('Table', 'Show the data as a table', 'tbtn', function () {
           var on = tb.getAttribute('aria-pressed') !== 'true'; tb.setAttribute('aria-pressed', on);
@@ -660,38 +735,53 @@
         });
         tb.setAttribute('aria-pressed', 'false'); ctl.appendChild(tb);
       }
+      function cell() { return view._pos[id].slice(); }
+      function nudge(dx, dy, dw, dh) { var c = cell(); placeWidget(view, id, [c[0] + dx, c[1] + dy, c[2] + dw, c[3] + dh]); }
       var edits = [
-        ['◂', 'Narrower', function () { setSize(w, Math.max(1, +w.dataset.cw - 1), +w.dataset.ch); captureView(view); }],
-        ['▸', 'Wider', function () { setSize(w, Math.min(12, +w.dataset.cw + 1), +w.dataset.ch); captureView(view); }],
-        ['▴', 'Shorter', function () { setSize(w, +w.dataset.cw, Math.max(1, +w.dataset.ch - 1)); captureView(view); }],
-        ['▾', 'Taller', function () { setSize(w, +w.dataset.cw, Math.min(24, +w.dataset.ch + 1)); captureView(view); }],
-        ['✕', 'Hide widget', function () { w.hidden = true; captureView(view); }]
+        ['◂', 'Narrower (Shift+Left)', function () { nudge(0, 0, -1, 0); }],
+        ['▸', 'Wider (Shift+Right)', function () { nudge(0, 0, 1, 0); }],
+        ['▴', 'Shorter (Shift+Up)', function () { nudge(0, 0, 0, -1); }],
+        ['▾', 'Taller (Shift+Down)', function () { nudge(0, 0, 0, 1); }],
+        ['✕', 'Hide widget', function () { hideWidget(view, w); }]
       ];
       edits.forEach(function (e) { var b = ctlBtn(e[0], e[1], 'edit', e[2]); b.hidden = true; ctl.appendChild(b); });
-      // drag to reorder
+      // drag the header to any cell
       var head = $('.wh', w);
-      head.addEventListener('dragstart', function (e) { e.dataTransfer.setData('text/plain', w.id); e.dataTransfer.effectAllowed = 'move'; w.classList.add('dragging'); });
-      head.addEventListener('dragend', function () { w.classList.remove('dragging'); $$('.dropbefore,.dropafter').forEach(function (x) { x.classList.remove('dropbefore', 'dropafter'); }); });
-      w.addEventListener('dragover', function (e) {
-        if (!document.body.classList.contains('editing')) return;
-        e.preventDefault(); var r = w.getBoundingClientRect(), before = e.clientX < r.left + r.width / 2;
-        w.classList.toggle('dropbefore', before); w.classList.toggle('dropafter', !before);
+      head.addEventListener('pointerdown', function (e) {
+        if (!isEditing() || e.button !== 0 || e.target.closest('button')) return;
+        e.preventDefault(); head.setPointerCapture(e.pointerId);
+        var r = w.getBoundingClientRect(), offX = e.clientX - r.left, offY = e.clientY - r.top, moved = false;
+        w.classList.add('dragging');
+        function mv(ev) {
+          var m = gridMetrics(view), c = cell();
+          var x = Math.round((ev.clientX - offX - m.left) / m.colW), y = Math.round((ev.clientY - offY - m.top) / m.rowH);
+          x = Math.max(0, Math.min(COLS - c[2], x)); y = Math.max(0, y);
+          if (x !== c[0] || y !== c[1]) { moved = true; placeWidget(view, id, [x, y, c[2], c[3]], false); }
+        }
+        function up() {
+          head.removeEventListener('pointermove', mv); head.removeEventListener('pointerup', up); head.removeEventListener('pointercancel', up);
+          w.classList.remove('dragging'); if (moved) { paintView(view); commitView(view); rerenderAll(); }
+        }
+        head.addEventListener('pointermove', mv); head.addEventListener('pointerup', up); head.addEventListener('pointercancel', up);
       });
-      w.addEventListener('dragleave', function () { w.classList.remove('dropbefore', 'dropafter'); });
-      w.addEventListener('drop', function (e) {
-        e.preventDefault(); var src = document.getElementById(e.dataTransfer.getData('text/plain'));
-        var before = w.classList.contains('dropbefore'); w.classList.remove('dropbefore', 'dropafter');
-        if (!src || src === w || src.parentNode !== view) return;
-        view.insertBefore(src, before ? w : w.nextSibling); captureView(view); rerenderAll();
+      // keyboard: arrows move, shift+arrows resize
+      head.addEventListener('keydown', function (e) {
+        if (!isEditing()) return;
+        var k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key]; if (!k) return;
+        e.preventDefault();
+        if (e.shiftKey) nudge(0, 0, k[0], k[1]); else nudge(k[0], k[1], 0, 0);
       });
-      // drag to resize
+      // drag the corner to resize
       var rz = $('.rz', w);
       rz.addEventListener('pointerdown', function (e) {
         e.preventDefault(); rz.setPointerCapture(e.pointerId);
-        var r = w.getBoundingClientRect(), gap = 7, cw0 = +w.dataset.cw, ch0 = +w.dataset.ch;
-        var colW = (r.width + gap) / cw0, rowH = (r.height + gap) / ch0, sx = e.clientX, sy = e.clientY;
-        function mv(ev) { setSize(w, Math.max(1, Math.min(12, Math.round(cw0 + (ev.clientX - sx) / colW))), Math.max(1, Math.min(24, Math.round(ch0 + (ev.clientY - sy) / rowH)))); }
-        function up() { rz.removeEventListener('pointermove', mv); rz.removeEventListener('pointerup', up); captureView(view); }
+        var c0 = cell(), m = gridMetrics(view), sx = e.clientX, sy = e.clientY;
+        function mv(ev) {
+          var nw = clampW(Math.round(c0[2] + (ev.clientX - sx) / m.colW)), nh = clampH(Math.round(c0[3] + (ev.clientY - sy) / m.rowH));
+          nw = Math.min(nw, COLS - c0[0]);
+          var c = cell(); if (nw !== c[2] || nh !== c[3]) placeWidget(view, id, [c0[0], c0[1], nw, nh], false);
+        }
+        function up() { rz.removeEventListener('pointermove', mv); rz.removeEventListener('pointerup', up); paintView(view); commitView(view); rerenderAll(); }
         rz.addEventListener('pointermove', mv); rz.addEventListener('pointerup', up);
       });
     });
@@ -700,26 +790,54 @@
     document.body.classList.toggle('editing', on);
     $('#editBtn').setAttribute('aria-pressed', on); $('#tray').hidden = !on;
     $$('.wctl .edit').forEach(function (b) { b.hidden = !on; });
-    $$('.wh').forEach(function (h) { h.draggable = on; });
+    $$('.wh').forEach(function (h) { if (on) h.tabIndex = 0; else h.removeAttribute('tabindex'); });
     renderTray(); setTopVar();
   }
-  $('#editBtn').addEventListener('click', function () { setEditing(!document.body.classList.contains('editing')); });
+  $('#editBtn').addEventListener('click', function () { setEditing(!isEditing()); });
   $('#doneBtn').addEventListener('click', function () { setEditing(false); });
   $('#saveAsBtn').addEventListener('click', function () {
-    var name = (window.prompt('Name this layout (it is saved in this browser):', '') || '').trim();
+    var name = (window.prompt('Name this layout (it is saved in this browser; use Export to share it):', '') || '').trim();
     if (!name) return;
-    $$('.view').forEach(function (v) { captureView(v); });
-    LAY.custom[name] = JSON.parse(JSON.stringify(layoutObj(LAY.current))); LAY.current = name; lsSet(LS_LAYOUT, LAY); fillLayoutSel();
+    $$('.view').forEach(function (v) { commitView(v); });
+    LAY.custom[name] = JSON.parse(JSON.stringify(layoutObj(LAY.current))); LAY.current = name; saveLayouts(); fillLayoutSel();
   });
   $('#delLayoutBtn').addEventListener('click', function () {
     if (!LAY.custom[LAY.current]) return;
     if (!window.confirm('Delete the layout "' + LAY.current + '"?')) return;
-    delete LAY.custom[LAY.current]; LAY.current = 'Default'; lsSet(LS_LAYOUT, LAY); applyLayout();
+    delete LAY.custom[LAY.current]; LAY.current = 'Default'; saveLayouts(); applyLayout();
   });
   $('#resetBtn').addEventListener('click', function () {
     var view = currentView(); if (!view) return;
-    if (LAY.custom[LAY.current]) { delete LAY.custom[LAY.current][view.dataset.view]; lsSet(LS_LAYOUT, LAY); }
+    if (LAY.custom[LAY.current]) { delete LAY.custom[LAY.current][view.dataset.view]; saveLayouts(); }
     applyLayout();
+  });
+  // export / import: the file is exactly what inputs/layouts.json takes, so a layout
+  // exported here can be made a shared preset for every machine that runs the build
+  function download(name, text) {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' })); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  }
+  var exportBtn = $('#exportBtn'), importFile = $('#importFile');
+  if (exportBtn) exportBtn.addEventListener('click', function () {
+    $$('.view').forEach(function (v) { if (LAY.custom[LAY.current]) commitView(v); });
+    var out = {};
+    Object.keys(LAY.custom).forEach(function (n) { out[n] = LAY.custom[n]; });
+    if (!Object.keys(out).length) { window.alert('No custom layouts yet. Click Customize, move something, then export.'); return; }
+    download('layouts.json', JSON.stringify(out, null, 1));
+  });
+  if (importFile) importFile.addEventListener('change', function () {
+    var f = importFile.files[0]; if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      try {
+        var obj = JSON.parse(rd.result), n = 0;
+        Object.keys(obj).forEach(function (name) { if (obj[name] && typeof obj[name] === 'object') { LAY.custom[name] = obj[name]; n++; LAY.current = name; } });
+        if (!n) throw new Error('no layouts in file');
+        saveLayouts(); applyLayout();
+      } catch (e) { window.alert('Could not import: ' + e.message); }
+      importFile.value = '';
+    };
+    rd.readAsText(f);
   });
 
   // ------------------------------------------------------------------ tabs, theme, refresh

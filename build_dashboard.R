@@ -728,8 +728,13 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   views_html <- paste0(vapply(names(views), function(v) sprintf("<div class='view%s' data-view='%s' role='tabpanel' hidden>%s</div>",
                                                                  if (v == "morning") " fit" else "", v, views[[v]]), ""), collapse = "\n")
 
+  # shared layout presets: inputs/layouts.json is what the page's Export button writes
+  layouts_path <- file.path(dash_dir, "inputs", "layouts.json")
+  layouts <- if (file.exists(layouts_path)) tryCatch(jsonlite::fromJSON(layouts_path, simplifyVector = FALSE),
+                                                     error = function(e) { logmsg("inputs/layouts.json ignored: ", conditionMessage(e)); NULL }) else NULL
   D <- list(meta = list(title = cfg$DASH_TITLE, built_at = format(raw$fetched_at, "%Y-%m-%dT%H:%M:%S"), run_mode = raw$run_mode,
                         refresh_s = cfg$BROWSER_REFRESH_SECONDS, n_alerts = n_alerts),
+            layouts = layouts,
             charts = charts,
             corr = if (is.null(corr)) NULL else list(labels = arr(corr$labels), m90 = corr$m90, m1y = corr$m1y))
   json <- jsonlite::toJSON(D, auto_unbox = TRUE, na = "null", null = "null", digits = 7, matrix = "rowmajor")
@@ -738,8 +743,8 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   # so the page itself stays small; the Charts tab reads it when present.
   cjson <- if (length(candles)) jsonlite::toJSON(candles, auto_unbox = TRUE, na = "null", null = "null", digits = 7) else "{}"
   cjson <- gsub("<", "\\u003c", cjson, fixed = TRUE)
-  con <- file(file.path(output_dir, "market_data.js"), open = "w", encoding = "UTF-8")
-  writeLines(paste0("window.MMD_CANDLES=", cjson, ";"), con); close(con)
+  con <- file(file.path(output_dir, "market_data.js"), open = "wb")
+  writeLines(enc2utf8(paste0("window.MMD_CANDLES=", cjson, ";")), con, useBytes = TRUE); close(con)
 
   read_asset <- function(f) paste(readLines(file.path(dash_dir, "assets", f), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
   html <- paste0("<!doctype html>\n<html lang='en'><head><meta charset='utf-8'>\n",
@@ -754,14 +759,18 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
                  "<div class='controls'><select id='layoutSel' aria-label='Layout'></select>",
                  "<button type='button' id='editBtn' aria-pressed='false'>Customize</button>",
                  "<button type='button' id='themeBtn' title='Theme: system / light / dark'>Theme</button></div></header>\n",
-                 "<div id='tray' class='tray' hidden><span>Hidden widgets:</span><span id='trayItems'></span>",
+                 "<div id='tray' class='tray' hidden><span class='hint'>Drag a header to any cell, drag the corner to resize (arrow keys / Shift+arrows work too).</span><span>Hidden:</span><span id='trayItems'></span>",
                  "<button type='button' id='saveAsBtn'>Save layout as&hellip;</button><button type='button' id='delLayoutBtn'>Delete layout</button>",
-                 "<button type='button' id='resetBtn'>Reset view</button><button type='button' id='doneBtn'>Done</button></div>\n",
+                 "<button type='button' id='resetBtn'>Reset view</button><button type='button' id='exportBtn' title='Download your layouts as layouts.json; drop it in inputs/ to share them as presets'>Export</button>",
+                 "<label class='btn' title='Load a layouts.json'>Import<input type='file' id='importFile' accept='.json,application/json' hidden></label>",
+                 "<button type='button' id='doneBtn'>Done</button></div>\n",
                  "<main id='main'>", views_html, "</main>\n",
                  "<script type='application/json' id='dash-data'>", json, "</script>\n",
                  "<script src='market_data.js'></script>\n<script>\n", read_asset("dashboard.js"), "\n</script>\n</body></html>")
   html_path <- file.path(output_dir, "market_dashboard.html")
-  con <- file(html_path, open = "w", encoding = "UTF-8"); writeLines(html, con); close(con)
+  # binary connection + useBytes: the assets hold UTF-8 glyphs that a non-UTF-8 locale
+  # would otherwise write as <U+XXXX> (or truncate through a text connection)
+  con <- file(html_path, open = "wb"); writeLines(enc2utf8(html), con, useBytes = TRUE); close(con)
 
   # ---- PNG snapshot (email / Teams) --------------------------------------------
   png_path <- file.path(output_dir, "market_dashboard.png")
