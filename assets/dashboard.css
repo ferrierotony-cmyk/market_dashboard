@@ -187,6 +187,20 @@ ul.alerts,ul.news,ul.notes{list-style:none;margin:0;padding:0}
 .notes li{padding:4px 0;color:var(--ink2);font-size:11.5px;border-bottom:1px solid var(--grid)}
 .notes b{color:var(--ink)}
 
+/* ---------- market tab ---------- */
+.mtiles{grid-template-columns:repeat(6,minmax(0,1fr))}
+.mtiles .tile .val{font-size:17px}
+.screener{flex:1;min-height:0;overflow:auto;position:relative}
+.screener table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:11px;table-layout:fixed}
+.screener th{position:sticky;top:0;background:var(--surface);font-weight:600;color:var(--ink2);padding:3px 5px;border-bottom:1px solid var(--grid);font-size:10.5px;z-index:1;white-space:nowrap;cursor:pointer;user-select:none;overflow:hidden;text-overflow:ellipsis}
+.screener th[aria-sort="descending"]::after{content:" \25BE"}.screener th[aria-sort="ascending"]::after{content:" \25B4"}
+.screener td{height:22px;padding:0 5px;border-bottom:1px solid var(--grid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.screener tr.spacer td{border:0;padding:0}
+.screener tr.srow:hover{background:var(--hover)}
+.screener .chipw{display:inline-block;padding:0 5px;border-radius:8px;background:var(--chip-na-bg);color:var(--chip-na);font-size:9.5px;margin-left:4px;vertical-align:middle}
+.tbl tr.mrow{cursor:default}
+@media (max-width: 900px){.mtiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 /* ---------- alert rules editor ---------- */
 .rules{border:1px solid var(--border);border-radius:7px;background:var(--surface2);padding:6px 8px;margin-bottom:6px;max-height:46vh;overflow:auto}
 .rules table{width:100%;border-collapse:collapse;font-size:11px}

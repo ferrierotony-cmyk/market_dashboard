@@ -613,3 +613,4 @@
 "Cboe delayed quotes","AAPL","Option chain: Apple Inc.","cache-fallback","2026-10-10 01:46:05 UTC","Delayed 15 min"
 "Cboe delayed quotes","MSFT","Option chain: Microsoft","cache-fallback","2026-10-10 01:46:09 UTC","Delayed 15 min"
 "Cboe delayed quotes","NVDA","Option chain: Nvidia","cache-fallback","2026-10-10 01:46:02 UTC","Delayed 15 min"
+"Nasdaq + Yahoo","universe","Whole-market snapshot (all US common stocks)","cache-fallback","2026-10-09 16:00 EDT","Delayed up to 15 min; once a day"

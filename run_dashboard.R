@@ -20,6 +20,7 @@ RUN_MODE <- if ("intraday" %in% tolower(commandArgs(trailingOnly = TRUE))) "intr
 
 dir.create("logs", showWarnings = FALSE)
 source("fetch_data.R")
+source("market.R")      # market_fetch() is called from fetch_all()
 LOG_FILE <- file.path("logs", paste0("run_", format(Sys.Date(), "%Y%m%d"), ".log"))
 logmsg("==== dashboard build (", RUN_MODE, ") started in ", DASH_DIR, " ====")
 

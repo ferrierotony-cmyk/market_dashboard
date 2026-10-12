@@ -488,6 +488,12 @@ fetch_all <- function(cfg, inputs, cache_dir, run_mode = "morning") {
     }
   }
 
+  # Whole-market snapshot ------------------------------------------------------
+  market <- tryCatch(market_fetch(cfg, cache_dir, run_mode), error = function(e) { logmsg("Market universe failed: ", conditionMessage(e)); list(data = NULL, mode = "failed", source = "", asof = NA) })
+  if (!identical(market$mode, "disabled"))
+    add_status("Nasdaq + Yahoo", "universe", "Whole-market snapshot (all US common stocks)", market$mode,
+               if (!is.null(market$data)) market$asof else NA, "Delayed up to 15 min; once a day")
+
   # Calendar (optional) ------------------------------------------------------
   cal <- NULL
   if (nzchar(cfg$FRED_API_KEY) && !intraday) {
@@ -503,7 +509,7 @@ fetch_all <- function(cfg, inputs, cache_dir, run_mode = "morning") {
                if (is.null(bbg)) NA else format(Sys.time(), "%Y-%m-%d %H:%M"), "Real-time (terminal)")
   }
 
-  list(fred = fred, yahoo = yahoo, candles = candles, news = news, options = options_data,
+  list(fred = fred, yahoo = yahoo, candles = candles, news = news, options = options_data, market = market,
        calendar = cal, bbg_comps = bbg, status = do.call(rbind, status),
        fetched_at = Sys.time(), run_mode = run_mode)
 }

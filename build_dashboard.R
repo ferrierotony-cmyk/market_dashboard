@@ -321,6 +321,8 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   health <- tryCatch(health_compute(cfg, S, Y, yahoo, fred), error = function(e) { logmsg("health failed: ", conditionMessage(e)); NULL })
   macro  <- tryCatch(macro_ribbon(fred, cfg, raw$calendar), error = function(e) { logmsg("macro failed: ", conditionMessage(e)); NULL })
   corr   <- tryCatch(corr_compute(cfg, fred, yahoo, derived), error = function(e) { logmsg("correlation failed: ", conditionMessage(e)); NULL })
+  mk     <- tryCatch(market_compute(cfg, raw$market$data, if (!is.null(inputs$watchlist)) inputs$watchlist$symbol else character(0)),
+                     error = function(e) { logmsg("market universe failed: ", conditionMessage(e)); NULL })
 
   # alerts: watchlist + portfolio concentration + red health indicators --------------
   alerts <- if (!is.null(watch)) watch$alerts else NULL
@@ -339,6 +341,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   rule_alerts <- tryCatch(alerts_compute(rules, mkt_metrics, sym_metrics, port_metrics),
                           error = function(e) { logmsg("alert rules failed: ", conditionMessage(e)); NULL })
   if (!is.null(rule_alerts)) alerts <- rbind(alerts, rule_alerts)
+  if (!is.null(mk) && !is.null(mk$alerts)) alerts <- rbind(alerts, mk$alerts)
   n_rules <- if (is.null(rules)) 0 else sum(rules$enabled)
   logmsg("Alert rules: ", n_rules, " enabled, ", if (is.null(rule_alerts)) 0 else nrow(rule_alerts), " fired")
   # an alert stamped long before the latest live quote comes from a stale cache: drop it
@@ -558,6 +561,74 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   }
 
   # ===========================================================================
+  #  MARKET VIEW (whole-market snapshot)
+  # ===========================================================================
+  market_views <- ""; market_src <- "Nasdaq + Yahoo"; universe_js <- "window.MMD_UNIVERSE=null;"
+  if (!is.null(mk)) {
+    b <- mk$breadth; mm <- raw$market
+    market_src <- sprintf("%s &middot; delayed &le;15m &middot; %s", esc(mm$source %||% "Nasdaq + Yahoo"), esc(mm$asof %||% ""))
+    mtile <- function(lbl, val, sub = "", cls = "") sprintf("<div class='tile'><div class='lbl'>%s</div><div class='val %s'>%s</div><div class='chg'>%s</div></div>", lbl, cls, val, sub)
+    ad_cls <- if (b$up > b$down) "up" else if (b$up < b$down) "dn" else ""
+    breadth_html <- paste0("<div class='tiles mtiles'>",
+      mtile("Advancers / decliners", sprintf("<span class='up'>%s</span> / <span class='dn'>%s</span>", format(b$up, big.mark = ","), format(b$down, big.mark = ",")), sprintf("%s names &middot; %s unchanged", format(b$n, big.mark = ","), b$unch)),
+      mtile("Median move", fmt_chg(b$median, 2, "%", TRUE), paste0("cap-weighted ", fmt_chg(b$cap_wtd, 2, "%", TRUE))),
+      mtile("Above 200-day avg", fmt_num(b$above200, 0, "%"), paste0("above 50-day ", fmt_num(b$above50, 0, "%"))),
+      mtile("New 52w highs / lows", sprintf("<span class='up'>%d</span> / <span class='dn'>%d</span>", b$new_highs, b$new_lows), "closing within 0.1% of the range edge"),
+      mtile("Up vs down $ volume", sprintf("<span class='up'>$%s</span> / <span class='dn'>$%s</span>", fmt_cap(b$up_dollar), fmt_cap(b$down_dollar)),
+            sprintf("%.0f%% of dollars in rising names", 100 * b$up_dollar / max(1, b$up_dollar + b$down_dollar))),
+      mtile("Moves of 10%+", sprintf("<span class='up'>%d</span> up / <span class='dn'>%d</span> down", b$big_up, b$big_down), "any size, before liquidity floors"),
+      "</div>")
+    sec_rows <- lapply(mk$sectors, function(s) c(esc(s$sector), s$n, fmt_chg(s$cap_wtd, 2, "%", TRUE), fmt_chg(s$avg, 2, "%", TRUE), fmt_chg(s$median, 2, "%", TRUE),
+                                                   sprintf("<span class='up'>%d</span> / <span class='dn'>%d</span>", s$up, s$down), fmt_num(s$above200, 0, "%"),
+                                                   sprintf("%s <span class='muted'>%s</span> %s", esc(s$best$name), esc(s$best$symbol), fmt_chg(s$best$chg_pct, 1, "%", TRUE)),
+                                                   sprintf("%s <span class='muted'>%s</span> %s", esc(s$worst$name), esc(s$worst$symbol), fmt_chg(s$worst$chg_pct, 1, "%", TRUE))))
+    sectors_mk <- html_table(sec_rows, c("Sector", "#", "Cap-wtd 1D", "Avg 1D", "Median 1D", "Up / down", "&gt; 200D", "Best today (liquid)", "Worst today (liquid)"),
+                             aligns = c("l", "r", "r", "r", "r", "r", "r", "l", "l"), class = "tbl sort")
+    cap_word <- c(mega = "Mega ($200B+)", large = "Large ($10-200B)", mid = "Mid ($2-10B)", small = "Small ($300M-2B)", micro = "Micro (&lt;$300M)")
+    cap_rows <- lapply(mk$caps, function(cp) c(cap_word[[cp$bucket]], cp$n, fmt_chg(cp$avg, 2, "%", TRUE), fmt_chg(cp$median, 2, "%", TRUE),
+                                               sprintf("<span class='up'>%d</span> / <span class='dn'>%d</span>", cp$up, cp$down), fmt_num(cp$above200, 0, "%"),
+                                               sprintf("<span class='up'>%d</span> / <span class='dn'>%d</span>", cp$new_highs, cp$new_lows)))
+    caps_html <- html_table(cap_rows, c("Size", "#", "Avg 1D", "Median 1D", "Up / down", "&gt; 200D", "52w hi / lo"), aligns = c("l", rep("r", 6)))
+    mrow <- function(df) lapply(seq_len(nrow(df)), function(i) { h <- df[i, ]
+      c(sprintf("<b>%s</b> <span class='muted'>%s</span>%s", esc(h$name), esc(h$symbol), if (isTRUE(h$in_watch)) " <span class='chip na'>watchlist</span>" else ""),
+        esc(h$sector), fmt_num(h$last, if (!is.na(h$last) && h$last < 10) 3 else 2), fmt_chg(h$chg_pct, 2, "%", TRUE),
+        if (is.na(h$vol_x)) "&ndash;" else sprintf("%.1fx", h$vol_x), paste0("$", fmt_cap(h$mcap))) })
+    mtable <- function(df) html_table(mrow(df), c("Name", "Sector", "Last", "1D", "Vol/3M", "Mkt cap"), aligns = c("l", "l", "r", "r", "r", "r"),
+                                      row_attrs = vapply(seq_len(nrow(df)), function(i) sprintf("class='mrow' data-sym='%s'", esc(df$symbol[i])), ""))
+    movers_block <- function(m, lbl) paste0("<div class='movers'><div><h3>", lbl, " gainers</h3>", mtable(m$up), "</div><div><h3>", lbl, " losers</h3>", mtable(m$down), "</div></div>")
+    vol_rows <- lapply(seq_len(nrow(mk$volume)), function(i) { h <- mk$volume[i, ]
+      c(sprintf("<b>%s</b> <span class='muted'>%s</span>", esc(h$name), esc(h$symbol)), esc(h$sector), sprintf("<b>%.1fx</b>", h$vol_x), fmt_chg(h$chg_pct, 2, "%", TRUE), paste0("$", fmt_cap(h$dollar_vol)), paste0("$", fmt_cap(h$mcap))) })
+    vol_html <- html_table(vol_rows, c("Name", "Sector", "Vol/3M", "1D", "$ traded", "Mkt cap"), aligns = c("l", "l", "r", "r", "r", "r"))
+    hl_rows <- function(df) lapply(seq_len(nrow(df)), function(i) { h <- df[i, ]
+      c(sprintf("<b>%s</b> <span class='muted'>%s</span>", esc(h$name), esc(h$symbol)), esc(h$sector), fmt_num(h$last, 2), fmt_chg(h$chg_pct, 2, "%", TRUE), paste0("$", fmt_cap(h$mcap))) })
+    hl_html <- paste0("<div class='movers'><div><h3>New 52-week highs <span class='muted'>$2B+</span></h3>", html_table(hl_rows(mk$highs), c("Name", "Sector", "Last", "1D", "Mkt cap"), aligns = c("l", "l", "r", "r", "r")),
+                      "</div><div><h3>New 52-week lows <span class='muted'>$2B+</span></h3>", html_table(hl_rows(mk$lows), c("Name", "Sector", "Last", "1D", "Mkt cap"), aligns = c("l", "l", "r", "r", "r")), "</div></div>")
+    sec_opts <- paste0(vapply(vapply(mk$sectors, function(s) s$sector, ""), function(x) sprintf("<option value='%s'>%s</option>", esc(x), esc(x)), ""), collapse = "")
+    screener_html <- paste0("<div class='ctool'><input type='search' id='sfilter' placeholder='Symbol or name' aria-label='Filter'>",
+                            "<select id='ssector' aria-label='Sector'><option value=''>All sectors</option>", sec_opts, "</select>",
+                            "<select id='sbucket' aria-label='Size'><option value=''>All sizes</option><option value='mega'>Mega $200B+</option><option value='large'>Large $10-200B</option><option value='mid'>Mid $2-10B</option><option value='small'>Small $300M-2B</option><option value='micro'>Micro</option></select>",
+                            "<select id='smin' aria-label='Minimum dollar volume'><option value='0'>Any $ volume</option><option value='1e6'>$1M+ traded</option><option value='1e7' selected>$10M+ traded</option><option value='1e8'>$100M+ traded</option></select>",
+                            "<label class='tog'><input type='checkbox' id='swatch'><span>Watchlist only</span></label>",
+                            "<span class='muted' id='scount'></span><span class='muted'>Click a header to sort</span></div>",
+                            "<div class='screener' id='screener'></div>")
+    market_views <- paste0(
+      widget("k-breadth", "Market breadth", breadth_html, 12, 2, src = market_src, cls = "bare"),
+      widget("k-sectors", "Sectors", paste0("<div class='scroll'>", sectors_mk, "</div>"), 7, 5, sub = sprintf("%s common stocks, every listed name", format(mk$n_kept, big.mark = ",")), src = market_src),
+      widget("k-caps", "By size", paste0("<div class='scroll'>", caps_html, "</div>"), 5, 5, sub = "market-cap buckets", src = market_src),
+      widget("k-large", "Large caps", paste0("<div class='scroll'>", movers_block(mk$movers$large, "Large-cap"), "</div>"), 6, 6, sub = "$10B+, $5M+ traded", src = market_src),
+      widget("k-small", "Mid &amp; small caps", paste0("<div class='scroll'>", movers_block(mk$movers$mid, "Mid-cap"), movers_block(mk$movers$small, "Small-cap"), "</div>"), 6, 6, sub = "$5M+ traded", src = market_src),
+      widget("k-volume", "Unusual volume", paste0("<div class='scroll'>", vol_html, "</div>"), 5, 5, sub = "vs 3-month average, $300M+ cap", src = market_src),
+      widget("k-highlow", "52-week highs &amp; lows", paste0("<div class='scroll'>", hl_html, "</div>"), 7, 5, src = market_src),
+      widget("k-screener", "Screener", screener_html, 12, 8, sub = "every name, filter and sort", src = market_src))
+    ucols <- c("symbol", "name", "sector", "industry", "exchange", "last", "chg_pct", "volume", "vol_x", "dollar_vol", "mcap", "bucket", "pos52", "vs50", "vs200", "hi52", "lo52", "new_high", "new_low", "in_watch")
+    ur <- mk$rows[, ucols]
+    for (k in c("last", "chg_pct", "vol_x", "pos52", "vs50", "vs200", "hi52", "lo52")) ur[[k]] <- round(ur[[k]], 3)
+    for (k in c("volume", "dollar_vol", "mcap")) ur[[k]] <- round(ur[[k]])
+    universe_js <- paste0("window.MMD_UNIVERSE=", jsonlite::toJSON(list(asof = mm$asof %||% "", source = mm$source %||% "", cols = ucols, rows = ur),
+                                                                   auto_unbox = TRUE, na = "null", null = "null", digits = 6, dataframe = "values"), ";")
+  }
+
+  # ===========================================================================
   #  MACRO & HEALTH VIEW
   # ===========================================================================
   health_html <- "<div class='muted pad'>Unavailable</div>"; domains_html <- ""
@@ -666,6 +737,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
     "<li><b>Bond prices are modeled.</b> Price = last mark &minus; duration &times; change in yield since the mark. Yield = UST par yield at the bond's tenor, plus the ICE BofA OAS index named in holdings.csv for corporates. Convexity, roll-down and issuer-specific spread moves are ignored. Re-mark a bond by updating mark_price and mark_date.</li>",
     "<li><b>Carry</b> accrues the coupon, or the yield at the mark date when coupon is blank.</li>",
     "<li><b>Performance</b> holds today's holdings constant over the past year and uses daily total return. Benchmarks use dividend-adjusted ETF prices.</li>",
+    "<li><b>Whole-market snapshot</b> (Market tab) covers every US-listed common stock from Nasdaq's screener with Yahoo batch quotes, once a day, delayed up to 15 minutes. Warrants, units, rights and preferreds are excluded; names under $1 or $50M are dropped. Market cap and sector come from the exchange feed and can lag corporate actions.</li>",
     "<li><b>Correlations</b> use daily changes for yields, spreads, VIX and MOVE, and daily % returns otherwise.</li>",
     "<li><b>Market health</b> grades ", if (!is.null(health)) health$n_total else "", " indicators across six domains against thresholds in config.R.</li>",
     "<li><b>Live vs delayed.</b> Futures, FX, ETFs and equities come from Yahoo, delayed up to 15 minutes, and refresh every 15 minutes in market hours when the intraday task is on. Rates, credit indices and macro update once a day.</li></ul>")
@@ -703,6 +775,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
       widget("m-port", "Portfolio", paste0("<div class='scroll'>", port_snap, "</div>"), 3, 3, src = "Model + Yahoo &middot; holdings.csv"),
       widget("m-movers", "Equity movers", paste0("<div class='scroll'>", movers_html, "</div>"), 6, 3, sub = "watchlist, today", src = live_src, hidden = TRUE)),
     portfolio = port_views,
+    market = market_views,
     charts = paste0(
       widget("c-candle", "Price chart", candle_body, 9, 9, sub = "candles with technicals", src = "<span id='csrc'>Yahoo</span>"),
       widget("c-side", "Snapshot", paste0("<div class='scroll'>", side_html, "</div>"), 3, 9, sub = "selected symbol", src = "Yahoo &middot; Cboe"),
@@ -727,9 +800,11 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
       widget("w-news", "Headlines", paste0("<div class='scroll'>", news_html, "</div>"), 7, 7, sub = "flagged words in config.R", src = "Yahoo Finance news"),
       widget("w-opts", "Options activity", paste0("<div class='scroll'>", opts_html, "</div>"), 5, 7, sub = "equities &amp; ETFs", src = "Cboe &middot; delayed 15m"))
   )
-  tabs <- c(morning = "Morning", portfolio = "Portfolio", charts = "Charts", health = "Macro &amp; health", watch = "Watchlist &amp; alerts")
+  tabs <- c(morning = "Morning", portfolio = "Portfolio", charts = "Charts", market = "Market", health = "Macro &amp; health", watch = "Watchlist &amp; alerts")
+  if (!nzchar(market_views)) tabs <- tabs[names(tabs) != "market"]
   tab_html <- paste0(vapply(names(tabs), function(v) sprintf("<button type='button' role='tab' data-view='%s'>%s%s</button>", v, tabs[[v]],
                                                              if (v == "watch" && n_alerts > 0) sprintf(" <span class='badge'>%d</span>", n_alerts) else ""), ""), collapse = "")
+  views <- views[vapply(views, nzchar, TRUE)]
   views_html <- paste0(vapply(names(views), function(v) sprintf("<div class='view%s' data-view='%s' role='tabpanel' hidden>%s</div>",
                                                                  if (v == "morning") " fit" else "", v, views[[v]]), ""), collapse = "\n")
 
@@ -755,6 +830,9 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   con <- file(file.path(output_dir, "market_data.js"), open = "wb")
   writeLines(enc2utf8(paste0("window.MMD_CANDLES=", cjson, ";")), con, useBytes = TRUE); close(con)
 
+  con <- file(file.path(output_dir, "market_universe.js"), open = "wb")
+  writeLines(enc2utf8(gsub("<", "\\u003c", universe_js, fixed = TRUE)), con, useBytes = TRUE); close(con)
+
   read_asset <- function(f) paste(readLines(file.path(dash_dir, "assets", f), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
   html <- paste0("<!doctype html>\n<html lang='en'><head><meta charset='utf-8'>\n",
                  "<meta name='viewport' content='width=device-width, initial-scale=1'>\n",
@@ -775,7 +853,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
                  "<button type='button' id='doneBtn'>Done</button></div>\n",
                  "<main id='main'>", views_html, "</main>\n", feeds_dialog, "\n",
                  "<script type='application/json' id='dash-data'>", json, "</script>\n",
-                 "<script src='market_data.js'></script>\n<script>\n", read_asset("dashboard.js"), "\n</script>\n</body></html>")
+                 "<script src='market_data.js'></script>\n<script src='market_universe.js'></script>\n<script>\n", read_asset("dashboard.js"), "\n</script>\n</body></html>")
   html_path <- file.path(output_dir, "market_dashboard.html")
   # binary connection + useBytes: the assets hold UTF-8 glyphs that a non-UTF-8 locale
   # would otherwise write as <U+XXXX> (or truncate through a text connection)

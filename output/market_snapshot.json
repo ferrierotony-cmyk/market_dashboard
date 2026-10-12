@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-10-12 00:26:27",
+  "built_at": "2026-10-12 00:34:46",
   "run_mode": "morning",
   "rates_asof": "2026-10-08",
   "credit_asof": "2026-10-08",
@@ -29,8 +29,8 @@
       "category": "Rule",
       "symbol": "Portfolio",
       "message": "Largest non-government issuer over 15%: Largest non-govt issuer (%) 17.55",
-      "time": "12 Oct 00:26",
-      "ts": 1791764789.738642,
+      "time": "12 Oct 00:34",
+      "ts": 1791765289.16058,
       "key": "port_issuer|portfolio"
     },
     {
@@ -38,9 +38,99 @@
       "category": "Concentration",
       "symbol": "Portfolio",
       "message": "JPMorgan is 17.5% of the portfolio (limit 15% per non-government issuer)",
-      "time": "12 Oct 00:26",
-      "ts": 1791764789.597092,
+      "time": "12 Oct 00:34",
+      "ts": 1791765289.030651,
       "key": "Concentration|Portfolio|JPMorgan is 17.5% of the"
+    },
+    {
+      "severity": "serious",
+      "category": "Market",
+      "symbol": "ZUIX",
+      "message": "Synthetic Co 4340 (ZUIX) -37.1% today, $4.2B cap, $202M traded, 2.2x volume. Large move outside the watchlist",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZUIX"
+    },
+    {
+      "severity": "serious",
+      "category": "Market",
+      "symbol": "ZMR",
+      "message": "Synthetic Co 4574 (ZMR) -32.7% today, $2.1B cap, $79M traded, 1.0x volume. Large move outside the watchlist",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZMR"
+    },
+    {
+      "severity": "serious",
+      "category": "Market",
+      "symbol": "ZMHK",
+      "message": "Synthetic Co 2175 (ZMHK) +29.9% today, $2.9B cap, $200M traded, 0.8x volume. Large move outside the watchlist",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZMHK"
+    },
+    {
+      "severity": "serious",
+      "category": "Market",
+      "symbol": "ZVW",
+      "message": "Synthetic Co 5480 (ZVW) -27.8% today, $2.3B cap, $53M traded, 1.4x volume. Large move outside the watchlist",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZVW"
+    },
+    {
+      "severity": "serious",
+      "category": "Market",
+      "symbol": "ZWQ",
+      "message": "Synthetic Co 2529 (ZWQ) -27.5% today, $10.8B cap, $24M traded, 1.7x volume. Large move outside the watchlist",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZWQ"
+    },
+    {
+      "severity": "serious",
+      "category": "Market",
+      "symbol": "ZPIN",
+      "message": "Synthetic Co 4366 (ZPIN) -26.9% today, $1.9B cap, $39M traded, 0.6x volume. Large move outside the watchlist",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZPIN"
+    },
+    {
+      "severity": "serious",
+      "category": "Market",
+      "symbol": "ZRCBN",
+      "message": "Synthetic Co 3131 (ZRCBN) +26.4% today, $1.7B cap, $70M traded, 2.5x volume. Large move outside the watchlist",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZRCBN"
+    },
+    {
+      "severity": "serious",
+      "category": "Market",
+      "symbol": "ZGB",
+      "message": "Synthetic Co 873 (ZGB) +24.3% today, $36.8B cap, $103M traded, 1.5x volume. Large move outside the watchlist",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZGB"
+    },
+    {
+      "severity": "serious",
+      "category": "Market",
+      "symbol": "ZFX2",
+      "message": "Synthetic Co 4048 (ZFX2) -22.5% today, $3.3B cap, $109M traded, 4.2x volume. Large move outside the watchlist",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZFX2"
+    },
+    {
+      "severity": "serious",
+      "category": "Market",
+      "symbol": "ZSQ",
+      "message": "Synthetic Co 906 (ZSQ) -21.3% today, $2.7B cap, $37M traded, 1.3x volume. Large move outside the watchlist",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZSQ"
     },
     {
       "severity": "serious",
@@ -74,9 +164,126 @@
       "category": "Market health",
       "symbol": "Credit",
       "message": "HY OAS 1-month change (bp) at +48 (green <= +15, red > +40)",
-      "time": "12 Oct 00:26",
-      "ts": 1791764789.597831,
+      "time": "12 Oct 00:34",
+      "ts": 1791765289.031285,
       "key": "Market health|Credit|HY OAS 1-month change (b"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "ZGB",
+      "message": "Synthetic Co 873 (ZGB) +24.3% today, $36.8B cap, $103M traded, 1.5x volume",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZGB"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "MRNA",
+      "message": "Moderna (MRNA) +14.2% today, $49.1B cap, $6,495M traded, 1.6x volume",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|MRNA"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "HUM",
+      "message": "Humana (HUM) +11.6% today, $47.5B cap, $2,155M traded, 3.8x volume",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|HUM"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "AMT",
+      "message": "American Tower (AMT) +9.3% today, $59.2B cap, $1,551M traded, 3.1x volume",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|AMT"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "ZNRLI",
+      "message": "Synthetic Co 1525 (ZNRLI) +8.9% today, $38.9B cap, $257M traded, 1.6x volume",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_move|ZNRLI"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "ZKXA4",
+      "message": "Synthetic Co 1243 (ZKXA4) volume 5.2x its 3-month average (-7.5% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_volume|ZKXA4"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "ZRE",
+      "message": "Synthetic Co 3462 (ZRE) volume 14.1x its 3-month average (-6.4% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_volume|ZRE"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "ZXN",
+      "message": "Synthetic Co 3217 (ZXN) volume 7.9x its 3-month average (+6.0% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_volume|ZXN"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "ZARKW",
+      "message": "Synthetic Co 808 (ZARKW) volume 8.9x its 3-month average (+5.7% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_volume|ZARKW"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "ZLLZ",
+      "message": "Synthetic Co 2226 (ZLLZ) volume 10.6x its 3-month average (-5.2% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_volume|ZLLZ"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "ZFGY",
+      "message": "Synthetic Co 802 (ZFGY) volume 5.2x its 3-month average (+3.7% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_volume|ZFGY"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "ZZNGT",
+      "message": "Synthetic Co 2336 (ZZNGT) volume 11.4x its 3-month average (+3.7% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_volume|ZZNGT"
+    },
+    {
+      "severity": "warning",
+      "category": "Market",
+      "symbol": "ZAND",
+      "message": "Synthetic Co 3226 (ZAND) volume 9.4x its 3-month average (+3.3% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_volume|ZAND"
     },
     {
       "severity": "warning",
@@ -338,6 +545,132 @@
       "time": "2026-10-09 14:30:40 UTC",
       "ts": 1791556240,
       "key": "Options|LQD"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "DDOG",
+      "message": "Datadog (DDOG) at a 52-week high (+7.1% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_high|DDOG"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "PLTR",
+      "message": "Palantir Technologies (PLTR) at a 52-week high (+5.2% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_high|PLTR"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "FFIV",
+      "message": "F5, Inc. (FFIV) at a 52-week high (+3.9% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_high|FFIV"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "NTAP",
+      "message": "NetApp (NTAP) at a 52-week high (+2.6% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_high|NTAP"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "ZHTYJ",
+      "message": "Synthetic Co 5428 (ZHTYJ) at a 52-week high (+1.5% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_high|ZHTYJ"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "ABBV",
+      "message": "AbbVie (ABBV) at a 52-week high (+1.5% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_high|ABBV"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "MTD",
+      "message": "Mettler Toledo (MTD) at a 52-week high (+1.3% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_high|MTD"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "ZBRA",
+      "message": "Zebra Technologies (ZBRA) at a 52-week high (+1.3% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_high|ZBRA"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "ZCTLO",
+      "message": "Synthetic Co 28 (ZCTLO) at a 52-week low (+3.3% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_low|ZCTLO"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "ZDEH",
+      "message": "Synthetic Co 3283 (ZDEH) at a 52-week low (+2.0% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_low|ZDEH"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "ZCI",
+      "message": "Synthetic Co 1374 (ZCI) at a 52-week low (+1.0% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_low|ZCI"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "ZML",
+      "message": "Synthetic Co 677 (ZML) at a 52-week low (-0.7% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_low|ZML"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "MLM",
+      "message": "Martin Marietta Materials (MLM) at a 52-week low (-0.7% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_low|MLM"
+    },
+    {
+      "severity": "info",
+      "category": "Market",
+      "symbol": "ZLG3",
+      "message": "Synthetic Co 759 (ZLG3) at a 52-week low (+0.1% today)",
+      "time": "12 Oct 00:34",
+      "ts": 1791765288.999315,
+      "key": "mkt_low|ZLG3"
     },
     {
       "severity": "info",

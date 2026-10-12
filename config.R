@@ -273,6 +273,33 @@ ALERT_MARKET_METRICS <- list(
   hyg     = list(src = "yahoo", key = "HYG",   unit = "px", label = "HYG (HY ETF)"),
   health_score = list(src = "health", key = "score", unit = "level", label = "Market health score (0-100)")
 )
+# -----------------------------------------------------------------------------
+#  Whole-market snapshot (Market tab): every US-listed common stock, once a day,
+#  from Nasdaq's screener plus Yahoo batch quotes. No candles for these; the
+#  watchlist keeps the charts. Set enabled = FALSE to skip it.
+# -----------------------------------------------------------------------------
+MARKET_UNIVERSE <- list(
+  enabled = TRUE,
+  intraday = FALSE,              # TRUE also refreshes the snapshot on intraday runs (~30 Yahoo calls)
+  include_etfs = FALSE,
+  min_price = 1,                 # drop sub-$1 names
+  min_market_cap = 50e6,         # drop sub-$50M names
+  mover_min_dollar_volume = 5e6, # a mover needs at least this much traded today
+  volume_min_market_cap = 300e6,
+  highlow_min_market_cap = 2e9,
+  movers_n = 10,
+  quote_batch = 200, quote_pause = 0.5
+)
+# Market-wide alerts. kind: move | volume | high | low; the cap and dollar-volume
+# floors keep penny-stock noise out. max_n caps how many fire per rule.
+MARKET_ALERT_RULES <- list(
+  list(kind = "move",   threshold = 15, min_market_cap = 1e9,  min_dollar_volume = 20e6, severity = "serious", max_n = 10, note = "Large move outside the watchlist"),
+  list(kind = "move",   threshold = 8,  min_market_cap = 20e9, min_dollar_volume = 50e6, severity = "warning", max_n = 10),
+  list(kind = "volume", threshold = 5,  min_market_cap = 2e9,  min_dollar_volume = 20e6, severity = "warning", max_n = 8),
+  list(kind = "high",   min_market_cap = 50e9, severity = "info", max_n = 8),
+  list(kind = "low",    min_market_cap = 50e9, severity = "info", max_n = 8)
+)
+
 # Desktop notification when a new alert appears (Windows toast, no setup).
 TOAST_ALERTS <- TRUE
 TOAST_MIN_SEVERITY <- "warning"     # critical | serious | warning | info

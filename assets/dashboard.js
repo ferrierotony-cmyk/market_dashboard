@@ -605,7 +605,7 @@
     pos[id] = [0, MAX_ROWS, w, h]; return pos[id];
   }
   // push overlaps down (the pinned widget stays where it was dropped), then float up
-  function compact(pos, pinned) {
+  function compactGrid(pos, pinned) {
     var ids = Object.keys(pos).sort(function (a, b) {
       if (a === pinned) return -1; if (b === pinned) return 1;
       return pos[a][1] - pos[b][1] || pos[a][0] - pos[b][0];
@@ -654,7 +654,7 @@
         w.hidden = conf && conf.hidden ? conf.hidden.indexOf(id) >= 0 : w.dataset.defHidden === '1';
         if (!w.hidden && conf && conf.pos && conf.pos[id]) pos[id] = conf.pos[id].slice();
       });
-      pos = compact(pos);
+      pos = compactGrid(pos);
       // widgets the layout does not know (added since it was saved) flow in after the rest
       ws.forEach(function (w) { if (!w.hidden && !pos[w.dataset.id]) flowPlace(pos, w.dataset.id, +w.dataset.w, +w.dataset.h); });
       view._pos = pos; paintView(view);
@@ -677,14 +677,14 @@
   }
   function placeWidget(view, id, cell, save) {
     var pos = view._pos; pos[id] = [Math.max(0, Math.min(COLS - cell[2], cell[0])), Math.max(0, cell[1]), clampW(cell[2]), clampH(cell[3])];
-    view._pos = compact(pos, id); paintView(view, save !== false);
+    view._pos = compactGrid(pos, id); paintView(view, save !== false);
     if (save !== false) { commitView(view); rerenderAll(); }
   }
   function showWidget(view, w) {
-    w.hidden = false; flowPlace(view._pos, w.dataset.id, +w.dataset.w, +w.dataset.h); view._pos = compact(view._pos);
+    w.hidden = false; flowPlace(view._pos, w.dataset.id, +w.dataset.w, +w.dataset.h); view._pos = compactGrid(view._pos);
     paintView(view); commitView(view); rerenderAll();
   }
-  function hideWidget(view, w) { w.hidden = true; delete view._pos[w.dataset.id]; view._pos = compact(view._pos); paintView(view); commitView(view); rerenderAll(); }
+  function hideWidget(view, w) { w.hidden = true; delete view._pos[w.dataset.id]; view._pos = compactGrid(view._pos); paintView(view); commitView(view); rerenderAll(); }
   function gridMetrics(view) {
     var r = view.getBoundingClientRect(), cs = getComputedStyle(view), gap = parseFloat(cs.gap || cs.rowGap) || 7;
     var rowH = parseFloat(cs.gridAutoRows) || 62;
@@ -967,6 +967,94 @@
     $('#wcount').textContent = n + ' of ' + tot + ' names';
   }
   if (wf && ws) { wf.addEventListener('input', applyWatchFilter); ws.addEventListener('change', applyWatchFilter); applyWatchFilter(); }
+
+  // ------------------------------------------------------------------ market screener
+  // ~6,000 rows from market_universe.js: filtered and sorted in memory, only the
+  // visible slice is in the DOM (two spacer rows keep the scrollbar honest).
+  var U = window.MMD_UNIVERSE, scr = $('#screener');
+  if (U && U.rows && scr) {
+    var CI = {}; U.cols.forEach(function (c, i) { CI[c] = i; });
+    var ROWH = 22, SCOLS = [
+      { k: 'symbol', l: 'Symbol', w: 72, f: function (v) { return v; }, al: true },
+      { k: 'name', l: 'Name', w: 230, f: function (v) { return v; }, al: true },
+      { k: 'sector', l: 'Sector', w: 150, f: function (v) { return v; }, al: true },
+      { k: 'last', l: 'Last', w: 70, f: function (v) { return v == null ? '–' : num(v, pxDec(v)); } },
+      { k: 'chg_pct', l: '1D', w: 70, f: function (v) { return signed(v, 2, '%'); }, sign: true },
+      { k: 'volume', l: 'Volume', w: 74, f: function (v) { return v == null ? '–' : compact(v); } },
+      { k: 'vol_x', l: 'Vol/3M', w: 62, f: function (v) { return v == null ? '–' : num(v, 1) + 'x'; } },
+      { k: 'dollar_vol', l: '$ traded', w: 78, f: function (v) { return v == null ? '–' : '$' + compact(v); } },
+      { k: 'mcap', l: 'Mkt cap', w: 78, f: function (v) { return v == null ? '–' : '$' + compact(v); } },
+      { k: 'pos52', l: '52w pos', w: 64, f: function (v) { return v == null ? '–' : num(v, 0) + '%'; } },
+      { k: 'vs50', l: 'vs 50D', w: 66, f: function (v) { return signed(v, 1, '%'); }, sign: true },
+      { k: 'vs200', l: 'vs 200D', w: 66, f: function (v) { return signed(v, 1, '%'); }, sign: true },
+      { k: 'exchange', l: 'Exchange', w: 90, f: function (v) { return v || ''; }, al: true }
+    ];
+    var sst = { q: '', sector: '', bucket: '', min: 1e7, watch: false, key: 'dollar_vol', dir: 'desc' }, srows = [];
+    var sf = $('#sfilter'), ss = $('#ssector'), sb = $('#sbucket'), smin = $('#smin'), sw = $('#swatch'), scount = $('#scount');
+    var tbl = document.createElement('table'), thead = tbl.createTHead(), hr = thead.insertRow(), body = tbl.createTBody();
+    SCOLS.forEach(function (c) {
+      var th = document.createElement('th'); th.textContent = c.l; th.style.width = c.w + 'px'; th.className = c.al ? 'al' : 'ar'; th.tabIndex = 0;
+      th.setAttribute('aria-sort', 'none');
+      function sortBy() { if (sst.key === c.k) sst.dir = sst.dir === 'desc' ? 'asc' : 'desc'; else { sst.key = c.k; sst.dir = c.al ? 'asc' : 'desc'; } recompute(); }
+      th.addEventListener('click', sortBy); th.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sortBy(); } });
+      hr.appendChild(th);
+    });
+    scr.appendChild(tbl);
+    function recompute() {
+      var q = sst.q.toLowerCase(), ki = CI[sst.key], isText = SCOLS.some(function (c) { return c.k === sst.key && c.al; });
+      srows = U.rows.filter(function (r) {
+        if (sst.sector && r[CI.sector] !== sst.sector) return false;
+        if (sst.bucket && r[CI.bucket] !== sst.bucket) return false;
+        if (sst.min && !(r[CI.dollar_vol] >= sst.min)) return false;
+        if (sst.watch && !r[CI.in_watch]) return false;
+        if (q && (String(r[CI.symbol]).toLowerCase().indexOf(q) < 0 && String(r[CI.name]).toLowerCase().indexOf(q) < 0)) return false;
+        return true;
+      });
+      var dir = sst.dir === 'desc' ? -1 : 1;
+      srows.sort(function (a, b) {
+        var x = a[ki], y = b[ki];
+        if (isText) return dir * String(x || '').localeCompare(String(y || ''));
+        if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
+        return dir * (x - y);
+      });
+      $$('th', thead).forEach(function (th, i) { th.setAttribute('aria-sort', SCOLS[i].k === sst.key ? (sst.dir === 'desc' ? 'descending' : 'ascending') : 'none'); });
+      scount.textContent = srows.length.toLocaleString() + ' of ' + U.rows.length.toLocaleString() + ' names';
+      scr.scrollTop = 0; paint();
+    }
+    function paint() {
+      var n = srows.length, h = scr.clientHeight || 400, first = Math.max(0, Math.floor(scr.scrollTop / ROWH) - 5), vis = Math.ceil(h / ROWH) + 10, last = Math.min(n, first + vis);
+      body.textContent = '';
+      var sp1 = body.insertRow(); sp1.className = 'spacer'; var c1 = sp1.insertCell(); c1.colSpan = SCOLS.length; c1.style.height = (first * ROWH) + 'px';
+      for (var i = first; i < last; i++) {
+        var r = srows[i], tr = body.insertRow(); tr.className = 'srow'; tr.title = r[CI.industry] || '';
+        SCOLS.forEach(function (c) {
+          var td = tr.insertCell(), v = r[CI[c.k]]; td.className = c.al ? 'al' : 'ar'; td.textContent = c.f(v);
+          if (c.sign && v != null) td.classList.add(v > 0 ? 'up' : v < 0 ? 'dn' : 'flat');
+          if (c.k === 'symbol' && r[CI.in_watch]) { var ch = document.createElement('span'); ch.className = 'chipw'; ch.textContent = 'WL'; td.appendChild(ch); }
+          if (c.k === 'pos52' && v != null) { if (r[CI.new_high]) td.classList.add('up'); if (r[CI.new_low]) td.classList.add('dn'); }
+        });
+      }
+      var sp2 = body.insertRow(); sp2.className = 'spacer'; var c2 = sp2.insertCell(); c2.colSpan = SCOLS.length; c2.style.height = (Math.max(0, n - last) * ROWH) + 'px';
+      if (!n) { var e = body.insertRow().insertCell(); e.colSpan = SCOLS.length; e.className = 'muted al'; e.textContent = 'No names match'; }
+    }
+    var lastFirst = -1;
+    scr.addEventListener('scroll', function () { var f = Math.floor(scr.scrollTop / ROWH); if (f !== lastFirst) { lastFirst = f; paint(); } });
+    new ResizeObserver(function () { paint(); }).observe(scr);
+    if (sf) sf.addEventListener('input', function () { sst.q = sf.value.trim(); recompute(); });
+    if (ss) ss.addEventListener('change', function () { sst.sector = ss.value; recompute(); });
+    if (sb) sb.addEventListener('change', function () { sst.bucket = sb.value; recompute(); });
+    if (smin) smin.addEventListener('change', function () { sst.min = +smin.value; recompute(); });
+    if (sw) sw.addEventListener('change', function () { sst.watch = sw.checked; recompute(); });
+    recompute();
+    // movers tables: clicking a name that is on the watchlist opens its chart; otherwise filter the screener to it
+    $$('tr.mrow').forEach(function (tr) {
+      tr.addEventListener('click', function () {
+        var s = tr.dataset.sym;
+        if (D.candles && D.candles[s]) { state.sym = s; if (csym) csym.value = s; showTab('charts'); redrawCandle(); return; }
+        if (sf) { sf.value = s; sst.q = s; sst.min = 0; if (smin) smin.value = '0'; recompute(); scr.scrollIntoView({ block: 'nearest' }); }
+      });
+    });
+  }
 
   // ------------------------------------------------------------------ alert rules editor
   // Edits are previewed instantly against the numbers baked into this page and kept
