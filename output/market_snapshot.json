@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-10-12 00:18:57",
+  "built_at": "2026-10-12 00:20:52",
   "run_mode": "morning",
   "rates_asof": "2026-10-08",
   "credit_asof": "2026-10-08",
@@ -29,8 +29,8 @@
       "category": "Concentration",
       "symbol": "Portfolio",
       "message": "JPMorgan is 17.5% of the portfolio (limit 15% per non-government issuer)",
-      "time": "12 Oct 00:19",
-      "ts": 1791764340.240123
+      "time": "12 Oct 00:20",
+      "ts": 1791764454.95159
     },
     {
       "severity": "serious",
@@ -93,8 +93,8 @@
       "category": "Market health",
       "symbol": "Credit",
       "message": "HY OAS 1-month change (bp) at +48 (green <= +15, red > +40)",
-      "time": "12 Oct 00:19",
-      "ts": 1791764340.240874
+      "time": "12 Oct 00:20",
+      "ts": 1791764454.952825
     },
     {
       "severity": "warning",

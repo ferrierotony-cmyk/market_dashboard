@@ -632,7 +632,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
                         tf_btns, "</div><div class='inds'>", ind_btns, "</div></div><div class='chart candle' id='candle'></div>")
 
   # ===========================================================================
-  #  DATA SOURCES VIEW
+  #  FEEDS (header chip + dialog; the old Data sources tab)
   # ===========================================================================
   mode_word <- c(fetched = "&#10003; Fetched this run", "cache-by-design" = "&#9679; Cached (intraday run)",
                  "cache-fallback" = "&#9650; Source down, using cache", failed = "&#10007; Failed")
@@ -647,17 +647,6 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
                                             chip(if (file.exists(p)) "good" else "bad", if (file.exists(p)) "&#10003; Read" else "&#10007; Missing"))
   }
   prov_html <- html_table(prov_rows, c("Dataset", "Source", "Key", "Type / latency", "Last observation", "Status"), aligns = rep("l", 6))
-  guide_html <- paste0(html_table(list(
-    c("<b>Free</b> (this dashboard)", "FRED, Treasury.gov, Yahoo Finance, Cboe delayed quotes", "Free", "Rates and credit indices end of day; quotes delayed about 10 to 15 minutes",
-      "UST curve, ICE BofA index spreads, macro, futures, FX, ETFs, single-name option chains. No single-bond prices, CDX or swaps."),
-    c("<b>Low-cost APIs</b>", "Polygon (Massive), Tiingo, Twelve Data, Financial Modeling Prep, Alpha Vantage", "Paid monthly plans; free tiers are rate-limited",
-      "Real-time to 15 minutes for equities, ETFs and FX", "Better intraday equity, ETF and FX data, fundamentals and news. Little or no OTC credit."),
-    c("<b>Public fixed income</b>", "FINRA TRACE, MSRB EMMA", "Free to low cost, terms apply", "Post-trade, delayed",
-      "Corporate and municipal bond trade prints for spot checks on comps."),
-    c("<b>Professional</b>", "Bloomberg (Terminal, B-PIPE, Data License), LSEG Workspace / Data Platform, ICE Data Services, Tradeweb, MarketAxess", "Enterprise contracts",
-      "Real-time", "Bond-level prices and spreads, CDX and iTraxx, swaps, new-issue monitors, ratings. Set USE_BLOOMBERG = TRUE in config.R to refresh comps from a terminal.")),
-    c("Tier", "Examples", "Cost", "Latency", "What it adds for DCM / FI / syndicate"), aligns = rep("l", 5), class = "tbl wrap"),
-    "<div class='note'>Free sources here are for internal analysis. Yahoo, Cboe and ICE index data are subject to their providers' terms and are not licensed for redistribution outside the desk.</div>")
   notes_html <- paste0("<ul class='notes'>",
     "<li><b>Bond prices are modeled.</b> Price = last mark &minus; duration &times; change in yield since the mark. Yield = UST par yield at the bond's tenor, plus the ICE BofA OAS index named in holdings.csv for corporates. Convexity, roll-down and issuer-specific spread moves are ignored. Re-mark a bond by updating mark_price and mark_date.</li>",
     "<li><b>Carry</b> accrues the coupon, or the yield at the mark date when coupon is blank.</li>",
@@ -673,11 +662,16 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
                    sprintf("Credit <b>%s</b>", esc(format(credit_asof, "%d %b"))),
                    sprintf("Live <b>%s</b>", esc(live_asof)),
                    sprintf("Built <b>%s</b> (%s)", esc(format(raw$fetched_at, "%d %b %H:%M")), esc(raw$run_mode)))
-  warn_html <- ""
-  if (nrow(fallback) || nrow(failed)) {
-    parts <- c(if (nrow(fallback)) sprintf("%d from cache", nrow(fallback)), if (nrow(failed)) sprintf("%d unavailable", nrow(failed)))
-    warn_html <- sprintf("<button type='button' class='stale' data-goto='data'>&#9888; %s</button>", paste(parts, collapse = ", "))
-  }
+  n_ok <- sum(st$mode %in% c("fetched", "cache-by-design")); n_fb <- nrow(fallback); n_fail <- nrow(failed)
+  feeds_cls <- if (n_fail) "bad" else if (n_fb) "warn" else "good"
+  feeds_txt <- if (n_fail) sprintf("&#10007; %d feed%s down", n_fail, if (n_fail > 1) "s" else "") else if (n_fb) sprintf("&#9650; %d from cache", n_fb) else sprintf("&#10003; %d feeds", n_ok)
+  warn_html <- sprintf("<button type='button' class='feeds %s' id='feedsBtn' title='%d fetched, %d from cache, %d failed. Click for every feed.' aria-haspopup='dialog'>%s</button>",
+                       feeds_cls, n_ok, n_fb, n_fail, feeds_txt)
+  feeds_dialog <- paste0("<dialog id='feedsDlg' class='feeds' aria-labelledby='feedsTitle'><div class='dhead'><h2 id='feedsTitle'>Data feeds</h2>",
+                         sprintf("<span class='muted'>%d fetched this run &middot; %d from cache &middot; %d failed &middot; built %s (%s)</span>",
+                                 n_ok, n_fb, n_fail, esc(format(raw$fetched_at, "%d %b %H:%M")), esc(raw$run_mode)),
+                         "<button type='button' id='feedsClose' aria-label='Close'>&#10005;</button></div>",
+                         "<div class='dbody'><div class='scroll'>", prov_html, "</div><h3>Methodology</h3>", notes_html, "</div></dialog>")
   views <- list(
     morning = paste0(
       widget("m-kpis", "Key levels", paste0("<div class='tiles'>", paste(tile_html, collapse = ""), "</div>"), 12, 2, src = paste(rates_src, "&middot;", live_src), cls = "bare"),
@@ -716,13 +710,9 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
       widget("w-sectors", "Sector summary", paste0("<div class='scroll'>", sectors_html, "</div>"), 6, 5, sub = "equal-weighted averages of watchlist names", src = live_src),
       widget("w-table", "Watchlist", paste0(watch_tool, "<div class='scroll'>", watch_html, "</div>"), 12, 7, sub = "click a row to chart it", src = "Yahoo &middot; delayed &le;15m &middot; watchlist.csv"),
       widget("w-news", "Headlines", paste0("<div class='scroll'>", news_html, "</div>"), 7, 7, sub = "flagged words in config.R", src = "Yahoo Finance news"),
-      widget("w-opts", "Options activity", paste0("<div class='scroll'>", opts_html, "</div>"), 5, 7, sub = "equities &amp; ETFs", src = "Cboe &middot; delayed 15m")),
-    data = paste0(
-      widget("d-prov", "Data provenance", paste0("<div class='scroll'>", prov_html, "</div>"), 12, 8, sub = "every series, where it came from, how fresh it is"),
-      widget("d-guide", "Choosing data sources by budget and latency", paste0("<div class='scroll'>", guide_html, "</div>"), 7, 6),
-      widget("d-notes", "Methodology", paste0("<div class='scroll'>", notes_html, "</div>"), 5, 6))
+      widget("w-opts", "Options activity", paste0("<div class='scroll'>", opts_html, "</div>"), 5, 7, sub = "equities &amp; ETFs", src = "Cboe &middot; delayed 15m"))
   )
-  tabs <- c(morning = "Morning", portfolio = "Portfolio", charts = "Charts", health = "Macro &amp; health", watch = "Watchlist &amp; alerts", data = "Data sources")
+  tabs <- c(morning = "Morning", portfolio = "Portfolio", charts = "Charts", health = "Macro &amp; health", watch = "Watchlist &amp; alerts")
   tab_html <- paste0(vapply(names(tabs), function(v) sprintf("<button type='button' role='tab' data-view='%s'>%s%s</button>", v, tabs[[v]],
                                                              if (v == "watch" && n_alerts > 0) sprintf(" <span class='badge'>%d</span>", n_alerts) else ""), ""), collapse = "")
   views_html <- paste0(vapply(names(views), function(v) sprintf("<div class='view%s' data-view='%s' role='tabpanel' hidden>%s</div>",
@@ -764,7 +754,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
                  "<button type='button' id='resetBtn'>Reset view</button><button type='button' id='exportBtn' title='Download your layouts as layouts.json; drop it in inputs/ to share them as presets'>Export</button>",
                  "<label class='btn' title='Load a layouts.json'>Import<input type='file' id='importFile' accept='.json,application/json' hidden></label>",
                  "<button type='button' id='doneBtn'>Done</button></div>\n",
-                 "<main id='main'>", views_html, "</main>\n",
+                 "<main id='main'>", views_html, "</main>\n", feeds_dialog, "\n",
                  "<script type='application/json' id='dash-data'>", json, "</script>\n",
                  "<script src='market_data.js'></script>\n<script>\n", read_asset("dashboard.js"), "\n</script>\n</body></html>")
   html_path <- file.path(output_dir, "market_dashboard.html")

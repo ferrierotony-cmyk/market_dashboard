@@ -854,6 +854,12 @@
   }
   $$('.tabs button').forEach(function (b) { b.addEventListener('click', function () { showTab(b.dataset.view); }); });
   $$('[data-goto]').forEach(function (b) { b.addEventListener('click', function () { showTab(b.dataset.goto); }); });
+  var feedsDlg = $('#feedsDlg'), feedsBtn = $('#feedsBtn');
+  if (feedsDlg && feedsBtn) {
+    feedsBtn.addEventListener('click', function () { if (feedsDlg.showModal) feedsDlg.showModal(); else feedsDlg.setAttribute('open', ''); });
+    $('#feedsClose').addEventListener('click', function () { feedsDlg.close ? feedsDlg.close() : feedsDlg.removeAttribute('open'); });
+    feedsDlg.addEventListener('click', function (e) { if (e.target === feedsDlg) feedsDlg.close(); });
+  }
 
   var themeBtn = $('#themeBtn');
   function applyTheme() {
