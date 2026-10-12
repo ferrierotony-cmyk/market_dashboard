@@ -167,6 +167,12 @@ ul.alerts,ul.news,ul.notes{list-style:none;margin:0;padding:0}
 .news a{color:var(--ink);text-decoration:none;font-weight:500}
 .news a:hover{text-decoration:underline}
 .news .meta{display:block;color:var(--muted);font-size:10.5px;margin-top:1px}
+.news .sum{margin:2px 0 1px;color:var(--ink2);font-size:11px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.news li.hassum{cursor:pointer}
+.news li.open .sum{display:block;-webkit-line-clamp:unset}
+.why{display:block;color:var(--ink2);font-size:10.5px;line-height:1.35;margin-top:1px}
+.movers .why{white-space:normal;font-weight:400}
+.symside .why{padding:4px 2px 2px;border-top:1px solid var(--grid);margin-top:4px}
 .notes li{padding:4px 0;color:var(--ink2);font-size:11.5px;border-bottom:1px solid var(--grid)}
 .notes b{color:var(--ink)}
 

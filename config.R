@@ -205,6 +205,20 @@ NEWS_KEYWORDS <- c("downgrade", "upgrade", "offering", "notes", "bond", "debt", 
                    "rating", "default", "lawsuit", "investigation", "ceo")
 NEWS_PER_SYMBOL <- 6
 NEWS_MAX_AGE_HOURS <- 72
+# Per-ticker RSS feeds carry a summary paragraph; the search endpoint only has
+# titles. "rss" tries the feed first and falls back to search for queries that
+# are not a ticker (e.g. "S&P 500").
+NEWS_SOURCE <- "rss"
+NEWS_SUMMARY_CHARS <- 320
+
+# -----------------------------------------------------------------------------
+#  Freshness. Desk CSV rows older than these limits (days) are hidden and the
+#  widget says how many were dropped, so nobody prices off stale comps.
+# -----------------------------------------------------------------------------
+STALE_DAYS <- list(comps = 30, pipeline = 21, holdings_mark = 10)
+# Alerts stamped more than this many hours before the latest live quote are
+# dropped (a stale cache for one symbol must not keep an old alert alive).
+ALERT_MAX_AGE_HOURS <- 36
 
 OPTIONS_RULES <- list(
   min_contract_volume = 2000,  # a contract needs at least this volume to count as unusual

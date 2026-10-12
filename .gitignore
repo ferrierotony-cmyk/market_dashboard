@@ -47,3 +47,7 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# Downloaded caches and run logs are rebuilt by every run: keep them out of git
+data/
+logs/

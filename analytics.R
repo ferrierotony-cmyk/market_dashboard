@@ -236,9 +236,10 @@ corr_compute <- function(cfg, fred, yahoo, derived) {
 # =============================================================================
 watch_compute <- function(cfg, wl, yahoo, news, options_data) {
   rows <- list(); alerts <- list()
-  add_alert <- function(sev, cat, sym, msg, when = NA) {
+  add_alert <- function(sev, cat, sym, msg, when = NA, ts = NA) {
     alerts[[length(alerts) + 1]] <<- data.frame(severity = sev, category = cat, symbol = sym,
-                                                message = msg, time = as.character(when), stringsAsFactors = FALSE)
+                                                message = msg, time = as.character(when),
+                                                ts = as.numeric(ts), stringsAsFactors = FALSE)
   }
   now_et <- as.POSIXlt(Sys.time(), tz = "America/New_York")
   col <- function(nm, default = "") { v <- wl[[nm]]; if (is.null(v)) return(rep(default, nrow(wl))); v[is.na(v) | !nzchar(v)] <- default; v }
@@ -269,34 +270,44 @@ watch_compute <- function(cfg, wl, yahoo, news, options_data) {
       vs200 = if (!is.na(s200)) 100 * (cl[n] / s200 - 1) else NA_real_,
       pos52 = if (max(w52) > min(w52)) (cl[n] - min(w52)) / (max(w52) - min(w52)) else NA_real_,
       spark = round(utils::tail(cl, 60), 6), time = format(y$market_time, "%d %b %H:%M"),
+      ts = as.numeric(y$market_time), stale = identical(y$mode, "cache-fallback"),
       delay = if (!is.na(y$delay_min) && y$delay_min > 0) sprintf("%d min", round(y$delay_min)) else "<=15 min")
     num <- function(x) suppressWarnings(as.numeric(x))
     above <- num(wl$alert_above[i]); below <- num(wl$alert_below[i])
     mv <- num(wl$alert_move_pct[i]); vx <- num(wl$alert_volume_x[i])
-    when <- format(y$market_time, "%d %b %H:%M")
-    if (!is.na(above) && y$last >= above) add_alert("serious", "Price", s, sprintf("%s at %s, above alert level %s", lab, format(y$last, big.mark = ","), format(above, big.mark = ",")), when)
-    if (!is.na(below) && y$last <= below) add_alert("serious", "Price", s, sprintf("%s at %s, below alert level %s", lab, format(y$last, big.mark = ","), format(below, big.mark = ",")), when)
-    if (!is.na(mv) && !is.na(d1) && abs(d1) >= mv) add_alert(if (abs(d1) >= 2 * mv) "serious" else "warning", "Move", s, sprintf("%s %+.2f%% on the day (alert at +/-%.1f%%)", lab, d1, mv), when)
-    if (!is.na(vx) && !is.na(vratio) && vratio >= vx) add_alert("warning", "Volume", s, sprintf("%s volume %.1fx its 20-day average (last full session)", lab, vratio), format(b$date[vi], "%d %b"))
-    if (!is.na(r) && (r >= cfg$RSI_ALERTS[["high"]] || r <= cfg$RSI_ALERTS[["low"]])) add_alert("info", "Technical", s, sprintf("%s RSI(14) %.0f, %s", lab, r, if (r >= cfg$RSI_ALERTS[["high"]]) "overbought" else "oversold"), when)
+    when <- format(y$market_time, "%d %b %H:%M"); ts <- y$market_time
+    if (!is.na(above) && y$last >= above) add_alert("serious", "Price", s, sprintf("%s at %s, above alert level %s", lab, format(y$last, big.mark = ","), format(above, big.mark = ",")), when, ts)
+    if (!is.na(below) && y$last <= below) add_alert("serious", "Price", s, sprintf("%s at %s, below alert level %s", lab, format(y$last, big.mark = ","), format(below, big.mark = ",")), when, ts)
+    if (!is.na(mv) && !is.na(d1) && abs(d1) >= mv) add_alert(if (abs(d1) >= 2 * mv) "serious" else "warning", "Move", s, sprintf("%s %+.2f%% on the day (alert at +/-%.1f%%)", lab, d1, mv), when, ts)
+    if (!is.na(vx) && !is.na(vratio) && vratio >= vx) add_alert("warning", "Volume", s, sprintf("%s volume %.1fx its 20-day average (last full session)", lab, vratio), format(b$date[vi], "%d %b"), as.POSIXct(b$date[vi]) + 21 * 3600)
+    if (!is.na(r) && (r >= cfg$RSI_ALERTS[["high"]] || r <= cfg$RSI_ALERTS[["low"]])) add_alert("info", "Technical", s, sprintf("%s RSI(14) %.0f, %s", lab, r, if (r >= cfg$RSI_ALERTS[["high"]]) "overbought" else "oversold"), when, ts)
   }
-  # news keyword flags
-  news_rows <- list()
+  # news: keyword flags, summaries, one copy of each story ----------------------------
+  news_rows <- list(); seen_links <- character(0); flagged_24h <- list()
   kw <- paste0("(", paste(cfg$NEWS_KEYWORDS, collapse = "|"), ")")
+  max_sum <- cfg$NEWS_SUMMARY_CHARS %||% 320
   for (s in names(news)) {
     nd <- news[[s]]; if (is.null(nd) || !nrow(nd)) next
     nd <- nd[!is.na(nd$time) & nd$time >= Sys.time() - cfg$NEWS_MAX_AGE_HOURS * 3600, ]
     if (!nrow(nd)) next
     nd <- nd[order(nd$time, decreasing = TRUE), ]
+    if (is.null(nd$summary)) nd$summary <- ""
     lab <- wl$label[match(s, wl$symbol)]
     for (k in seq_len(nrow(nd))) {
+      if (nd$link[k] %in% seen_links) next
+      seen_links <- c(seen_links, nd$link[k])
       hit <- regmatches(tolower(nd$title[k]), regexpr(kw, tolower(nd$title[k])))
+      sm <- nd$summary[k]; if (is.na(sm)) sm <- ""
+      if (nchar(sm) > max_sum) sm <- paste0(substr(sm, 1, max_sum - 3), "...")
+      if (tolower(sm) == tolower(nd$title[k])) sm <- ""
       news_rows[[length(news_rows) + 1]] <- list(symbol = s, label = lab, title = nd$title[k], publisher = nd$publisher[k],
                                                  link = nd$link[k], time = format(nd$time[k], "%Y-%m-%dT%H:%M:%SZ"),
-                                                 flag = if (length(hit)) hit else "")
-      if (length(hit) && nd$time[k] >= Sys.time() - 24 * 3600)
+                                                 summary = sm, flag = if (length(hit)) hit else "")
+      if (length(hit) && nd$time[k] >= Sys.time() - 24 * 3600) {
+        flagged_24h[[s]] <- c(flagged_24h[[s]], hit)
         add_alert("info", "News", s, sprintf("%s headline mentions '%s': %s", lab, hit, nd$title[k]),
-                  format(nd$time[k], "%d %b %H:%M UTC"))
+                  format(nd$time[k], "%d %b %H:%M UTC"), nd$time[k])
+      }
     }
   }
   # options activity
@@ -313,24 +324,22 @@ watch_compute <- function(cfg, wl, yahoo, news, options_data) {
     opt_rows[[length(opt_rows) + 1]] <- list(symbol = s, label = lab, timestamp = o$timestamp,
       call_vol = o$call_vol, put_vol = o$put_vol, pc = pc, oi = o$call_oi + o$put_oi,
       iv30 = o$iv30, iv30_change = o$iv30_change, top = tp, n_unusual = nrow(unusual))
+    o_ts <- suppressWarnings(as.POSIXct(substr(o$timestamp, 1, 19), tz = "UTC")); if (is.na(o_ts)) o_ts <- Sys.time()
     if (!is.na(pc) && (pc >= orl$pc_high || pc <= orl$pc_low) && (o$call_vol + o$put_vol) >= 5 * orl$min_contract_volume)
       add_alert("warning", "Options", s, sprintf("%s put/call volume ratio %.2f (%s calls, %s puts)", lab, pc,
-                format(o$call_vol, big.mark = ","), format(o$put_vol, big.mark = ",")), o$timestamp)
+                format(o$call_vol, big.mark = ","), format(o$put_vol, big.mark = ",")), o$timestamp, o_ts)
     if (nrow(unusual)) {
       u <- unusual[1, ]
       add_alert("warning", "Options", s, sprintf("%s unusual activity: %s %s %g %s traded %s vs open interest %s",
                 lab, if (u$type == "C") "call" else "put", format(as.Date(u$expiry), "%d %b %y"), u$strike,
-                "strike", format(u$volume, big.mark = ","), format(u$oi, big.mark = ",")), o$timestamp)
+                "strike", format(u$volume, big.mark = ","), format(u$oi, big.mark = ",")), o$timestamp, o_ts)
     }
   }
   # equity movers and sector summary ------------------------------------------------
-  eq <- Filter(function(r) isTRUE(r$ok) && r$type == "Equity" && !is.na(r$d1), rows)
+  is_eq <- vapply(rows, function(r) isTRUE(r$ok) && r$type == "Equity" && !is.na(r$d1), TRUE)
+  eq <- rows[is_eq]
   movers <- NULL; sectors <- NULL
   if (length(eq)) {
-    d1 <- vapply(eq, function(r) r$d1, 0)
-    ord <- order(d1, decreasing = TRUE)
-    movers <- list(up = eq[utils::head(ord[d1[ord] > 0], 8)], down = eq[utils::head(rev(ord)[d1[rev(ord)] < 0], 8)],
-                   n_up = sum(d1 > 0), n_down = sum(d1 < 0), n = length(eq))
     secs <- vapply(eq, function(r) r$sector, "")
     sectors <- lapply(unique(secs), function(sct) {
       rs <- eq[secs == sct]; dd <- vapply(rs, function(r) r$d1, 0)
@@ -339,6 +348,31 @@ watch_compute <- function(cfg, wl, yahoo, news, options_data) {
            up = sum(dd > 0), down = sum(dd < 0), best = rs[[which.max(dd)]], worst = rs[[which.min(dd)]])
     })
     sectors <- sectors[order(-vapply(sectors, function(s) s$d1, 0))]
+  }
+  # "why it moved": one line per name built from the numbers already on the page ----
+  sec_d1 <- if (length(sectors)) setNames(vapply(sectors, function(s) s$d1, 0), vapply(sectors, function(s) s$sector, "")) else numeric(0)
+  pc_of <- setNames(vapply(opt_rows, function(o) o$pc, 0), vapply(opt_rows, function(o) o$symbol, ""))
+  for (k in seq_along(rows)) {
+    r <- rows[[k]]; if (!isTRUE(r$ok) || is.na(r$d1)) next
+    p <- sprintf("%+.1f%% today", r$d1)
+    if (!is.na(r$vratio)) p <- c(p, if (r$vratio >= 1.5) sprintf("on %.1fx normal volume", r$vratio) else if (r$vratio <= 0.5) "on light volume" else NULL)
+    sd <- sec_d1[r$sector]
+    if (length(sd) && !is.na(sd) && r$type == "Equity")
+      p <- c(p, sprintf("sector %+.1f%% (%s)", sd, if (abs(r$d1 - sd) >= 3) "stock-specific" else if (abs(r$d1) >= 1) "sector-wide" else "in line"))
+    if (!is.na(r$pos52)) p <- c(p, if (r$pos52 >= 0.98) "at a 52-week high" else if (r$pos52 <= 0.02) "at a 52-week low" else NULL)
+    if (!is.na(r$rsi)) p <- c(p, if (r$rsi >= cfg$RSI_ALERTS[["high"]]) sprintf("RSI %.0f overbought", r$rsi) else if (r$rsi <= cfg$RSI_ALERTS[["low"]]) sprintf("RSI %.0f oversold", r$rsi) else NULL)
+    pc <- pc_of[r$symbol]
+    if (length(pc) && !is.na(pc)) p <- c(p, if (pc >= cfg$OPTIONS_RULES$pc_high) sprintf("put/call %.2f, heavy put buying", pc) else if (pc <= cfg$OPTIONS_RULES$pc_low) sprintf("put/call %.2f, call-heavy", pc) else NULL)
+    fl <- unique(flagged_24h[[r$symbol]])
+    if (length(fl)) p <- c(p, paste0("headlines: ", paste(fl, collapse = ", ")))
+    rows[[k]]$why <- paste(p, collapse = " | ")   # the build renders | as a middle dot (locale-safe)
+  }
+  # movers come last so each row carries its "why" line
+  if (length(eq)) {
+    eq <- rows[is_eq]; d1 <- vapply(eq, function(r) r$d1, 0)
+    ord <- order(d1, decreasing = TRUE)
+    movers <- list(up = eq[utils::head(ord[d1[ord] > 0], 8)], down = eq[utils::head(rev(ord)[d1[rev(ord)] < 0], 8)],
+                   n_up = sum(d1 > 0), n_down = sum(d1 < 0), n = length(eq))
   }
   list(rows = rows, news = news_rows, options = opt_rows, movers = movers, sectors = sectors,
        alerts = if (length(alerts)) do.call(rbind, alerts) else NULL)
@@ -410,6 +444,7 @@ portfolio_compute <- function(cfg, h, fred, yahoo, ust_ids) {
          quantity = face, per100 = h$per100[i], price = last, cost = h$cost_price[i],
          asof = if (inherits(p$asof, "POSIXct")) format(p$asof, "%d %b %H:%M") else format(as.Date(p$asof), "%d %b"),
          method = p$method, mv = mv, day = day, price_pnl = price_pnl, carry_pnl = carry_pnl,
+         mark_age = if (h$pricing[i] == "yahoo" || is.na(h$mark_date[i])) NA_real_ else as.numeric(Sys.Date() - h$mark_date[i]),
          total_pnl = (price_pnl %||% 0) + carry_pnl, duration = dur,
          dv01 = if (!is.na(dur)) mv * dur * 1e-4 else NA_real_,
          cs01 = if (!is.na(dur) && nzchar(h$spread_index[i])) mv * dur * 1e-4 else NA_real_,

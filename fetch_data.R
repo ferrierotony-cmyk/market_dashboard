@@ -232,24 +232,75 @@ yahoo_daily_from <- function(symbol, p, mode) {
 # ----------------------------------------------------------------------------
 #  Yahoo news headlines
 # ----------------------------------------------------------------------------
+empty_news <- function() data.frame(title = character(0), publisher = character(0), link = character(0),
+                                    time = as.POSIXct(character(0), tz = "UTC"), summary = character(0),
+                                    tickers = character(0), stringsAsFactors = FALSE)
+
+# Search endpoint: titles only, but every story lists the tickers it is about.
 parse_yahoo_news <- function(path) {
   j <- jsonlite::fromJSON(path, simplifyVector = FALSE)
   n <- j$news
   if (is.null(n)) stop("no news field")
-  if (!length(n)) return(data.frame(title = character(0), publisher = character(0), link = character(0),
-                                    time = as.POSIXct(character(0)), stringsAsFactors = FALSE))
+  if (!length(n)) return(empty_news())
   data.frame(title = vapply(n, function(x) x$title %||% "", ""),
              publisher = vapply(n, function(x) x$publisher %||% "", ""),
              link = vapply(n, function(x) x$link %||% "", ""),
              time = as.POSIXct(vapply(n, function(x) as.numeric(x$providerPublishTime %||% NA), 0),
                                origin = "1970-01-01", tz = "UTC"),
+             summary = "",
+             tickers = vapply(n, function(x) paste(toupper(unlist(x$relatedTickers)), collapse = ","), ""),
              stringsAsFactors = FALSE)
 }
 
-yahoo_news <- function(query, cache_dir, n = 6, cache_only = FALSE) {
+# Per-ticker RSS feed: same stories with a summary paragraph.
+parse_yahoo_rss <- function(path) {
+  doc <- xml2::read_xml(path)
+  items <- xml2::xml_find_all(doc, "//item")
+  if (!length(items)) return(empty_news())
+  txt <- function(tag) vapply(items, function(it) {
+    n <- xml2::xml_find_first(it, tag); if (inherits(n, "xml_missing")) "" else trimws(xml2::xml_text(n))
+  }, "")
+  strip_html <- function(x) trimws(gsub("\\s+", " ", gsub("<[^>]+>", " ", x)))
+  old <- Sys.getlocale("LC_TIME"); Sys.setlocale("LC_TIME", "C"); on.exit(Sys.setlocale("LC_TIME", old), add = TRUE)
+  pub <- sub("\\s+[+-]\\d{4}$|\\s+GMT$|\\s+UTC$", "", txt("pubDate"))
+  tm <- as.POSIXct(strptime(pub, "%a, %d %b %Y %H:%M:%S", tz = "UTC"))
+  d <- data.frame(title = strip_html(txt("title")), publisher = txt("source"), link = txt("link"), time = tm,
+                  summary = strip_html(txt("description")), tickers = "", stringsAsFactors = FALSE)
+  d$publisher[!nzchar(d$publisher)] <- "Yahoo Finance"
+  d[nzchar(d$title) & nzchar(d$link), ]
+}
+
+# query: ticker or free text; sym: the watchlist symbol the stories are shown under.
+# Stories from the search endpoint that name other tickers but not this one are dropped,
+# which is what used to put Gilead headlines under Pfizer.
+yahoo_news <- function(query, cache_dir, n = 6, cache_only = FALSE, sym = query, source = "rss", label = "") {
+  is_ticker <- identical(query, sym) && grepl("^[A-Z0-9.=^-]{1,12}$", query)
+  r <- NULL
+  if (identical(source, "rss") && is_ticker) {
+    url <- sprintf("https://feeds.finance.yahoo.com/rss/2.0/headline?s=%s&region=US&lang=en-US",
+                   utils::URLencode(query, reserved = TRUE))
+    r <- cached_fetch(url, file.path(cache_dir, paste0("rss_", safe_name(query), ".xml")), parse_yahoo_rss, cache_only)
+    if (!is.null(r$data) && nrow(r$data)) { r$data <- utils::head(r$data[order(r$data$time, decreasing = TRUE), ], max(n, 8)); return(r) }
+  }
   url <- sprintf("https://query1.finance.yahoo.com/v1/finance/search?q=%s&newsCount=%d&quotesCount=0",
                  utils::URLencode(query, reserved = TRUE), n)
-  cached_fetch(url, file.path(cache_dir, paste0("news_", safe_name(query), ".json")), parse_yahoo_news, cache_only)
+  r <- cached_fetch(url, file.path(cache_dir, paste0("news_", safe_name(query), ".json")), parse_yahoo_news, cache_only)
+  if (!is.null(r$data) && nrow(r$data) && is_ticker) {
+    # Yahoo tags a story with every ticker it mentions. Keep it only when this symbol is
+    # the story's primary ticker, or the title names the company.
+    words <- setdiff(tolower(unlist(strsplit(gsub("[^A-Za-z ]", " ", label), "\\s+"))),
+                     c("", "inc", "corp", "corporation", "company", "group", "holdings", "the", "plc", "class", "ltd", "co"))
+    words <- words[nchar(words) >= 4]
+    tk <- strsplit(r$data$tickers, ",", fixed = TRUE)
+    keep <- vapply(seq_len(nrow(r$data)), function(k) {
+      t <- tk[[k]]; if (!length(t) || !any(nzchar(t))) return(TRUE)
+      if (identical(t[1], toupper(sym))) return(TRUE)
+      ttl <- tolower(r$data$title[k])
+      grepl(paste0("\\b", tolower(sym), "\\b"), ttl) || (length(words) && any(vapply(words, function(w) grepl(paste0("\\b", w), ttl, fixed = FALSE), TRUE)))
+    }, TRUE)
+    r$data <- r$data[keep, ]
+  }
+  r
 }
 
 # ----------------------------------------------------------------------------
@@ -413,7 +464,7 @@ fetch_all <- function(cfg, inputs, cache_dir, run_mode = "morning") {
     for (i in seq_len(nrow(wl))) {
       if (!isTRUE(toupper(wl$news[i]) == "Y")) next
       q <- if (nzchar(wl$news_query[i] %||% "")) wl$news_query[i] else wl$symbol[i]
-      r <- yahoo_news(q, cache_dir, cfg$NEWS_PER_SYMBOL)
+      r <- yahoo_news(q, cache_dir, cfg$NEWS_PER_SYMBOL, sym = wl$symbol[i], source = cfg$NEWS_SOURCE %||% "rss", label = wl$label[i])
       if (!is.null(r$data)) news[[wl$symbol[i]]] <- r$data
       add_status("Yahoo Finance news", wl$symbol[i], paste("Headlines:", wl$label[i]), r$mode,
                  if (!is.null(r$data) && nrow(r$data)) format(max(r$data$time), "%Y-%m-%d %H:%M UTC") else NA,

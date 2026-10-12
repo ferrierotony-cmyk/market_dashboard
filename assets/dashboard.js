@@ -758,6 +758,11 @@
     }
     cd.textContent = 'reload in ' + Math.floor(left / 60000) + ':' + String(Math.floor(left % 60000 / 1000)).padStart(2, '0');
   }, 1000);
+  $$('.news li.hassum').forEach(function (li) {
+    function tog(e) { if (e.target.closest('a')) return; li.classList.toggle('open'); }
+    li.addEventListener('click', tog);
+    li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tog(e); } });
+  });
   $$('time[data-iso]').forEach(function (t) {
     var d = new Date(t.dataset.iso);
     if (!isNaN(d)) t.textContent = d.toLocaleString([], { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });

@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-10-09 21:46:58",
-  "run_mode": "intraday",
+  "built_at": "2026-10-12 00:11:55",
+  "run_mode": "morning",
   "rates_asof": "2026-10-08",
   "credit_asof": "2026-10-08",
   "window": "OPEN",
@@ -26,591 +26,651 @@
   "alerts": [
     {
       "severity": "serious",
-      "category": "Move",
-      "symbol": "T",
-      "message": "AT&T -10.82% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:02"
-    },
-    {
-      "severity": "serious",
-      "category": "Move",
-      "symbol": "TMUS",
-      "message": "T-Mobile US -13.27% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "serious",
-      "category": "Move",
-      "symbol": "VZ",
-      "message": "Verizon -10.14% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
+      "category": "Concentration",
+      "symbol": "Portfolio",
+      "message": "JPMorgan is 17.5% of the portfolio (limit 15% per non-government issuer)",
+      "time": "12 Oct 00:11",
+      "ts": 1791763917.899665
     },
     {
       "severity": "serious",
       "category": "Move",
       "symbol": "HUM",
       "message": "Humana +11.56% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:03"
+      "time": "09 Oct 16:03",
+      "ts": 1791576192
     },
     {
       "severity": "serious",
       "category": "Move",
-      "symbol": "MRNA",
-      "message": "Moderna +14.21% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
+      "symbol": "T",
+      "message": "AT&T -10.82% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:02",
+      "ts": 1791576127
     },
     {
       "severity": "serious",
       "category": "Move",
       "symbol": "AMT",
       "message": "American Tower +9.30% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
+      "time": "09 Oct 16:00",
+      "ts": 1791576003
+    },
+    {
+      "severity": "serious",
+      "category": "Move",
+      "symbol": "VZ",
+      "message": "Verizon -10.14% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
     },
     {
       "severity": "serious",
       "category": "Move",
       "symbol": "CCI",
       "message": "Crown Castle +15.60% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
     },
     {
       "severity": "serious",
-      "category": "Concentration",
-      "symbol": "Portfolio",
-      "message": "JPMorgan is 17.5% of the portfolio (limit 15% per non-government issuer)",
-      "time": "09 Oct 21:47"
-    },
-    {
-      "severity": "warning",
-      "category": "Volume",
-      "symbol": "T",
-      "message": "AT&T volume 3.9x its 20-day average (last full session)",
-      "time": "09 Oct"
-    },
-    {
-      "severity": "warning",
       "category": "Move",
-      "symbol": "CHTR",
-      "message": "Charter Communications -5.74% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
+      "symbol": "MRNA",
+      "message": "Moderna +14.21% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
     },
     {
-      "severity": "warning",
+      "severity": "serious",
       "category": "Move",
-      "symbol": "PSKY",
-      "message": "Paramount Skydance Corporation +5.33% on the day (alert at +/-4.0%)",
-      "time": "05 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Volume",
       "symbol": "TMUS",
-      "message": "T-Mobile US volume 3.7x its 20-day average (last full session)",
-      "time": "09 Oct"
-    },
-    {
-      "severity": "warning",
-      "category": "Volume",
-      "symbol": "VZ",
-      "message": "Verizon volume 4.3x its 20-day average (last full session)",
-      "time": "09 Oct"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "BG",
-      "message": "Bunge Global -4.72% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "COIN",
-      "message": "Coinbase +4.30% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Volume",
-      "symbol": "HUM",
-      "message": "Humana volume 3.9x its 20-day average (last full session)",
-      "time": "09 Oct"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "ILMN",
-      "message": "Illumina, Inc. +5.14% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "DE",
-      "message": "Deere & Company -4.85% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "AKAM",
-      "message": "Akamai Technologies +6.00% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "CIEN",
-      "message": "Ciena +5.60% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "CRWD",
-      "message": "CrowdStrike +4.57% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "DDOG",
-      "message": "Datadog +7.11% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "FICO",
-      "message": "Fair Isaac -5.63% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "FLEX",
-      "message": "Flex Ltd. +4.44% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "HPQ",
-      "message": "HP Inc. -6.91% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "LITE",
-      "message": "Lumentum +5.22% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "ORCL",
-      "message": "Oracle Corporation +4.21% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:03"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "PLTR",
-      "message": "Palantir Technologies +5.17% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "PANW",
-      "message": "Palo Alto Networks +5.09% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "SWKS",
-      "message": "Skyworks Solutions -5.45% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "MOS",
-      "message": "Mosaic Company (The) -5.02% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Volume",
-      "symbol": "AMT",
-      "message": "American Tower volume 3.0x its 20-day average (last full session)",
-      "time": "09 Oct"
-    },
-    {
-      "severity": "warning",
-      "category": "Volume",
-      "symbol": "CCI",
-      "message": "Crown Castle volume 3.8x its 20-day average (last full session)",
-      "time": "09 Oct"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "SBAC",
-      "message": "SBA Communications +7.34% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Move",
-      "symbol": "CEG",
-      "message": "Constellation Energy +4.56% on the day (alert at +/-4.0%)",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "TLT",
-      "message": "TLT 20Y+ Treasury ETF put/call volume ratio 0.27 (860,424 calls, 233,775 puts)",
-      "time": "2026-10-10 01:45:57 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "TLT",
-      "message": "TLT 20Y+ Treasury ETF unusual activity: call 21 Jan 28 95 strike traded 184,409 vs open interest 88,637",
-      "time": "2026-10-10 01:45:57 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "LQD",
-      "message": "LQD IG Corporate ETF unusual activity: call 16 Oct 26 102.5 strike traded 20,001 vs open interest 4,583",
-      "time": "2026-10-09 14:30:40 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "HYG",
-      "message": "HYG High Yield ETF put/call volume ratio 3.36 (73,361 calls, 246,450 puts)",
-      "time": "2026-10-10 01:46:05 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "HYG",
-      "message": "HYG High Yield ETF unusual activity: put 20 Aug 27 69 strike traded 10,000 vs open interest 0",
-      "time": "2026-10-10 01:46:05 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "T",
-      "message": "AT&T unusual activity: call 15 Jan 27 22 strike traded 13,250 vs open interest 5,517",
-      "time": "2026-10-10 00:21:18 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "VZ",
-      "message": "Verizon unusual activity: put 20 Nov 26 40 strike traded 6,772 vs open interest 431",
-      "time": "2026-10-10 00:33:14 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "AMZN",
-      "message": "Amazon unusual activity: call 30 Oct 26 275 strike traded 28,217 vs open interest 5,140",
-      "time": "2026-10-10 01:46:04 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "CCL",
-      "message": "Carnival Corporation put/call volume ratio 0.28 (19,014 calls, 5,272 puts)",
-      "time": "2026-10-09 21:06:52 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "CCL",
-      "message": "Carnival Corporation unusual activity: call 16 Oct 26 26.5 strike traded 7,488 vs open interest 762",
-      "time": "2026-10-09 21:06:52 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "XOM",
-      "message": "ExxonMobil unusual activity: call 16 Oct 26 180 strike traded 10,518 vs open interest 6,081",
-      "time": "2026-10-09 22:24:27 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "BAC",
-      "message": "Bank of America unusual activity: call 16 Oct 26 56 strike traded 22,604 vs open interest 13,847",
-      "time": "2026-10-10 01:46:03 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "PFE",
-      "message": "Pfizer put/call volume ratio 0.27 (51,174 calls, 13,714 puts)",
-      "time": "2026-10-09 22:28:27 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "AAPL",
-      "message": "Apple Inc. unusual activity: put 16 Oct 26 230 strike traded 19,502 vs open interest 4,531",
-      "time": "2026-10-10 01:46:05 UTC"
-    },
-    {
-      "severity": "warning",
-      "category": "Options",
-      "symbol": "NVDA",
-      "message": "Nvidia unusual activity: put 19 Feb 27 120 strike traded 112,558 vs open interest 1,069",
-      "time": "2026-10-10 01:46:02 UTC"
+      "message": "T-Mobile US -13.27% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
     },
     {
       "severity": "warning",
       "category": "Market health",
       "symbol": "Credit",
       "message": "HY OAS 1-month change (bp) at +48 (green <= +15, red > +40)",
-      "time": "09 Oct 21:47"
+      "time": "12 Oct 00:11",
+      "ts": 1791763917.900756
     },
     {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "T",
-      "message": "AT&T RSI(14) 26, oversold",
-      "time": "09 Oct 16:02"
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "HYG",
+      "message": "HYG High Yield ETF put/call volume ratio 3.36 (73,361 calls, 246,450 puts)",
+      "time": "2026-10-10 01:46:05 UTC",
+      "ts": 1791596765
     },
     {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "CHTR",
-      "message": "Charter Communications RSI(14) 28, oversold",
-      "time": "09 Oct 16:00"
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "HYG",
+      "message": "HYG High Yield ETF unusual activity: put 20 Aug 27 69 strike traded 10,000 vs open interest 0",
+      "time": "2026-10-10 01:46:05 UTC",
+      "ts": 1791596765
     },
     {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "CMCSA",
-      "message": "Comcast RSI(14) 25, oversold",
-      "time": "09 Oct 16:00"
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "AAPL",
+      "message": "Apple Inc. unusual activity: put 16 Oct 26 230 strike traded 19,502 vs open interest 4,531",
+      "time": "2026-10-10 01:46:05 UTC",
+      "ts": 1791596765
     },
     {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "TMUS",
-      "message": "T-Mobile US RSI(14) 29, oversold",
-      "time": "09 Oct 16:00"
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "AMZN",
+      "message": "Amazon unusual activity: call 30 Oct 26 275 strike traded 28,217 vs open interest 5,140",
+      "time": "2026-10-10 01:46:04 UTC",
+      "ts": 1791596764
     },
     {
-      "severity": "info",
-      "category": "Technical",
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "BAC",
+      "message": "Bank of America unusual activity: call 16 Oct 26 56 strike traded 22,604 vs open interest 13,847",
+      "time": "2026-10-10 01:46:03 UTC",
+      "ts": 1791596763
+    },
+    {
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "NVDA",
+      "message": "Nvidia unusual activity: put 19 Feb 27 120 strike traded 112,558 vs open interest 1,069",
+      "time": "2026-10-10 01:46:02 UTC",
+      "ts": 1791596762
+    },
+    {
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "TLT",
+      "message": "TLT 20Y+ Treasury ETF put/call volume ratio 0.27 (860,424 calls, 233,775 puts)",
+      "time": "2026-10-10 01:45:57 UTC",
+      "ts": 1791596757
+    },
+    {
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "TLT",
+      "message": "TLT 20Y+ Treasury ETF unusual activity: call 21 Jan 28 95 strike traded 184,409 vs open interest 88,637",
+      "time": "2026-10-10 01:45:57 UTC",
+      "ts": 1791596757
+    },
+    {
+      "severity": "warning",
+      "category": "Options",
       "symbol": "VZ",
-      "message": "Verizon RSI(14) 22, oversold",
-      "time": "09 Oct 16:00"
+      "message": "Verizon unusual activity: put 20 Nov 26 40 strike traded 6,772 vs open interest 431",
+      "time": "2026-10-10 00:33:14 UTC",
+      "ts": 1791592394
     },
     {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "LVS",
-      "message": "Las Vegas Sands RSI(14) 23, oversold",
-      "time": "09 Oct 16:00"
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "T",
+      "message": "AT&T unusual activity: call 15 Jan 27 22 strike traded 13,250 vs open interest 5,517",
+      "time": "2026-10-10 00:21:18 UTC",
+      "ts": 1791591678
     },
     {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "MGM",
-      "message": "MGM Resorts RSI(14) 13, oversold",
-      "time": "09 Oct 16:00"
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "PFE",
+      "message": "Pfizer put/call volume ratio 0.27 (51,174 calls, 13,714 puts)",
+      "time": "2026-10-09 22:28:27 UTC",
+      "ts": 1791584907
     },
     {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "SBUX",
-      "message": "Starbucks RSI(14) 29, oversold",
-      "time": "09 Oct 16:00"
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "XOM",
+      "message": "ExxonMobil unusual activity: call 16 Oct 26 180 strike traded 10,518 vs open interest 6,081",
+      "time": "2026-10-09 22:24:27 UTC",
+      "ts": 1791584667
     },
     {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "WYNN",
-      "message": "Wynn Resorts RSI(14) 26, oversold",
-      "time": "09 Oct 16:00"
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "CCL",
+      "message": "Carnival Corporation put/call volume ratio 0.28 (19,014 calls, 5,272 puts)",
+      "time": "2026-10-09 21:06:52 UTC",
+      "ts": 1791580012
     },
     {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "HRL",
-      "message": "Hormel Foods RSI(14) 25, oversold",
-      "time": "09 Oct 16:00"
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "CCL",
+      "message": "Carnival Corporation unusual activity: call 16 Oct 26 26.5 strike traded 7,488 vs open interest 762",
+      "time": "2026-10-09 21:06:52 UTC",
+      "ts": 1791580012
     },
     {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "MPC",
-      "message": "Marathon Petroleum RSI(14) 73, overbought",
-      "time": "09 Oct 16:00"
+      "severity": "warning",
+      "category": "Volume",
+      "symbol": "T",
+      "message": "AT&T volume 3.9x its 20-day average (last full session)",
+      "time": "09 Oct",
+      "ts": 1791579600
+    },
+    {
+      "severity": "warning",
+      "category": "Volume",
+      "symbol": "TMUS",
+      "message": "T-Mobile US volume 3.7x its 20-day average (last full session)",
+      "time": "09 Oct",
+      "ts": 1791579600
+    },
+    {
+      "severity": "warning",
+      "category": "Volume",
+      "symbol": "VZ",
+      "message": "Verizon volume 4.3x its 20-day average (last full session)",
+      "time": "09 Oct",
+      "ts": 1791579600
+    },
+    {
+      "severity": "warning",
+      "category": "Volume",
+      "symbol": "HUM",
+      "message": "Humana volume 3.9x its 20-day average (last full session)",
+      "time": "09 Oct",
+      "ts": 1791579600
+    },
+    {
+      "severity": "warning",
+      "category": "Volume",
+      "symbol": "AMT",
+      "message": "American Tower volume 3.0x its 20-day average (last full session)",
+      "time": "09 Oct",
+      "ts": 1791579600
+    },
+    {
+      "severity": "warning",
+      "category": "Volume",
+      "symbol": "CCI",
+      "message": "Crown Castle volume 3.8x its 20-day average (last full session)",
+      "time": "09 Oct",
+      "ts": 1791579600
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "ORCL",
+      "message": "Oracle Corporation +4.21% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:03",
+      "ts": 1791576206
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "BG",
+      "message": "Bunge Global -4.72% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "DE",
+      "message": "Deere & Company -4.85% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "CIEN",
+      "message": "Ciena +5.60% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "FICO",
+      "message": "Fair Isaac -5.63% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "HPQ",
+      "message": "HP Inc. -6.91% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "MOS",
+      "message": "Mosaic Company (The) -5.02% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "CHTR",
+      "message": "Charter Communications -5.74% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "COIN",
+      "message": "Coinbase +4.30% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "ILMN",
+      "message": "Illumina, Inc. +5.14% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "AKAM",
+      "message": "Akamai Technologies +6.00% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "CRWD",
+      "message": "CrowdStrike +4.57% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "DDOG",
+      "message": "Datadog +7.11% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "FLEX",
+      "message": "Flex Ltd. +4.44% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "LITE",
+      "message": "Lumentum +5.22% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "CEG",
+      "message": "Constellation Energy +4.56% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "PLTR",
+      "message": "Palantir Technologies +5.17% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "PANW",
+      "message": "Palo Alto Networks +5.09% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "SWKS",
+      "message": "Skyworks Solutions -5.45% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
+    },
+    {
+      "severity": "warning",
+      "category": "Move",
+      "symbol": "SBAC",
+      "message": "SBA Communications +7.34% on the day (alert at +/-4.0%)",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
+    },
+    {
+      "severity": "warning",
+      "category": "Options",
+      "symbol": "LQD",
+      "message": "LQD IG Corporate ETF unusual activity: call 16 Oct 26 102.5 strike traded 20,001 vs open interest 4,583",
+      "time": "2026-10-09 14:30:40 UTC",
+      "ts": 1791556240
     },
     {
       "severity": "info",
       "category": "Technical",
       "symbol": "BNY",
       "message": "BNY Mellon RSI(14) 27, oversold",
-      "time": "09 Oct 16:03"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "PNC",
-      "message": "PNC Financial Services RSI(14) 29, oversold",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "ABBV",
-      "message": "AbbVie RSI(14) 71, overbought",
-      "time": "09 Oct 16:01"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "MRNA",
-      "message": "Moderna RSI(14) 72, overbought",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "PCAR",
-      "message": "Paccar RSI(14) 29, oversold",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "PNR",
-      "message": "Pentair RSI(14) 27, oversold",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "DDOG",
-      "message": "Datadog RSI(14) 73, overbought",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "P",
-      "message": "Everpure RSI(14) 81, overbought",
-      "time": "09 Oct 16:01"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "FFIV",
-      "message": "F5, Inc. RSI(14) 70, overbought",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "FTNT",
-      "message": "Fortinet RSI(14) 73, overbought",
-      "time": "09 Oct 16:00"
+      "time": "09 Oct 16:03",
+      "ts": 1791576184
     },
     {
       "severity": "info",
       "category": "Technical",
       "symbol": "HPE",
       "message": "Hewlett Packard Enterprise RSI(14) 71, overbought",
-      "time": "09 Oct 16:02"
+      "time": "09 Oct 16:02",
+      "ts": 1791576158
     },
     {
       "severity": "info",
       "category": "Technical",
-      "symbol": "NTAP",
-      "message": "NetApp RSI(14) 75, overbought",
-      "time": "09 Oct 16:00"
+      "symbol": "T",
+      "message": "AT&T RSI(14) 26, oversold",
+      "time": "09 Oct 16:02",
+      "ts": 1791576127
     },
     {
       "severity": "info",
       "category": "Technical",
-      "symbol": "PLTR",
-      "message": "Palantir Technologies RSI(14) 76, overbought",
-      "time": "09 Oct 16:00"
+      "symbol": "P",
+      "message": "Everpure RSI(14) 81, overbought",
+      "time": "09 Oct 16:01",
+      "ts": 1791576103
     },
     {
       "severity": "info",
       "category": "Technical",
-      "symbol": "PTC",
-      "message": "PTC Inc. RSI(14) 81, overbought",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "SNPS",
-      "message": "Synopsys RSI(14) 75, overbought",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "MOS",
-      "message": "Mosaic Company (The) RSI(14) 23, oversold",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "BXP",
-      "message": "BXP, Inc. RSI(14) 30, oversold",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "CCI",
-      "message": "Crown Castle RSI(14) 72, overbought",
-      "time": "09 Oct 16:00"
-    },
-    {
-      "severity": "info",
-      "category": "Technical",
-      "symbol": "FRT",
-      "message": "Federal Realty Investment Trust RSI(14) 26, oversold",
-      "time": "09 Oct 16:00"
+      "symbol": "ABBV",
+      "message": "AbbVie RSI(14) 71, overbought",
+      "time": "09 Oct 16:01",
+      "ts": 1791576080
     },
     {
       "severity": "info",
       "category": "Technical",
       "symbol": "WY",
       "message": "Weyerhaeuser RSI(14) 30, oversold",
-      "time": "09 Oct 16:00"
+      "time": "09 Oct 16:00",
+      "ts": 1791576003
     },
     {
       "severity": "info",
-      "category": "News",
-      "symbol": "F",
-      "message": "Ford Motor Company headline mentions 'rating': Deutsche Bank Adjusts Ford Motor Price Target to $15 From $16, Maintains Hold Rating",
-      "time": "09 Oct 11:50 UTC"
+      "category": "Technical",
+      "symbol": "VZ",
+      "message": "Verizon RSI(14) 22, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
     },
     {
       "severity": "info",
-      "category": "News",
-      "symbol": "BA",
-      "message": "Boeing headline mentions 'rating': TD Cowen Says De-Rating In Aerospace Stocks Has Been ‘Disorderly,’ Cuts Targets On Boeing, Lockheed Martin Among Others",
-      "time": "09 Oct 17:49 UTC"
+      "category": "Technical",
+      "symbol": "LVS",
+      "message": "Las Vegas Sands RSI(14) 23, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "MGM",
+      "message": "MGM Resorts RSI(14) 13, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "HRL",
+      "message": "Hormel Foods RSI(14) 25, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "MPC",
+      "message": "Marathon Petroleum RSI(14) 73, overbought",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "PNC",
+      "message": "PNC Financial Services RSI(14) 29, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "PNR",
+      "message": "Pentair RSI(14) 27, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "MOS",
+      "message": "Mosaic Company (The) RSI(14) 23, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "BXP",
+      "message": "BXP, Inc. RSI(14) 30, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "CCI",
+      "message": "Crown Castle RSI(14) 72, overbought",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "FRT",
+      "message": "Federal Realty Investment Trust RSI(14) 26, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576002
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "CHTR",
+      "message": "Charter Communications RSI(14) 28, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "CMCSA",
+      "message": "Comcast RSI(14) 25, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "MRNA",
+      "message": "Moderna RSI(14) 72, overbought",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "DDOG",
+      "message": "Datadog RSI(14) 73, overbought",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "FFIV",
+      "message": "F5, Inc. RSI(14) 70, overbought",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "FTNT",
+      "message": "Fortinet RSI(14) 73, overbought",
+      "time": "09 Oct 16:00",
+      "ts": 1791576001
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "TMUS",
+      "message": "T-Mobile US RSI(14) 29, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "SBUX",
+      "message": "Starbucks RSI(14) 29, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "WYNN",
+      "message": "Wynn Resorts RSI(14) 26, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "PCAR",
+      "message": "Paccar RSI(14) 29, oversold",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "NTAP",
+      "message": "NetApp RSI(14) 75, overbought",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "PLTR",
+      "message": "Palantir Technologies RSI(14) 76, overbought",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "PTC",
+      "message": "PTC Inc. RSI(14) 81, overbought",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
+    },
+    {
+      "severity": "info",
+      "category": "Technical",
+      "symbol": "SNPS",
+      "message": "Synopsys RSI(14) 75, overbought",
+      "time": "09 Oct 16:00",
+      "ts": 1791576000
     }
   ],
   "fred": {

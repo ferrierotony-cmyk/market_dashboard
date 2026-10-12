@@ -55,6 +55,7 @@ read_input_csv <- function(path) {
   if (is.null(x) || !nrow(x)) return(NULL)
   x
 }
+why_html <- function(w) gsub(" | ", " &middot; ", esc(w), fixed = TRUE)   # "why it moved" lines use | as a locale-safe separator
 chip <- function(status, text) sprintf("<span class='chip %s'>%s</span>", status, text)
 STATUS_ICON <- c(good = "&#10003;", warn = "&#9650;", bad = "&#10007;", na = "&ndash;")
 status_chip <- function(st, label) chip(st, paste(STATUS_ICON[[st]], label))
@@ -274,14 +275,21 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
                         paste(score_rows, collapse = "\n"), "<div class='gap'></div>", cal_table)
 
   # pipeline / comps ------------------------------------------------------------------
+  stale <- cfg$STALE_DAYS %||% list(comps = 30, pipeline = 21, holdings_mark = 10)
+  age_days <- function(d) as.numeric(today - suppressWarnings(as.Date(d)))
   pipe <- inputs$pipeline
-  pipe_rows <- if (is.null(pipe)) list() else lapply(seq_len(nrow(pipe)), function(i) {
+  if (!is.null(pipe)) pipe <- pipe[!grepl("^\\s*example", pipe$issuer, ignore.case = TRUE), ]   # placeholder rows never show
+  pipe_rows <- if (is.null(pipe) || !nrow(pipe)) list() else lapply(seq_len(nrow(pipe)), function(i) {
+    ag <- age_days(pipe$pricing_date[i])
+    st <- esc(pipe$status[i])
+    if (!is.na(ag) && ag > stale$pipeline) st <- paste(st, chip("warn", sprintf("priced %dd ago", ag)))
     c(esc(pipe$issuer[i]), esc(pipe$rating[i]), fmt_num(pipe$size_mm[i], 0), esc(pipe$tenor[i]), esc(pipe$ipt[i]),
-      esc(pipe$status[i]), esc(pipe$pricing_date[i]), esc(pipe$notes[i]))
+      st, esc(pipe$pricing_date[i]), esc(pipe$notes[i]))
   })
   pipe_html <- html_table(pipe_rows, c("Issuer", "Rating", "Size ($mm)", "Tenor", "IPT", "Status", "Pricing", "Notes"),
                           aligns = c("l", "l", "r", "l", "l", "l", "l", "l"))
-  comps <- inputs$comps; comps_src <- desk_src("comps.csv")
+  if (!length(pipe_rows)) pipe_html <- "<div class='muted pad'>No live deals. Add rows to inputs/pipeline.csv (issuer, rating, size_mm, tenor, ipt, status, pricing_date, notes).</div>"
+  comps <- inputs$comps; comps_src <- desk_src("comps.csv"); comps_note <- ""
   if (!is.null(comps) && !is.null(raw$bbg_comps) && !is.null(comps$bbg_ticker)) {
     b <- raw$bbg_comps; m <- match(comps$bbg_ticker, b$bbg_ticker); hit <- !is.na(m)
     comps$yield[hit] <- b$yield[m[hit]]; comps$z_spread[hit] <- b$z_spread[m[hit]]
@@ -289,13 +297,19 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
     comps$as_of[hit] <- format(today); comps$source[hit] <- "Bloomberg (live)"
     if (any(hit)) comps_src <- sprintf("Bloomberg &middot; live &middot; %s", format(Sys.time(), "%H:%M"))
   }
-  comps_rows <- if (is.null(comps)) list() else lapply(order(-suppressWarnings(as.numeric(comps$z_spread))), function(i) {
+  if (!is.null(comps) && nrow(comps)) {
+    ag <- age_days(comps$as_of); old <- !is.na(ag) & ag > stale$comps
+    if (any(old)) comps_note <- sprintf("<div class='note'>%s %d of %d comps are older than %d days and are hidden. Re-mark them in inputs/comps.csv (as_of column).</div>",
+                                        status_chip("warn", "Stale"), sum(old), nrow(comps), stale$comps)
+    comps <- comps[!old, ]
+  }
+  comps_rows <- if (is.null(comps) || !nrow(comps)) list() else lapply(order(-suppressWarnings(as.numeric(comps$z_spread))), function(i) {
     c(esc(comps$issuer[i]), esc(comps$bond[i]), esc(comps$rating[i]), fmt_num(comps$yield[i], 2, "%"),
       fmt_num(comps$z_spread[i], 0), fmt_num(comps$duration[i], 1), esc(comps$as_of[i]))
   })
-  comps_html <- html_table(comps_rows, c("Issuer", "Bond", "Rtg", "Yield", "Z (bp)", "Dur", "As of"),
-                           aligns = c("l", "l", "l", "r", "r", "r", "r"))
-  comps_asof <- if (is.null(comps)) "" else paste(unique(comps$as_of), collapse = ", ")
+  comps_html <- paste0(html_table(comps_rows, c("Issuer", "Bond", "Rtg", "Yield", "Z (bp)", "Dur", "As of"),
+                                  aligns = c("l", "l", "l", "r", "r", "r", "r")), comps_note)
+  comps_asof <- if (is.null(comps) || !nrow(comps)) "none current" else paste(unique(comps$as_of), collapse = ", ")
 
   # ===========================================================================
   #  ANALYTICS
@@ -311,12 +325,20 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   # alerts: watchlist + portfolio concentration + red health indicators --------------
   alerts <- if (!is.null(watch)) watch$alerts else NULL
   add_alert <- function(sev, cat, sym, msg) alerts <<- rbind(alerts, data.frame(severity = sev, category = cat, symbol = sym,
-                                                                                   message = msg, time = format(Sys.time(), "%d %b %H:%M"), stringsAsFactors = FALSE))
+                                                                                   message = msg, time = format(Sys.time(), "%d %b %H:%M"),
+                                                                                   ts = as.numeric(Sys.time()), stringsAsFactors = FALSE))
   if (!is.null(port)) for (f in port$conc$flags) add_alert("serious", "Concentration", "Portfolio", f)
   if (!is.null(health)) for (d in health$domains) for (it in d$items) if (it$status == "bad")
     add_alert("warning", "Market health", d$name, sprintf("%s at %s (%s)", it$name, it$value_txt, it$rule))
+  # an alert stamped long before the latest live quote comes from a stale cache: drop it
+  n_stale_alerts <- 0
+  if (!is.null(alerts) && nz(live_time)) {
+    cut <- as.numeric(live_time) - (cfg$ALERT_MAX_AGE_HOURS %||% 36) * 3600
+    old <- !is.na(alerts$ts) & alerts$ts < cut
+    n_stale_alerts <- sum(old); alerts <- alerts[!old, ]
+  }
   sev_rank <- c(critical = 1, serious = 2, warning = 3, info = 4)
-  if (!is.null(alerts)) alerts <- alerts[order(sev_rank[alerts$severity]), ]
+  if (!is.null(alerts) && nrow(alerts)) alerts <- alerts[order(sev_rank[alerts$severity], -alerts$ts), ] else alerts <- NULL
   n_alerts <- if (is.null(alerts)) 0 else sum(alerts$severity != "info")
 
   # ---- portfolio snapshot for the morning view -------------------------------------
@@ -352,7 +374,8 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
     hold_rows <- lapply(Filter(function(r) isTRUE(r$ok), port$rows), function(r) {
       c(esc(r$name), esc(r$asset_class), esc(r$sector),
         if (r$per100) paste0(fmt_money(r$quantity / 1e6, 1), "mm") else fmt_num(r$quantity, 0),
-        fmt_num(r$price, if (r$per100) 3 else 2), paste0("<span class='muted'>", esc(r$method), " &middot; ", esc(r$asof), "</span>"),
+        fmt_num(r$price, if (r$per100) 3 else 2), paste0("<span class='muted'>", esc(r$method), " &middot; ", esc(r$asof), "</span>",
+                                                         if (!is.na(r$mark_age) && r$mark_age > stale$holdings_mark) paste0(" ", chip("warn", sprintf("mark %dd old", r$mark_age))) else ""),
         fmt_money(r$mv), fmt_num(100 * r$weight, 1, "%"), fmt_chg(r$day, 0, "", TRUE), fmt_chg(r$price_pnl, 0, "", TRUE),
         fmt_chg(r$carry_pnl, 0, "", TRUE), fmt_chg(r$total_pnl, 0, "", TRUE), fmt_num(r$duration, 2), fmt_money(r$dv01))
     })
@@ -417,11 +440,12 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   alert_items <- function(a) paste0(sprintf("<li class='sev-%s'><span class='sev'>%s %s</span><span class='cat'>%s</span><span class='sym'>%s</span><span class='msg'>%s</span><span class='when'>%s</span></li>",
                                             a$severity, SEV_ICON[a$severity], sev_word[a$severity], esc(a$category),
                                             esc(a$symbol), esc(a$message), esc(a$time)), collapse = "")
-  alerts_html <- if (is.null(alerts) || !nrow(alerts)) "<div class='muted pad'>No alerts triggered</div>" else {
+  stale_note <- if (n_stale_alerts > 0) sprintf("<div class='note'>%d alert%s from stale (cached) quotes hidden.</div>", n_stale_alerts, if (n_stale_alerts > 1) "s" else "") else ""
+  alerts_html <- if (is.null(alerts) || !nrow(alerts)) paste0("<div class='muted pad'>No alerts triggered</div>", stale_note) else {
     main <- alerts[alerts$severity != "info", ]; info <- alerts[alerts$severity == "info", ]
     paste0(if (nrow(main)) paste0("<ul class='alerts'>", alert_items(main), "</ul>") else "<div class='muted pad'>No warnings</div>",
            if (nrow(info)) paste0("<details class='infoalerts'><summary>", nrow(info), " informational (RSI extremes, headline keywords)</summary><ul class='alerts'>",
-                                  alert_items(info), "</ul></details>") else "")
+                                  alert_items(info), "</ul></details>") else "", stale_note)
   }
   watch_html <- "<div class='muted pad'>No watchlist (inputs/watchlist.csv)</div>"; watch_tool <- ""
   news_html <- "<div class='muted pad'>No headlines</div>"; opts_html <- "<div class='muted pad'>No option chains</div>"
@@ -435,10 +459,10 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
         fmt_chg(r$m1, 1, "%", TRUE), fmt_chg(r$ytd, 1, "%", TRUE), spark_svg(r$spark),
         if (is.na(r$vratio)) "&ndash;" else paste0(if (r$vratio >= 2) "<b>" else "", sprintf("%.1fx", r$vratio), if (r$vratio >= 2) "</b>" else ""),
         fmt_num(r$rsi, 0), fmt_chg(r$vs50, 1, "%", NA), fmt_chg(r$vs200, 1, "%", NA),
-        paste0(esc(r$time), " <span class='muted'>(", esc(r$delay), ")</span>"))
+        paste0(esc(r$time), " <span class='muted'>(", esc(r$delay), ")</span>", if (isTRUE(r$stale)) paste0(" ", chip("warn", "cached")) else ""))
     })
-    row_link <- function(r) sprintf("class='rowlink' tabindex='0' data-sym='%s' data-name='%s' data-sector='%s' title='Open chart'",
-                                    esc(r$symbol), esc(r$label), esc(r$sector))
+    row_link <- function(r) sprintf("class='rowlink' tabindex='0' data-sym='%s' data-name='%s' data-sector='%s' title='%s'",
+                                    esc(r$symbol), esc(r$label), esc(r$sector), why_html(r$why %||% "Open chart"))
     wattrs <- vapply(watch$rows, row_link, "")
     watch_html <- html_table(wrows, c("Name", "Symbol", "Sector", "Last", "1D", "1W", "1M", "YTD", "60D trend", "Vol vs 20D", "RSI 14",
                                       "vs 50D", "vs 200D", "Last trade (delay)"),
@@ -448,7 +472,8 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
                          "<select id='wsector' aria-label='Sector'><option value=''>All sectors</option>", sect_opts, "</select>",
                          "<span class='muted' id='wcount'></span><span class='muted'>Click a column header to sort</span></div>")
     # movers and sector summary (equities only)
-    mover_rows <- function(lst) lapply(lst, function(r) c(sprintf("<b>%s</b> <span class='muted'>%s</span>", esc(r$label), esc(r$symbol)), esc(r$sector),
+    mover_rows <- function(lst) lapply(lst, function(r) c(sprintf("<b>%s</b> <span class='muted'>%s</span>%s", esc(r$label), esc(r$symbol),
+                                                                   if (nzchar(r$why %||% "")) paste0("<span class='why'>", why_html(r$why), "</span>") else ""), esc(r$sector),
                                                            fmt_num(r$last, if (abs(r$last) < 10) 4 else 2), fmt_chg(r$d1, 2, "%", TRUE),
                                                            if (is.na(r$vratio)) "&ndash;" else sprintf("%.1fx", r$vratio)))
     mover_table <- function(lst) html_table(mover_rows(lst), c("Name", "Sector", "Last", "1D", "Vol/20D"), aligns = c("l", "l", "r", "r", "r"),
@@ -464,8 +489,11 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
       c("Sector", "#", "Avg 1D", "Avg 1W", "Avg 1M", "Avg YTD", "Up / down", "Best today", "Worst today"),
       aligns = c("l", "r", "r", "r", "r", "r", "r", "l", "l"), class = "tbl sort")
     safe_link <- function(u) if (grepl("^https://", u)) esc(u) else ""
-    news_item <- function(n) sprintf("<li><a href='%s' target='_blank' rel='noopener noreferrer'>%s</a><span class='meta'>%s &middot; %s &middot; <time data-iso='%s'>%s</time>%s</span></li>",
-                                     safe_link(n$link), esc(n$title), esc(n$label), esc(n$publisher), esc(n$time), esc(substr(n$time, 1, 16)),
+    news_item <- function(n) sprintf("<li%s><a href='%s' target='_blank' rel='noopener noreferrer'>%s</a>%s<span class='meta'>%s &middot; %s &middot; <time data-iso='%s'>%s</time>%s</span></li>",
+                                     if (nzchar(n$summary %||% "")) " class='hassum' tabindex='0' title='Click to expand the summary'" else "",
+                                     safe_link(n$link), esc(n$title),
+                                     if (nzchar(n$summary %||% "")) paste0("<p class='sum'>", esc(n$summary), "</p>") else "",
+                                     esc(n$label), esc(n$publisher), esc(n$time), esc(substr(n$time, 1, 16)),
                                      if (nzchar(n$flag)) paste0(" ", chip("warn", paste("flag:", esc(n$flag)))) else "")
     if (length(watch$news)) {
       ord <- order(vapply(watch$news, function(n) n$time, ""), decreasing = TRUE)
@@ -498,7 +526,8 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
       kv <- function(k, v) sprintf("<span>%s</span><b>%s</b>", k, v)
       paste0("<div class='symside' data-sym='", esc(r$symbol), "' hidden>",
              "<div class='symhead'><div class='lbl'>", esc(r$label), " &middot; ", esc(y$exchange), "</div><div class='val'>", fmt_num(r$last, dec),
-             " <small>", fmt_chg(r$d1, 2, "%", TRUE), "</small></div><div class='muted'>", esc(r$time), " &middot; delay ", esc(r$delay), " &middot; ", esc(y$currency), "</div></div>",
+             " <small>", fmt_chg(r$d1, 2, "%", TRUE), "</small></div><div class='muted'>", esc(r$time), " &middot; delay ", esc(r$delay), " &middot; ", esc(y$currency), "</div>",
+             if (nzchar(r$why %||% "")) paste0("<div class='why'>", why_html(r$why), "</div>") else "", "</div>",
              "<div class='kv'>", kv("Day range", paste(fmt_num(b$l[nb], dec), "&ndash;", fmt_num(b$h[nb], dec))),
              kv("52w range", paste(fmt_num(min(w52), dec), "&ndash;", fmt_num(max(w52), dec))),
              kv("Position in 52w range", if (is.na(pos)) "&ndash;" else paste0(pos, "%")),
