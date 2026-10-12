@@ -228,6 +228,56 @@ OPTIONS_RULES <- list(
 )
 RSI_ALERTS <- c(low = 30, high = 70)
 
+# -----------------------------------------------------------------------------
+#  Alert rules live in inputs/alerts.csv (edit them there or with the Rules
+#  editor on the Watchlist tab, which downloads a new alerts.csv).
+#  Columns: id, enabled (Y/N), scope (symbol | market | portfolio), target
+#  (symbol scope only: a ticker, * for every equity, detail for detail names,
+#  sector:<name>), metric, op (> < >= <= abs> crosses_above crosses_below),
+#  value (a number, or sma50 / sma200 for crosses), severity (critical |
+#  serious | warning | info), note (shown in the alert).
+# -----------------------------------------------------------------------------
+# The per-row alert columns in watchlist.csv (alert_above, alert_move_pct, ...)
+# apply to: "detail" (only detail = Y rows), "all", or "none". The rules file
+# covers the broad watchlist with sane thresholds; +/-4% on 500 names is noise.
+WATCHLIST_ROW_ALERTS <- "detail"
+# Market metrics a rule can name. Suffix .d1 / .w1 / .m1 / .ytd for the change
+# (bp for yields and spreads, points for VIX / MOVE, % for prices).
+ALERT_MARKET_METRICS <- list(
+  ust2y   = list(src = "fred", key = "DGS2",   unit = "yield", label = "UST 2Y yield (%)"),
+  ust5y   = list(src = "fred", key = "DGS5",   unit = "yield", label = "UST 5Y yield (%)"),
+  ust10y  = list(src = "fred", key = "DGS10",  unit = "yield", label = "UST 10Y yield (%)"),
+  ust30y  = list(src = "fred", key = "DGS30",  unit = "yield", label = "UST 30Y yield (%)"),
+  "2s10s" = list(src = "derived", key = "2s10s", unit = "bp", label = "2s10s curve (bp)"),
+  "5s30s" = list(src = "derived", key = "5s30s", unit = "bp", label = "5s30s curve (bp)"),
+  "3m10y" = list(src = "derived", key = "3m10y", unit = "bp", label = "3m10y curve (bp)"),
+  ig_oas  = list(src = "fred", key = "BAMLC0A0CM",   unit = "bp", label = "US IG OAS (bp)"),
+  ig_bbb  = list(src = "fred", key = "BAMLC0A4CBBB", unit = "bp", label = "IG BBB OAS (bp)"),
+  hy_oas  = list(src = "fred", key = "BAMLH0A0HYM2", unit = "bp", label = "US HY OAS (bp)"),
+  hy_bb   = list(src = "fred", key = "BAMLH0A1HYBB", unit = "bp", label = "HY BB OAS (bp)"),
+  hy_ccc  = list(src = "fred", key = "BAMLH0A3HYC",  unit = "bp", label = "HY CCC OAS (bp)"),
+  sofr    = list(src = "fred", key = "SOFR",   unit = "yield", label = "SOFR (%)"),
+  effr    = list(src = "fred", key = "EFFR",   unit = "yield", label = "EFFR (%)"),
+  bkeven10 = list(src = "fred", key = "T10YIE", unit = "yield", label = "10Y breakeven (%)"),
+  vix     = list(src = "yahoo", key = "^VIX",  unit = "level", label = "VIX"),
+  move    = list(src = "yahoo", key = "^MOVE", unit = "level", label = "MOVE"),
+  spx_fut = list(src = "yahoo", key = "ES=F",  unit = "px", label = "S&P 500 futures"),
+  nq_fut  = list(src = "yahoo", key = "NQ=F",  unit = "px", label = "Nasdaq 100 futures"),
+  dxy     = list(src = "yahoo", key = "DX-Y.NYB", unit = "px", label = "US dollar index"),
+  eurusd  = list(src = "yahoo", key = "EURUSD=X", unit = "px", label = "EUR/USD"),
+  usdjpy  = list(src = "yahoo", key = "USDJPY=X", unit = "px", label = "USD/JPY"),
+  wti     = list(src = "yahoo", key = "CL=F",  unit = "px", label = "WTI crude"),
+  gold    = list(src = "yahoo", key = "GC=F",  unit = "px", label = "Gold"),
+  tlt     = list(src = "yahoo", key = "TLT",   unit = "px", label = "TLT (20Y+ UST ETF)"),
+  lqd     = list(src = "yahoo", key = "LQD",   unit = "px", label = "LQD (IG ETF)"),
+  hyg     = list(src = "yahoo", key = "HYG",   unit = "px", label = "HYG (HY ETF)"),
+  health_score = list(src = "health", key = "score", unit = "level", label = "Market health score (0-100)")
+)
+# Desktop notification when a new alert appears (Windows toast, no setup).
+TOAST_ALERTS <- TRUE
+TOAST_MIN_SEVERITY <- "warning"     # critical | serious | warning | info
+TOAST_REPEAT_HOURS <- 12            # the same alert is not toasted again within this window
+
 # Economic releases shown on the calendar when a FRED API key is configured
 CALENDAR_RELEASES <- c("Consumer Price Index", "Employment Situation",
                        "Personal Income and Outlays", "Gross Domestic Product",

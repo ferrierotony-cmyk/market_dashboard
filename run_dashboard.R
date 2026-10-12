@@ -31,6 +31,7 @@ ok <- tryCatch({
   sys.source("config.R", envir = cfg_env)
   cfg <- as.list(cfg_env)
   source("analytics.R")
+  source("alerts.R")
   source("build_dashboard.R")
 
   inputs <- lapply(c(holdings = "holdings.csv", watchlist = "watchlist.csv", pipeline = "pipeline.csv",
@@ -40,6 +41,7 @@ ok <- tryCatch({
   raw <- fetch_all(cfg, inputs, cache_dir = "data", run_mode = RUN_MODE)
   res <- build_dashboard(cfg, raw, inputs, DASH_DIR)
   logmsg("Built ", res$html, "  (window: ", res$window, ", health: ", res$health, ", alerts: ", res$n_alerts, ")")
+  tryCatch(notify_new_alerts(cfg, res$alerts, DASH_DIR, res$html), error = function(e) logmsg("Toast failed: ", conditionMessage(e)))
   TRUE
 }, error = function(e) {
   logmsg("BUILD FAILED: ", conditionMessage(e))

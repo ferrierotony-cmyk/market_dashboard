@@ -326,10 +326,21 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   alerts <- if (!is.null(watch)) watch$alerts else NULL
   add_alert <- function(sev, cat, sym, msg) alerts <<- rbind(alerts, data.frame(severity = sev, category = cat, symbol = sym,
                                                                                    message = msg, time = format(Sys.time(), "%d %b %H:%M"),
-                                                                                   ts = as.numeric(Sys.time()), stringsAsFactors = FALSE))
+                                                                                   ts = as.numeric(Sys.time()), key = paste0(cat, "|", sym, "|", substr(msg, 1, 24)),
+                                                                                   stringsAsFactors = FALSE))
   if (!is.null(port)) for (f in port$conc$flags) add_alert("serious", "Concentration", "Portfolio", f)
   if (!is.null(health)) for (d in health$domains) for (it in d$items) if (it$status == "bad")
     add_alert("warning", "Market health", d$name, sprintf("%s at %s (%s)", it$name, it$value_txt, it$rule))
+  # rule-based alerts (inputs/alerts.csv) ------------------------------------------------
+  rules <- read_alert_rules(file.path(dash_dir, "inputs", "alerts.csv"))
+  mkt_metrics <- resolve_market_metrics(cfg, S, Y, yahoo, health)
+  sym_metrics <- if (!is.null(watch)) symbol_metrics(watch$rows) else list()
+  port_metrics <- portfolio_metrics(port)
+  rule_alerts <- tryCatch(alerts_compute(rules, mkt_metrics, sym_metrics, port_metrics),
+                          error = function(e) { logmsg("alert rules failed: ", conditionMessage(e)); NULL })
+  if (!is.null(rule_alerts)) alerts <- rbind(alerts, rule_alerts)
+  n_rules <- if (is.null(rules)) 0 else sum(rules$enabled)
+  logmsg("Alert rules: ", n_rules, " enabled, ", if (is.null(rule_alerts)) 0 else nrow(rule_alerts), " fired")
   # an alert stamped long before the latest live quote comes from a stale cache: drop it
   n_stale_alerts <- 0
   if (!is.null(alerts) && nz(live_time)) {
@@ -440,6 +451,10 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   alert_items <- function(a) paste0(sprintf("<li class='sev-%s'><span class='sev'>%s %s</span><span class='cat'>%s</span><span class='sym'>%s</span><span class='msg'>%s</span><span class='when'>%s</span></li>",
                                             a$severity, SEV_ICON[a$severity], sev_word[a$severity], esc(a$category),
                                             esc(a$symbol), esc(a$message), esc(a$time)), collapse = "")
+  rules_tool <- paste0("<div class='ctool'><button type='button' id='rulesBtn' aria-expanded='false'>Edit rules</button>",
+                       sprintf("<span class='muted'>%d rule%s enabled &middot; %d fired &middot; rules live in inputs/alerts.csv</span></div>",
+                               n_rules, if (n_rules == 1) "" else "s", if (is.null(rule_alerts)) 0 else nrow(rule_alerts)),
+                       "<div id='rulesPanel' class='rules' hidden></div>")
   stale_note <- if (n_stale_alerts > 0) sprintf("<div class='note'>%d alert%s from stale (cached) quotes hidden.</div>", n_stale_alerts, if (n_stale_alerts > 1) "s" else "") else ""
   alerts_html <- if (is.null(alerts) || !nrow(alerts)) paste0("<div class='muted pad'>No alerts triggered</div>", stale_note) else {
     main <- alerts[alerts$severity != "info", ]; info <- alerts[alerts$severity == "info", ]
@@ -705,7 +720,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
       widget("x-cal", "Calendar", paste0("<div class='scroll'>", cal_table, "</div>"), 12, 3,
              sub = if (nzchar(cfg$FRED_API_KEY)) "desk + FRED releases" else "desk calendar (set FRED_API_KEY for releases)", src = desk_src("calendar.csv"))),
     watch = paste0(
-      widget("w-alerts", "Alerts", paste0("<div class='scroll'>", alerts_html, "</div>"), 12, 4, sub = sprintf("%d active", n_alerts), src = "Derived"),
+      widget("w-alerts", "Alerts", paste0(rules_tool, "<div class='scroll'>", alerts_html, "</div>"), 12, 4, sub = sprintf("%d active", n_alerts), src = "Derived &middot; inputs/alerts.csv"),
       widget("w-movers", "Equity movers", paste0("<div class='scroll'>", movers_html, "</div>"), 6, 5, sub = "today, click a row to chart it", src = live_src),
       widget("w-sectors", "Sector summary", paste0("<div class='scroll'>", sectors_html, "</div>"), 6, 5, sub = "equal-weighted averages of watchlist names", src = live_src),
       widget("w-table", "Watchlist", paste0(watch_tool, "<div class='scroll'>", watch_html, "</div>"), 12, 7, sub = "click a row to chart it", src = "Yahoo &middot; delayed &le;15m &middot; watchlist.csv"),
@@ -725,6 +740,10 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   D <- list(meta = list(title = cfg$DASH_TITLE, built_at = format(raw$fetched_at, "%Y-%m-%dT%H:%M:%S"), run_mode = raw$run_mode,
                         refresh_s = cfg$BROWSER_REFRESH_SECONDS, n_alerts = n_alerts),
             layouts = layouts,
+            alert_rules = if (is.null(rules)) list() else lapply(seq_len(nrow(rules)), function(i) as.list(rules[i, ])),
+            alert_fired = if (is.null(rule_alerts)) character(0) else arr(rule_alerts$key),
+            metrics = mkt_metrics, symmetrics = sym_metrics, portmetrics = port_metrics,
+            metric_labels = list(symbol = as.list(SYMBOL_METRICS), portfolio = as.list(PORTFOLIO_METRICS)),
             charts = charts,
             corr = if (is.null(corr)) NULL else list(labels = arr(corr$labels), m90 = corr$m90, m1y = corr$m1y))
   json <- jsonlite::toJSON(D, auto_unbox = TRUE, na = "null", null = "null", digits = 7, matrix = "rowmajor")
@@ -797,6 +816,6 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   jsonlite::write_json(snap, file.path(output_dir, "market_snapshot.json"), auto_unbox = TRUE, pretty = TRUE, digits = 6, na = "null")
   utils::write.csv(raw$status, file.path(output_dir, "data_status.csv"), row.names = FALSE)
 
-  invisible(list(html = html_path, png = png_path, window = window_txt, n_alerts = n_alerts,
+  invisible(list(html = html_path, png = png_path, window = window_txt, n_alerts = n_alerts, alerts = alerts,
                  health = if (!is.null(health)) paste(health$score, health$label) else "n/a"))
 }

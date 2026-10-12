@@ -239,7 +239,7 @@ watch_compute <- function(cfg, wl, yahoo, news, options_data) {
   add_alert <- function(sev, cat, sym, msg, when = NA, ts = NA) {
     alerts[[length(alerts) + 1]] <<- data.frame(severity = sev, category = cat, symbol = sym,
                                                 message = msg, time = as.character(when),
-                                                ts = as.numeric(ts), stringsAsFactors = FALSE)
+                                                ts = as.numeric(ts), key = paste0(cat, "|", sym), stringsAsFactors = FALSE)
   }
   now_et <- as.POSIXlt(Sys.time(), tz = "America/New_York")
   col <- function(nm, default = "") { v <- wl[[nm]]; if (is.null(v)) return(rep(default, nrow(wl))); v[is.na(v) | !nzchar(v)] <- default; v }
@@ -258,11 +258,14 @@ watch_compute <- function(cfg, wl, yahoo, news, options_data) {
     avg20 <- if (vi >= 21) mean(b$v[(vi - 20):(vi - 1)]) else NA_real_
     vratio <- if (!is.na(vol) && !is.na(avg20) && avg20 > 0) vol / avg20 else NA_real_
     r <- rsi_wilder(cl)[n]
-    s50 <- sma(cl, 50)[n]; s200 <- sma(cl, 200)[n]
+    sma50 <- sma(cl, 50); sma200 <- sma(cl, 200); s50 <- sma50[n]; s200 <- sma200[n]
+    # +1 when the close crossed above the average since the prior session, -1 below, 0 otherwise
+    crossed <- function(a) if (n < 2 || is.na(a[n]) || is.na(a[n - 1])) 0 else (cl[n] > a[n]) - (cl[n - 1] > a[n - 1])
     w52 <- utils::tail(cl, 252)
     d1 <- 100 * (y$last / y$prev - 1)
     rows[[length(rows) + 1]] <- list(
       symbol = s, label = lab, type = wl_type[i], sector = wl_sector[i], ok = TRUE,
+      detail = toupper(wl$detail[i] %||% "N") == "Y", prev = y$prev, cross50 = crossed(sma50), cross200 = crossed(sma200),
       last = y$last, d1 = d1, w1 = pctk(5), m1 = pctk(21),
       ytd = if (!is.na(ytd_base)) 100 * (y$last / ytd_base - 1) else NA_real_,
       vratio = vratio, rsi = r,
@@ -272,6 +275,9 @@ watch_compute <- function(cfg, wl, yahoo, news, options_data) {
       spark = round(utils::tail(cl, 60), 6), time = format(y$market_time, "%d %b %H:%M"),
       ts = as.numeric(y$market_time), stale = identical(y$mode, "cache-fallback"),
       delay = if (!is.na(y$delay_min) && y$delay_min > 0) sprintf("%d min", round(y$delay_min)) else "<=15 min")
+    # per-row alert columns: only for the rows WATCHLIST_ROW_ALERTS selects (rules cover the rest)
+    row_mode <- tolower(cfg$WATCHLIST_ROW_ALERTS %||% "all")
+    if (row_mode == "none" || (row_mode == "detail" && !isTRUE(toupper(wl$detail[i] %||% "N") == "Y"))) next
     num <- function(x) suppressWarnings(as.numeric(x))
     above <- num(wl$alert_above[i]); below <- num(wl$alert_below[i])
     mv <- num(wl$alert_move_pct[i]); vx <- num(wl$alert_volume_x[i])

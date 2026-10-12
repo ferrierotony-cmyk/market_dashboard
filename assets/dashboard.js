@@ -968,6 +968,112 @@
   }
   if (wf && ws) { wf.addEventListener('input', applyWatchFilter); ws.addEventListener('change', applyWatchFilter); applyWatchFilter(); }
 
+  // ------------------------------------------------------------------ alert rules editor
+  // Edits are previewed instantly against the numbers baked into this page and kept
+  // in this browser; "Download alerts.csv" writes the file the build reads.
+  var RULES_LS = 'mmd.rules.v1', rulesPanel = $('#rulesPanel'), rulesBtn = $('#rulesBtn');
+  if (rulesPanel && rulesBtn && D.alert_rules) {
+    var fileRules = D.alert_rules.map(function (r) { return Object.assign({}, r); });
+    var rules = lsGet(RULES_LS, null) || JSON.parse(JSON.stringify(fileRules));
+    var OPS = ['>', '<', '>=', '<=', 'abs>', 'abs<', 'crosses_above', 'crosses_below'];
+    var SEVS = ['critical', 'serious', 'warning', 'info'];
+    var SUFFIX = { d1: '1-day change', w1: '1-week change', m1: '1-month change', ytd: 'YTD change' };
+    var SYMM = (D.metric_labels && D.metric_labels.symbol) || {}, PORTM = (D.metric_labels && D.metric_labels.portfolio) || {};
+    function marketMetricOptions() {
+      var out = [];
+      Object.keys(D.metrics || {}).forEach(function (k) {
+        var m = D.metrics[k]; out.push([k, m.label]);
+        Object.keys(SUFFIX).forEach(function (s) { out.push([k + '.' + s, m.label + ' - ' + SUFFIX[s]]); });
+      });
+      return out;
+    }
+    var METRIC_OPTS = { market: marketMetricOptions(), symbol: Object.keys(SYMM).map(function (k) { return [k, SYMM[k]]; }),
+      portfolio: Object.keys(PORTM).map(function (k) { return [k, PORTM[k]]; }) };
+    function cmp(op, v, x) {
+      if (v == null || !isFinite(v) || !isFinite(x)) return false;
+      switch (op) { case '>': return v > x; case '<': return v < x; case '>=': return v >= x; case '<=': return v <= x; case 'abs>': return Math.abs(v) > x; case 'abs<': return Math.abs(v) < x; }
+      return false;
+    }
+    function targets(tg) {
+      var S = D.symmetrics || {}, ids = Object.keys(S); tg = (tg || '*').trim();
+      if (tg === '*') return ids;
+      if (tg.toLowerCase() === 'detail') return ids.filter(function (s) { return S[s].detail; });
+      if (/^sector:/i.test(tg)) { var sc = tg.replace(/^sector:/i, '').trim().toLowerCase(); return ids.filter(function (s) { return (S[s].sector || '').toLowerCase() === sc; }); }
+      var want = tg.toUpperCase().split(',').map(function (s) { return s.trim(); }); return ids.filter(function (s) { return want.indexOf(s) >= 0; });
+    }
+    // mirrors alerts_compute() in alerts.R
+    function evalRule(r) {
+      var x = parseFloat(r.value), v;
+      if (r.scope === 'market') {
+        var parts = String(r.metric).split('.'), m = (D.metrics || {})[parts[0]]; if (!m) return { ok: false, text: 'unknown metric' };
+        v = parts[1] ? m[parts[1]] : m.v; var hit = cmp(r.op, v, x);
+        return { ok: true, fires: hit, text: (v == null ? 'n/a' : num(v, 2)) + (hit ? ' ✓ fires' : '') };
+      }
+      if (r.scope === 'portfolio') {
+        v = (D.portmetrics || {})[r.metric]; if (v === undefined) return { ok: false, text: 'unknown metric' };
+        var h2 = cmp(r.op, v, x); return { ok: true, fires: h2, text: (v == null ? 'n/a' : num(v, 2)) + (h2 ? ' ✓ fires' : '') };
+      }
+      var S = D.symmetrics || {}, hits = [], tg = targets(r.target);
+      tg.forEach(function (s) {
+        var sm = S[s], f = false;
+        if (r.op === 'crosses_above' || r.op === 'crosses_below') {
+          var up = r.op === 'crosses_above', val = String(r.value || '').trim().toLowerCase();
+          if (val === 'sma50' || val === 'sma200') f = sm[val === 'sma50' ? 'cross50' : 'cross200'] === (up ? 1 : -1);
+          else if (isFinite(x) && sm.prev != null && sm.last != null) f = up ? (sm.prev < x && sm.last >= x) : (sm.prev > x && sm.last <= x);
+        } else f = cmp(r.op, sm[r.metric], x);
+        if (f) hits.push(s);
+      });
+      return { ok: true, fires: hits.length > 0, text: hits.length ? hits.length + ' of ' + tg.length + ' fire: ' + hits.slice(0, 6).join(', ') + (hits.length > 6 ? '…' : '') : '0 of ' + tg.length };
+    }
+    function csvCell(s) { s = String(s == null ? '' : s); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+    function toCSV() {
+      var cols = ['id', 'enabled', 'scope', 'target', 'metric', 'op', 'value', 'severity', 'note'];
+      return cols.join(',') + '\n' + rules.map(function (r) { return cols.map(function (c) { return csvCell(c === 'enabled' ? (r.enabled ? 'Y' : 'N') : r[c]); }).join(','); }).join('\n') + '\n';
+    }
+    function sel(opts, val, onchange) {
+      var s = document.createElement('select');
+      opts.forEach(function (o) { var op = document.createElement('option'); op.value = o[0]; op.textContent = o[1] || o[0]; s.appendChild(op); });
+      if (opts.every(function (o) { return o[0] !== val; }) && val) { var ex = document.createElement('option'); ex.value = val; ex.textContent = val; s.appendChild(ex); }
+      s.value = val || opts[0][0]; s.addEventListener('change', function () { onchange(s.value); }); return s;
+    }
+    function inp(val, cls, onchange) { var i = document.createElement('input'); i.type = 'text'; i.value = val == null ? '' : val; if (cls) i.className = cls; i.addEventListener('change', function () { onchange(i.value); }); return i; }
+    function save() { lsSet(RULES_LS, rules); }
+    function renderRules() {
+      rulesPanel.textContent = '';
+      var tool = document.createElement('div'); tool.className = 'rtool';
+      var add = ctlBtn('+ Add rule', 'Add a rule', '', function () { rules.push({ id: 'rule' + (rules.length + 1), enabled: true, scope: 'symbol', target: '*', metric: 'd1', op: 'abs>', value: '5', severity: 'warning', note: '' }); save(); renderRules(); });
+      var dl = ctlBtn('Download alerts.csv', 'Save these rules as inputs/alerts.csv so the build uses them', '', function () { download('alerts.csv', toCSV()); });
+      var rs = ctlBtn('Reset to file', 'Discard browser edits and reload the rules the build used', '', function () { rules = JSON.parse(JSON.stringify(fileRules)); try { localStorage.removeItem(RULES_LS); } catch (e) { } renderRules(); });
+      var edited = JSON.stringify(rules) !== JSON.stringify(fileRules);
+      var note = document.createElement('span'); note.className = 'muted';
+      note.textContent = (edited ? 'Edited in this browser, not yet in the build. ' : '') + 'Preview shows what each rule would fire on right now. Save the download as inputs/alerts.csv and rebuild to make it live.';
+      tool.appendChild(add); tool.appendChild(dl); tool.appendChild(rs); tool.appendChild(note); rulesPanel.appendChild(tool);
+      var tb = document.createElement('table'), hr = tb.createTHead().insertRow();
+      ['On', 'Id', 'Scope', 'Target', 'Metric', 'Op', 'Value', 'Severity', 'Note', 'Preview', ''].forEach(function (h) { var th = document.createElement('th'); th.textContent = h; hr.appendChild(th); });
+      var body = tb.createTBody();
+      rules.forEach(function (r, i) {
+        var tr = body.insertRow(); if (!r.enabled) tr.className = 'off';
+        var on = document.createElement('input'); on.type = 'checkbox'; on.checked = !!r.enabled; on.addEventListener('change', function () { r.enabled = on.checked; save(); renderRules(); });
+        tr.insertCell().appendChild(on);
+        tr.insertCell().appendChild(inp(r.id, '', function (v) { r.id = v; save(); }));
+        tr.insertCell().appendChild(sel([['symbol'], ['market'], ['portfolio']], r.scope, function (v) { r.scope = v; r.metric = (METRIC_OPTS[v][0] || [''])[0]; if (v !== 'symbol') r.target = ''; save(); renderRules(); }));
+        var tgc = tr.insertCell(); if (r.scope === 'symbol') tgc.appendChild(inp(r.target, '', function (v) { r.target = v; save(); renderRules(); }));
+        tr.insertCell().appendChild(sel(METRIC_OPTS[r.scope] || [[r.metric]], r.metric, function (v) { r.metric = v; save(); renderRules(); }));
+        tr.insertCell().appendChild(sel(OPS.map(function (o) { return [o]; }), r.op, function (v) { r.op = v; save(); renderRules(); }));
+        tr.insertCell().appendChild(inp(r.value, 'num', function (v) { r.value = v; save(); renderRules(); }));
+        tr.insertCell().appendChild(sel(SEVS.map(function (o) { return [o]; }), r.severity, function (v) { r.severity = v; save(); renderRules(); }));
+        tr.insertCell().appendChild(inp(r.note, '', function (v) { r.note = v; save(); }));
+        var ev = evalRule(r), fc = tr.insertCell(); fc.className = 'fire'; fc.textContent = ev.text; if (ev.fires) fc.classList.add('dn'); if (!ev.ok) fc.classList.add('muted');
+        tr.insertCell().appendChild(ctlBtn('✕', 'Delete rule', '', function () { rules.splice(i, 1); save(); renderRules(); }));
+      });
+      rulesPanel.appendChild(tb);
+    }
+    rulesBtn.addEventListener('click', function () {
+      var open = rulesPanel.hidden; rulesPanel.hidden = !open; rulesBtn.setAttribute('aria-expanded', open);
+      if (open) renderRules();
+    });
+  }
+
   // ------------------------------------------------------------------ mount
   $$('.chart[data-chart]').forEach(function (h) {
     var spec = D.charts[h.dataset.chart];

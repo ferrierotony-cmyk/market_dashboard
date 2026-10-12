@@ -1,0 +1,23 @@
+id,enabled,scope,target,metric,op,value,severity,note
+hy_wide_1w,Y,market,,hy_oas.w1,>,25,serious,HY spreads widened 25bp or more in a week
+ig_wide_1w,Y,market,,ig_oas.w1,>,8,warning,IG spreads widened 8bp or more in a week
+ust10_day,Y,market,,ust10y.d1,abs>,10,warning,10Y yield moved 10bp or more on the day
+ust2_week,Y,market,,ust2y.w1,abs>,25,warning,2Y yield moved 25bp or more in a week
+curve_inverted,Y,market,,2s10s,<,0,warning,2s10s curve inverted
+vix_high,Y,market,,vix,>,25,serious,VIX above 25
+move_high,Y,market,,move,>,120,warning,MOVE above 120
+spx_drop,Y,market,,spx_fut.d1,<,-1.5,serious,S&P futures down 1.5% or more
+dxy_week,Y,market,,dxy.w1,abs>,2,info,Dollar index moved 2% or more in a week
+health_stress,Y,market,,health_score,<,45,serious,Market health score in STRESS
+port_day_loss,Y,portfolio,,port.day_pnl,<,-50000,serious,Portfolio lost more than $50k today
+port_drawdown,Y,portfolio,,port.total_pct,<,-10,serious,Portfolio down more than 10% since entry
+port_issuer,Y,portfolio,,port.max_issuer_pct,>,15,serious,Largest non-government issuer over 15%
+big_mover,Y,symbol,*,d1,abs>,8,warning,Watchlist name moved 8% or more today
+huge_mover,Y,symbol,*,d1,abs>,15,serious,Watchlist name moved 15% or more today
+vol_spike,Y,symbol,*,vol_x,>,4,warning,Volume at least 4x the 20-day average
+detail_cross50,Y,symbol,detail,last,crosses_above,sma50,info,Detail name crossed above its 50-day average
+detail_lost50,Y,symbol,detail,last,crosses_below,sma50,info,Detail name crossed below its 50-day average
+cross200_dn,Y,symbol,*,last,crosses_below,sma200,warning,Closed below its 200-day average
+rsi_extreme,Y,symbol,detail,rsi,>,80,info,Detail name RSI above 80
+energy_rout,Y,symbol,sector:Energy,d1,<,-5,warning,Energy name down 5% or more
+t_level,N,symbol,T,last,<,20,serious,AT&T below $20 (example of a single-name level)
