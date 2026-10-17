@@ -255,9 +255,9 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   if (!is.null(raw$calendar)) {
     rc <- raw$calendar[raw$calendar$event %in% cfg$CALENDAR_RELEASES & raw$calendar$date >= today, ]
     if (nrow(rc)) {
-      # FRED gives dates only. 08:30 ET is right for most of these releases and Consumer Confidence is 10:00.
-      rc_time <- ifelse(rc$event == "Consumer Confidence", "10:00", "08:30")
-      rc_imp  <- ifelse(rc$event %in% c("Producer Price Index", "Employment Cost Index", "Consumer Confidence"), "Med", "High")
+      # FRED gives dates only. 08:30 ET is right for most of these releases and Michigan consumer sentiment is 10:00.
+      rc_time <- ifelse(rc$event == "Surveys of Consumers", "10:00", "08:30")
+      rc_imp  <- ifelse(rc$event %in% c("Producer Price Index", "Employment Cost Index", "Surveys of Consumers"), "Med", "High")
       cal <- rbind(cal, data.frame(date = rc$date, time_et = rc_time, event = rc$event, importance = rc_imp,
                                    notes = "FRED release calendar", stringsAsFactors = FALSE))
     }

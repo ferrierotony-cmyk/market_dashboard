@@ -310,7 +310,7 @@ CALENDAR_RELEASES <- c("Consumer Price Index", "Employment Situation",
                        "Personal Income and Outlays", "Gross Domestic Product",
                        "Advance Monthly Sales for Retail and Food Services",
                        "Producer Price Index",
-                       "Employment Cost Index", "Consumer Confidence")
+                       "Employment Cost Index", "Surveys of Consumers")
 
 # -----------------------------------------------------------------------------
 #  Public demo mode. The GitHub workflow sets DASH_PUBLIC=1 so the hosted page
