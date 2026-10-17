@@ -1,0 +1,69 @@
+name: Refresh public dashboard
+
+on:
+  schedule:
+    # Weekdays, every 30 minutes from 12:00 to 21:30 UTC (8:00 to 17:30 Eastern in summer, 7:00 to 16:30 in winter).
+    # GitHub may start a scheduled run a few minutes late and can skip runs under load.
+    - cron: "0,30 12-21 * * 1-5"
+  workflow_dispatch:
+  push:
+    branches: [public-live, main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DASH_PUBLIC: "1"
+      FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System libraries for the R graphics packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev libpng-dev
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: R packages
+        run: Rscript -e 'install.packages(c("ggplot2","gridExtra","jsonlite","xml2","svglite","curl"))'
+
+      - name: Build the dashboard
+        run: Rscript run_dashboard.R
+
+      - name: Show the run log
+        if: always()
+        run: cat logs/run_*.log || true
+
+      - name: Assemble the site
+        run: |
+          mkdir -p site
+          cp output/market_dashboard.html site/index.html
+          cp output/market_data.js output/market_universe.js site/
+          cp output/market_dashboard.png site/ || true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
