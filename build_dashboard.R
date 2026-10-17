@@ -337,7 +337,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   # alerts: watchlist + portfolio concentration + red health indicators --------------
   alerts <- if (!is.null(watch)) watch$alerts else NULL
   add_alert <- function(sev, cat, sym, msg) alerts <<- rbind(alerts, data.frame(severity = sev, category = cat, symbol = sym,
-                                                                                   message = msg, time = format(Sys.time(), "%d %b %H:%M"),
+                                                                                   message = msg, time = format(Sys.time(), "%d %b %H:%M", tz = "America/New_York"),
                                                                                    ts = as.numeric(Sys.time()), key = paste0(cat, "|", sym, "|", substr(msg, 1, 24)),
                                                                                    stringsAsFactors = FALSE))
   if (!is.null(port)) for (f in port$conc$flags) add_alert("serious", "Concentration", "Portfolio", f)
@@ -758,7 +758,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   status_bits <- c(sprintf("Rates <b>%s</b>", esc(format(rates_asof, "%d %b"))),
                    sprintf("Credit <b>%s</b>", esc(format(credit_asof, "%d %b"))),
                    sprintf("Live <b>%s</b>", esc(live_asof)),
-                   sprintf("Built <b>%s</b> (%s)", esc(format(raw$fetched_at, "%d %b %H:%M")), esc(raw$run_mode)))
+                   sprintf("Built <b>%s ET</b> (%s)", esc(format(raw$fetched_at, "%d %b %H:%M", tz = "America/New_York")), esc(raw$run_mode)))
   n_ok <- sum(st$mode %in% c("fetched", "cache-by-design")); n_fb <- nrow(fallback); n_fail <- nrow(failed)
   feeds_cls <- if (n_fail) "bad" else if (n_fb) "warn" else "good"
   feeds_txt <- if (n_fail) sprintf("&#10007; %d feed%s down", n_fail, if (n_fail > 1) "s" else "") else if (n_fb) sprintf("&#9650; %d from cache", n_fb) else sprintf("&#10003; %d feeds", n_ok)
