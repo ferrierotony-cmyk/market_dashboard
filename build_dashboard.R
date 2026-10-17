@@ -777,7 +777,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
       widget("m-window", "New-issue window", paste0("<div class='scroll'>", window_html, "</div>"), 3, 5, sub = "scorecard &amp; calendar", src = paste0("Derived &middot; ", desk_src("calendar.csv"))),
       widget("m-pipe", "Pipeline", paste0("<div class='scroll'>", pipe_html, "</div>"), 5, 3, src = desk_src("pipeline.csv")),
       widget("m-comps", "Comps", paste0("<div class='scroll'>", comps_html, "</div>"), 4, 3, sub = paste("as of", esc(comps_asof)), src = comps_src),
-      widget("m-port", "Portfolio", paste0("<div class='scroll'>", port_snap, "</div>"), 3, 3, src = "Model + Yahoo &middot; holdings.csv"),
+      widget("m-port", if (nzchar(Sys.getenv("DASH_PUBLIC", unset = ""))) "Portfolio (hypothetical sample)" else "Portfolio", paste0("<div class='scroll'>", port_snap, "</div>"), 3, 3, src = "Model + Yahoo &middot; holdings.csv"),
       widget("m-movers", "Equity movers", paste0("<div class='scroll'>", movers_html, "</div>"), 6, 3, sub = "watchlist, today", src = live_src, hidden = TRUE)),
     portfolio = port_views,
     market = market_views,
@@ -805,7 +805,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
       widget("w-news", "Headlines", paste0("<div class='scroll'>", news_html, "</div>"), 7, 7, sub = "flagged words in config.R", src = "Yahoo Finance news"),
       widget("w-opts", "Options activity", paste0("<div class='scroll'>", opts_html, "</div>"), 5, 7, sub = "equities &amp; ETFs", src = "Cboe &middot; delayed 15m"))
   )
-  tabs <- c(morning = "Morning", portfolio = "Portfolio", charts = "Charts", market = "Market", health = "Macro &amp; health", watch = "Watchlist &amp; alerts")
+  tabs <- c(morning = "Morning", portfolio = if (nzchar(Sys.getenv("DASH_PUBLIC", unset = ""))) "Portfolio (sample)" else "Portfolio", charts = "Charts", market = "Market", health = "Macro &amp; health", watch = "Watchlist &amp; alerts")
   if (!nzchar(market_views)) tabs <- tabs[names(tabs) != "market"]
   tab_html <- paste0(vapply(names(tabs), function(v) sprintf("<button type='button' role='tab' data-view='%s'>%s%s</button>", v, tabs[[v]],
                                                              if (v == "watch" && n_alerts > 0) sprintf(" <span class='badge'>%d</span>", n_alerts) else ""), ""), collapse = "")
