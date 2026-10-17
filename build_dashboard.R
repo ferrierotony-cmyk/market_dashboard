@@ -279,6 +279,9 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
                         if (event_today) chip("bad", "High-impact event today") else "", "</div>",
                         paste(score_rows, collapse = "\n"), "<div class='gap'></div>", cal_table)
 
+  # public demo mode (set by the GitHub workflow) labels the sample portfolio and explains the empty desk cards
+  PUB <- nzchar(Sys.getenv("DASH_PUBLIC", unset = ""))
+  pub_note <- if (PUB) "<div class='flagline'><b>Hypothetical sample book.</b> These are not real positions and not real P&amp;L.</div>" else ""
   # pipeline / comps ------------------------------------------------------------------
   stale <- cfg$STALE_DAYS %||% list(comps = 30, pipeline = 21, holdings_mark = 10)
   age_days <- function(d) as.numeric(today - suppressWarnings(as.Date(d)))
@@ -293,7 +296,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   })
   pipe_html <- html_table(pipe_rows, c("Issuer", "Rating", "Size ($mm)", "Tenor", "IPT", "Status", "Pricing", "Notes"),
                           aligns = c("l", "l", "r", "l", "l", "l", "l", "l"))
-  if (!length(pipe_rows)) pipe_html <- "<div class='muted pad'>No live deals. Add rows to inputs/pipeline.csv (issuer, rating, size_mm, tenor, ipt, status, pricing_date, notes).</div>"
+  if (!length(pipe_rows)) pipe_html <- if (PUB) "<div class='muted pad'>Desk-only card. In the private version this lists live new-issue deals from a Bloomberg terminal. That data cannot be published, so it is empty on this public demo.</div>" else "<div class='muted pad'>No live deals. Add rows to inputs/pipeline.csv (issuer, rating, size_mm, tenor, ipt, status, pricing_date, notes).</div>"
   comps <- inputs$comps; comps_src <- desk_src("comps.csv"); comps_note <- ""
   if (!is.null(comps) && !is.null(raw$bbg_comps) && !is.null(comps$bbg_ticker)) {
     b <- raw$bbg_comps; m <- match(comps$bbg_ticker, b$bbg_ticker); hit <- !is.na(m)
@@ -314,6 +317,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   })
   comps_html <- paste0(html_table(comps_rows, c("Issuer", "Bond", "Rtg", "Yield", "Z (bp)", "Dur", "As of"),
                                   aligns = c("l", "l", "l", "r", "r", "r", "r")), comps_note)
+  if (PUB && !length(comps_rows)) comps_html <- "<div class='muted pad'>Desk-only card. In the private version this compares recent new-issue bonds by yield and Z-spread from a Bloomberg terminal. That data cannot be published, so it is empty on this public demo.</div>"
   comps_asof <- if (is.null(comps) || !nrow(comps)) "none current" else paste(unique(comps$as_of), collapse = ", ")
 
   # ===========================================================================
@@ -368,7 +372,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
                  c("P&amp;L since entry", paste0(fmt_chg(tt$total_pnl, 0, "", TRUE), " <span class='muted'>(", fmt_chg(tt$total_pct, 2, "%", NA), ")</span>")),
                  c("DV01 / CS01", paste0(fmt_money(tt$dv01), " / ", fmt_money(tt$cs01))),
                  c("Yield / duration", paste0(fmt_num(tt$yield, 2, "%"), " / ", fmt_num(tt$duration, 1), "y")))
-    paste0(html_table(rows, c("Portfolio", "")),
+    paste0(pub_note, html_table(rows, c("Portfolio", "")),
            if (length(port$conc$flags)) paste0("<div class='flagline'>", status_chip("bad", "Limit"), " ", esc(port$conc$flags[1]), "</div>") else "")
   }
 
@@ -380,7 +384,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
     tt <- port$totals
     stat <- function(lbl, val, sub = "", hero = FALSE) sprintf("<div class='stat%s'><div class='lbl'>%s</div><div class='val'>%s</div><div class='chg'>%s</div></div>",
                                                               if (hero) " hero" else "", lbl, val, sub)
-    summary_html <- paste0("<div class='stats'>",
+    summary_html <- paste0(pub_note, "<div class='stats'>",
       stat("Total market value", fmt_money(tt$mv), sprintf("%d holdings &middot; cost %s", tt$n, fmt_money(tt$cost_mv)), TRUE),
       stat("Day P&amp;L", fmt_chg(tt$day, 0, "", TRUE), fmt_chg(tt$day_pct, 2, "%", TRUE)),
       stat("P&amp;L since entry", fmt_chg(tt$total_pnl, 0, "", TRUE), paste0(fmt_chg(tt$total_pct, 2, "%", TRUE), " incl. carry")),
