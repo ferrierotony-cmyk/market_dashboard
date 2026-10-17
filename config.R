@@ -320,4 +320,7 @@ if (nzchar(Sys.getenv("DASH_PUBLIC", unset = ""))) {
   DASH_SUBTITLE <- "Public demo  |  free data only  |  sample desk tabs  |  click the feeds chip for how it works"
   TOAST_ALERTS  <- FALSE
   USE_BLOOMBERG <- FALSE
+  # fewer, stronger options flags on the public page: put/call ratios drop to info in analytics.R
+  OPTIONS_RULES$min_contract_volume <- 5000
+  OPTIONS_RULES$vol_oi_ratio <- 3
 }

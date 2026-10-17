@@ -363,6 +363,18 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   }
   sev_rank <- c(critical = 1, serious = 2, warning = 3, info = 4)
   if (!is.null(alerts) && nrow(alerts)) alerts <- alerts[order(sev_rank[alerts$severity], -alerts$ts), ] else alerts <- NULL
+  if (PUB && !is.null(alerts)) {
+    # Public demo only. A big move can fire at two severities and the JPMorgan limit fires from two places;
+    # rows are already sorted by severity, so keep the first of each and label the sample book.
+    is_move <- grepl("1-day change|[-+][0-9.]+% today, \\$", alerts$message)
+    alerts <- alerts[!(is_move & duplicated(paste(alerts$symbol, is_move))), , drop = FALSE]
+    dup_conc <- alerts$category == "Rule" & alerts$symbol == "Portfolio" &
+      grepl("^Largest non-government issuer", alerts$message) & any(alerts$category == "Concentration")
+    alerts <- alerts[!dup_conc, , drop = FALSE]
+    is_port <- alerts$symbol == "Portfolio"
+    alerts$message[is_port] <- paste0("Sample book: ", alerts$message[is_port])
+    if (!nrow(alerts)) alerts <- NULL
+  }
   n_alerts <- if (is.null(alerts)) 0 else sum(alerts$severity != "info")
 
   # ---- portfolio snapshot for the morning view -------------------------------------

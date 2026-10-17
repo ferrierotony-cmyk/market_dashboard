@@ -332,7 +332,7 @@ watch_compute <- function(cfg, wl, yahoo, news, options_data) {
       iv30 = o$iv30, iv30_change = o$iv30_change, top = tp, n_unusual = nrow(unusual))
     o_ts <- suppressWarnings(as.POSIXct(substr(o$timestamp, 1, 19), tz = "UTC")); if (is.na(o_ts)) o_ts <- Sys.time()
     if (!is.na(pc) && (pc >= orl$pc_high || pc <= orl$pc_low) && (o$call_vol + o$put_vol) >= 5 * orl$min_contract_volume)
-      add_alert("warning", "Options", s, sprintf("%s put/call volume ratio %.2f (%s calls, %s puts)", lab, pc,
+      add_alert(if (nzchar(Sys.getenv("DASH_PUBLIC", unset = ""))) "info" else "warning", "Options", s, sprintf("%s put/call volume ratio %.2f (%s calls, %s puts)", lab, pc,
                 format(o$call_vol, big.mark = ","), format(o$put_vol, big.mark = ",")), o$timestamp, o_ts)
     if (nrow(unusual)) {
       u <- unusual[1, ]
