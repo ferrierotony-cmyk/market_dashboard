@@ -510,6 +510,18 @@ fetch_all <- function(cfg, inputs, cache_dir, run_mode = "morning") {
   if (nzchar(cfg$FRED_API_KEY) && !intraday) {
     cal <- fred_release_calendar(cfg$FRED_API_KEY)
     logmsg("FRED calendar: ", if (is.null(cal)) "unavailable" else paste(nrow(cal), "release dates"))
+    # A name in CALENDAR_RELEASES that matches no FRED release name drops off the card silently,
+    # so say so in the log and suggest the closest FRED names.
+    if (!is.null(cal)) {
+      for (nm in cfg$CALENDAR_RELEASES) {
+        if (!(nm %in% cal$event)) {
+          key <- strsplit(nm, " ")[[1]][1]
+          near <- unique(cal$event[grepl(key, cal$event, ignore.case = TRUE)])
+          logmsg("FRED calendar: no release named '", nm, "' in the next 45 days.",
+                 if (length(near)) paste0(" Closest FRED names: ", paste(head(near, 5), collapse = " | ")) else " No similar name found.")
+        }
+      }
+    }
   }
 
   # Bloomberg comps (optional) ----------------------------------------------
