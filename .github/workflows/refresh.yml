@@ -10,7 +10,7 @@ on:
     branches: [public-live, main]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -42,6 +42,20 @@ jobs:
 
       - name: Build the dashboard
         run: Rscript run_dashboard.R
+
+      - name: Publish a redacted run summary to the ci-logs branch
+        if: always()
+        run: |
+          mkdir -p /tmp/ci
+          cat logs/run_*.log 2>/dev/null | sed -E 's/api_key=[A-Za-z0-9]+/api_key=REDACTED/g' > /tmp/ci/run.log || true
+          if [ -n "$FRED_API_KEY" ]; then sed -i "s/$FRED_API_KEY/REDACTED/g" /tmp/ci/run.log; fi
+          cp output/data_status.csv /tmp/ci/ 2>/dev/null || true
+          cd /tmp/ci
+          git init -q
+          git checkout -q -b ci-logs
+          git add .
+          git -c user.name=github-actions -c user.email=actions@users.noreply.github.com commit -qm "Run summary ${GITHUB_RUN_ID}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ci-logs
 
       - name: Show the run log
         if: always()
