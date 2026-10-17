@@ -281,6 +281,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
 
   # public demo mode (set by the GitHub workflow) labels the sample portfolio and explains the empty desk cards
   PUB <- nzchar(Sys.getenv("DASH_PUBLIC", unset = ""))
+  about_html <- if (PUB) "<h3>How it works</h3><p>I built this dashboard in R to answer one question every morning. Is the new issue window open? It pulls Treasury yields, credit spreads, volatility and macro data from free sources. It scores the window using VIX, MOVE, the one week move in IG and HY spreads, overnight stock futures and where IG spreads sit in their one year range. The alert rules live in a simple file I can edit. The page rebuilds about every 30 minutes on weekdays. The data is free and can be 15 minutes late, so this is not a trading tool. My private version also reads new deals and comps from Bloomberg. That data cannot be published, so those cards are empty here and the portfolio is a made up sample. I used Claude to help write and debug parts of the code, and I checked the results myself.</p>" else ""
   pub_note <- if (PUB) "<div class='flagline'><b>Hypothetical sample book.</b> These are not real positions and not real P&amp;L.</div>" else ""
   # pipeline / comps ------------------------------------------------------------------
   stale <- cfg$STALE_DAYS %||% list(comps = 30, pipeline = 21, holdings_mark = 10)
@@ -767,7 +768,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
                          sprintf("<span class='muted'>%d fetched this run &middot; %d from cache &middot; %d failed &middot; built %s (%s)</span>",
                                  n_ok, n_fb, n_fail, esc(format(raw$fetched_at, "%d %b %H:%M")), esc(raw$run_mode)),
                          "<button type='button' id='feedsClose' aria-label='Close'>&#10005;</button></div>",
-                         "<div class='dbody'><div class='scroll'>", prov_html, "</div><h3>Methodology</h3>", notes_html, "</div></dialog>")
+                         "<div class='dbody'><div class='scroll'>", prov_html, "</div>", about_html, "<h3>Methodology</h3>", notes_html, "</div></dialog>")
   views <- list(
     morning = paste0(
       widget("m-kpis", "Key levels", paste0("<div class='tiles'>", paste(tile_html, collapse = ""), "</div>"), 12, 2, src = paste(rates_src, "&middot;", live_src), cls = "bare"),

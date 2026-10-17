@@ -317,7 +317,7 @@ CALENDAR_RELEASES <- c("Consumer Price Index", "Employment Situation",
 #  uses free data only and says so on the page. Nothing here changes a local run.
 # -----------------------------------------------------------------------------
 if (nzchar(Sys.getenv("DASH_PUBLIC", unset = ""))) {
-  DASH_SUBTITLE <- "Public demo  |  free data only  |  desk tabs use hypothetical sample data"
+  DASH_SUBTITLE <- "Public demo  |  free data only  |  sample desk tabs  |  click the feeds chip for how it works"
   TOAST_ALERTS  <- FALSE
   USE_BLOOMBERG <- FALSE
 }

@@ -4,6 +4,10 @@
 
 The hosted page is a public demo. It rebuilds on a schedule from free data only, with the FRED, Treasury.gov, Yahoo and Nasdaq feeds. The pipeline and comps cards are empty on purpose, and the portfolio tab is a hypothetical model book, not real positions. Nothing from a Bloomberg terminal is published here.
 
+## How it works
+
+I built this dashboard in R to answer one question every morning. Is the new issue window open? It pulls Treasury yields, credit spreads, volatility and macro data from free sources. It scores the window using VIX, MOVE, the one week move in IG and HY spreads, overnight stock futures and where IG spreads sit in their one year range. The alert rules live in a simple file I can edit. The page rebuilds about every 30 minutes on weekdays. The data is free and can be 15 minutes late, so this is not a trading tool. My private version also reads new deals and comps from Bloomberg. That data cannot be published, so those cards are empty here and the portfolio is a made up sample. I used Claude to help write and debug parts of the code, and I checked the results myself.
+
 Built in R by Anthony Ferriero. The full local version, which also supports a Bloomberg refresh and Windows alerts, is described below.
 
 ---
