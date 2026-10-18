@@ -67,9 +67,13 @@ def classify(title, text, doc=""):
         return "extension"
     if re.search(r"final results|final tender results|expiration and (?:final )?results|expiration of|settlement of|results of|and results|results and|announces results|expiration, pricing", t):
         return "final_results"
-    if re.search(r"amendments? to|amended", t):
+    if re.search(r"terminat", t):
+        return "terminated"
+    if re.search(r"commence|launch|announces exchange offer|announces (?:\w+ )?(?:tender|exchange) offers?\b", t) and not re.search(r"amendments? to (?:the )?(?:terms|previously)", t):
+        return "launch"
+    if re.search(r"announces amend|amendments? to (?:its |the )?(?:terms|previously|tender|exchange|offer)|amended|amendment to terms", t):
         return "amendment"
-    if re.search(r"pricing terms|pricing for|price determination|pricing of (?:the )?(?:cash )?(?:tender|offers?)|pricing of .{0,40}tender", t):
+    if re.search(r"pricing terms|total consideration|consideration for|pricing for|price determination|pricing of (?:the )?(?:cash )?(?:tender|offers?)|pricing of .{0,40}tender", t):
         return "pricing_terms"
     if re.search(r"amend", t):
         return "amendment"
@@ -94,7 +98,9 @@ def money(m):
 
 
 AMT = r"\$\s?([\d,]+(?:\.\d+)?)\s*(million|billion)?"
-CAP_TERMS = r"(?:Aggregate Maximum Tender Cap|Consideration Cap Amount|Consideration Cap|Aggregate Maximum Tender Amount|Maximum Tender Cap|Maximum Tender Amount|Maximum Amount|Tender Cap|Offer Cap|Waterfall Cap|Aggregate Cap|Total Cap|Maximum Purchase Price|Aggregate Maximum Purchase Price|Series Cap)"
+CAP_MAIN = r"(?:Aggregate Maximum Tender Cap|Aggregate Maximum Tender Amount|Maximum Aggregate (?:Consideration|Purchase Price|Principal Amount)|Aggregate Offer Cap|Aggregate Cap|Consideration Cap Amount|Consideration Cap|Maximum Tender Cap|Maximum Tender Amount|Maximum Amount|Tender Cap|Offer Cap|Waterfall Cap|Total Cap|Maximum Purchase Price|Aggregate Maximum Purchase Price|Maximum Cap)"
+CAP_SERIES = r"(?:Series Cap)"
+CAP_TERMS = CAP_MAIN
 TERM_EXP = r"(?!Early)(?:[\w\- ]{0,40}?)Expiration (?:Date|Time|Deadline)"
 TERM_EARLY = r"(?:[\w\- ]{0,40}?)Early (?:Tender|Participation|Consent|Exchange)? ?(?:Deadline|Date|Time|Expiration)"
 
@@ -135,8 +141,8 @@ def def_date(text, term, kind=""):
     return ""
 
 
-NEWNOTE_AFTER = r"^[^.]{0,90}?[“\"](?:New |Financing)"
-NEWNOTE_RULE_A = re.compile(r"\bnew(?:ly issued)?\b[\w\s\-&,]{0,35}$", re.I)
+NEWNOTE_AFTER = r"^[^.]{0,90}?[“\"]\s*(?:the )?(?:New|Financing)"
+NEWNOTE_RULE_A = re.compile(r"\bnew(?:ly[\- ]issued)?\b[\w\s\-&,’']{0,35}$", re.I)
 NEWNOTE_RULE_B = re.compile(r"\$[\d\.,]+\s*(?:million|billion)?\s+(?:in\s+)?(?:aggregate\s+)?principal amount of\s+$", re.I)
 REDEEM = re.compile(r"(?:redeem|redemption|redeemed)[^.]{0,100}$", re.I)
 
@@ -156,24 +162,29 @@ def is_new_or_redeemed(text, m):
 def extract(text, kind=""):
     r = {}
     exchange = bool(re.search(r"exchange offers?|offers? to exchange", text[:2500], re.I)) and not re.search(r"cash tender offer", text[:2500], re.I)
-    pats = [
-        rf"{AMT}[^$]{{0,200}}?[“\"]\s*{CAP_TERMS}",
-        rf"{CAP_TERMS}[”\"]?\s*(?:means|of|is|equal to)[^$.]{{0,120}}{AMT}",
-        rf"[“\"]\s*{CAP_TERMS}\s*[”\"][^$]{{0,60}}{AMT}",
+    def cap_pats(T):
+        return [
+            rf"{AMT}[^$]{{0,200}}?[“\"]\s*{T}",
+            rf"{T}[”\"]?\s*(?:means|of|is|equal to)[^$.]{{0,120}}{AMT}",
+            rf"[“\"]\s*{T}\s*[”\"][^$]{{0,60}}{AMT}",
+        ]
+    pats = cap_pats(CAP_MAIN) + [
         rf"subject to a {AMT} cap",
         rf"exceed(?:s|ing) {AMT}",
     ]
     if not exchange or re.search(r"offers? to purchase for cash|tender offer", text[:2500], re.I):
         pats.append(rf"up to (?:a combined )?(?:an )?(?:aggregate )?(?:principal )?(?:amount|purchase price)?(?: of)?\s*{AMT}")
+    pats += cap_pats(CAP_SERIES)
     m = first(pats, text)
     r["cap"] = money(m)
-    if True:
-        m2 = re.search(rf"(?:reduc|increas|decreas|rais|upsiz)[a-z]*[\s\S]{{0,160}}?from [^$]{{0,40}}{AMT}[\s\S]{{0,30}}?to {AMT}[\s\S]{{0,60}}[“\"]\s*{CAP_TERMS}", text, re.I)
-        if m2:
-            r["cap"] = m2.group(3).rstrip(",.") + (" " + m2.group(4).lower() if m2.group(4) else "")
+    m2 = (re.search(rf"(?:reduc|increas|decreas|rais|upsiz)[a-z]*[\s\S]{{0,160}}?from [^$]{{0,40}}{AMT}[\s\S]{{0,30}}?to {AMT}[\s\S]{{0,60}}[“\"]\s*{CAP_MAIN}", text, re.I)
+          or re.search(rf"[“\"]\s*{CAP_MAIN}\s*[”\"][\s\S]{{0,200}}?from [^$]{{0,60}}{AMT}[\s\S]{{0,40}}?to {AMT}", text, re.I))
+    if m2:
+        r["cap"] = m2.group(3).rstrip(",.") + (" " + m2.group(4).lower() if m2.group(4) else "")
+        m = m2
     if m:
-        ctx = text[max(0, m.start() - 200):m.end() + 200].lower()
-        r["cap_basis"] = "purchase_price" if re.search(r"purchase price|tender consideration|total consideration", ctx) else "principal"
+        ctx = text[max(0, m.start() - 250):m.end() + 250].lower()
+        r["cap_basis"] = "purchase_price" if re.search(r"purchase price|consideration|excluding accrued|exclusive of (?:any )?accrued", ctx) else "principal"
     else:
         r["cap_basis"] = ""
     r["any_and_all"] = "yes" if re.search(r"any and all", text[:2500], re.I) else ""
@@ -185,6 +196,12 @@ def extract(text, kind=""):
         if is_new_or_redeemed(text, m):
             continue
         s.add(f"{m.group(1)}% {m.group(2)}")
+    for m in re.finditer(r"(\d{1,2}\.\d{1,3})%\s+(20\d\d|21\d\d)\s+(?:Notes|Debentures)\b", text):
+        if not is_new_or_redeemed(text, m):
+            s.add(f"{m.group(1)}% {m.group(2)}")
+    for m in re.finditer(r"Zero[- ]Coupon\s+(?:[A-Za-z]+\s+){0,3}?(?:notes|debentures)\s+due\s+(?:(?:[A-Za-z]+\.?\s+\d{1,2},?\s+)|(?:[A-Za-z]+\s+))?(20\d\d|21\d\d)\b", text, re.I):
+        if not is_new_or_redeemed(text, m):
+            s.add(f"0.000% {m.group(1)}")
     s = sorted(s)
     r["securities"] = "; ".join(s)
     r["n_securities"] = len(s)
@@ -243,13 +260,13 @@ for e in sorted(events, key=lambda e: e["file_date"]):
     seen[k] = e
     uniq.append(e)
 
-offer_kinds = ("launch", "early_results", "final_results", "extension", "pricing_terms", "amendment", "unverified_offer")
+offer_kinds = ("launch", "early_results", "final_results", "extension", "pricing_terms", "amendment", "terminated", "unverified_offer")
 ev_offer = [e for e in uniq if e["kind"] in offer_kinds]
 other_rel = [e for e in uniq if e["kind"] == "financing_linked"]
 
 # offers: group lifecycle events by subject company and securities overlap, start a new offer at each launch
 groups = defaultdict(list)
-RANK = {"launch": 0, "amendment": 1, "extension": 2, "early_results": 3, "pricing_terms": 4, "final_results": 5, "unverified_offer": 6}
+RANK = {"launch": 0, "amendment": 1, "extension": 2, "early_results": 3, "pricing_terms": 4, "final_results": 5, "terminated": 5, "unverified_offer": 6}
 for e in sorted(ev_offer, key=lambda e: (e["file_date"], RANK.get(e["kind"], 9))):
     groups[norm(e["issuer_sec"].split()[0] if e["issuer_sec"] else e["subject"])].append(e)
 offers = []
@@ -289,7 +306,7 @@ for o in offers:
             e["early_date"], e["early_source"] = early, "inherited"
 for o in offers:
     ks = [e["kind"] for e in o["events"]]
-    o["status"] = "closed" if "final_results" in ks else "open_or_unknown"
+    o["status"] = "closed" if ("final_results" in ks or "terminated" in ks) else "open_or_unknown"
     o["event_kinds"] = ">".join(ks)
     o["cap"] = next((e["cap"] for e in o["events"] if e.get("cap")), "")
     o["expiration_latest"] = next((e["expiration_date"] for e in reversed(o["events"]) if e.get("expiration_date")), "")
