@@ -12,7 +12,7 @@ if not CONTACT:
 UA = {"User-Agent": "TenderTrackerResearch student project " + CONTACT, "Accept-Encoding": "gzip, deflate"}
 OUT = os.path.join(os.path.dirname(__file__), "out")
 os.makedirs(OUT, exist_ok=True)
-MAX_DOCS = int(os.environ.get("MAX_DOCS", "300"))
+MAX_DOCS = int(os.environ.get("MAX_DOCS", "400"))
 today = dt.date.today()
 start = today - dt.timedelta(days=90)
 log_lines = []
@@ -31,7 +31,8 @@ def get(url, **kw):
     return None
 
 # 1. search -------------------------------------------------------------------------------------
-queries = ['"tender offer" "notes"', '"exchange offer" "notes"', '"offer to purchase" "notes"']
+queries = ['"cash tender offer" "notes"', '"early tender" "expiration" "notes"', '"announces" "exchange offer" "notes"',
+           '"announces" "tender offer" "any and all"', '"announces" "tender offers" "notes"', '"announces" "offer to purchase" "notes"']
 hits = {}
 for q in queries:
     frm = 0
@@ -56,7 +57,12 @@ if not hits:
     sys.exit("No search results. Check the SEC response codes above.")
 
 # keep press release exhibits and the 8-K body, newest first
-docs = sorted(hits.values(), key=lambda h: h["_source"].get("file_date", ""), reverse=True)[:MAX_DOCS]
+def pr_like(h):
+    ft = (h["_source"].get("file_type") or "")
+    return ft.startswith("EX-99") or ft == "8-K"
+cands = [h for h in hits.values() if pr_like(h)]
+log("press release style documents", len(cands), "of", len(hits))
+docs = sorted(cands, key=lambda h: h["_source"].get("file_date", ""), reverse=True)[:MAX_DOCS]
 
 # 2. fetch text ---------------------------------------------------------------------------------
 def clean(t):
@@ -81,7 +87,8 @@ for n, h in enumerate(docs):
     row = {"file_date": s.get("file_date"), "issuer": (s.get("display_names") or [""])[0], "doc": s.get("file_type"),
            "url": url, "chars": len(text)}
     # classification of the press release
-    if not re.search(r"tender offer|exchange offer|offer to purchase|offer to exchange", low):
+    body_start = re.sub(r"^\S+ \d+ \S+ ", "", text)[:900].lower()
+    if not re.search(r"tender offer|exchange offer|offer to purchase|offer to exchange|tender results|exchange results", body_start):
         row["kind"] = "not_relevant"
     else:
         h2 = head.lower()
@@ -99,9 +106,9 @@ for n, h in enumerate(docs):
     row["securities"] = "; ".join(sorted({f"{c}% {y}" for c, y in secs}))[:200]
     row["n_securities"] = len({f"{c}% {y}" for c, y in secs})
     row["cusips"] = "; ".join(sorted(set(re.findall(r"\b([0-9]{3}[0-9A-Z]{5}[0-9])\b", text)) ))[:120] if re.search(r"CUSIP", text) else ""
-    m = re.search(rf"[Ee]arly (?:[Tt]ender|[Pp]articipation|[Cc]onsent)[^.]{{0,80}}?(?:Date|Deadline)[^.]{{0,160}}?({DATE})", text)
+    m = re.search(rf"[Ee]arly (?:[Tt]ender|[Pp]articipation|[Cc]onsent)[\\s\\S]{{0,80}}?(?:Date|Deadline)[\\s\\S]{{0,220}}?({DATE})", text)
     row["early_date"] = m.group(1) if m else ""
-    m = re.search(rf"[Ee]xpiration (?:[Dd]ate|[Tt]ime)[^.]{{0,200}}?({DATE})", text)
+    m = re.search(rf"[Ee]xpiration (?:[Dd]ate|[Tt]ime)[\\s\\S]{{0,220}}?({DATE})", text)
     row["expiration_date"] = m.group(1) if m else ""
     m = re.search(r"(?:up to|maximum (?:aggregate )?(?:principal )?(?:amount|tender)[^$]{0,60})\s*(?:an aggregate principal amount of\s*)?\$\s?([\d,\.]+)\s*(million|billion)?", text, re.I)
     row["cap"] = (m.group(1) + (" " + m.group(2) if m.group(2) else "")) if m else ""
