@@ -12,7 +12,8 @@ OUT = os.path.join(os.path.dirname(__file__), "out")
 TXT = os.path.join(OUT, "texts")
 os.makedirs(TXT, exist_ok=True)
 MAX_DOCS = int(os.environ.get("MAX_DOCS", "400"))
-today = dt.date.today()
+OFFSET = int(os.environ.get("OFFSET_DAYS", "0"))
+today = dt.date.today() - dt.timedelta(days=OFFSET)
 start = today - dt.timedelta(days=90)
 log_lines = []
 def log(*a):

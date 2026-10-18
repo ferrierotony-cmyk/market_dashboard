@@ -22,14 +22,16 @@ jobs:
         env:
           SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
         run: |
+          set -a; . tender/window.env; set +a
           python tender/fetch.py
           if [ -f tender/parse.py ]; then python tender/parse.py; fi
       - name: Publish results to the tender-results branch
         if: always()
         run: |
+          . tender/window.env
           cd tender/out
           git init -q
-          git checkout -q -b tender-results
+          git checkout -q -b "$RESULT_BRANCH"
           git add .
           git -c user.name=github-actions -c user.email=actions@users.noreply.github.com commit -qm "Feasibility results ${GITHUB_RUN_ID}"
-          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" tender-results
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "$RESULT_BRANCH"
