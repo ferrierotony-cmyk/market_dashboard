@@ -21,7 +21,9 @@ jobs:
       - name: Pull and extract
         env:
           SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
-        run: python tender/feasibility.py
+        run: |
+          python tender/fetch.py
+          if [ -f tender/parse.py ]; then python tender/parse.py; fi
       - name: Publish results to the tender-results branch
         if: always()
         run: |
