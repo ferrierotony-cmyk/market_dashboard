@@ -20,3 +20,11 @@ Out of sample test of parse.py v3.4, window of 90 days ending 2026-01-21, never 
 Blind windows C and D combined, 103 offer events: kind 90 percent, securities 76 percent, cap 75 percent, expiration 92 percent, early date 95 percent.
 Each new window exposed new failure modes in securities and caps, so regex rules are not converging on those two fields. They stay labeled unverified.
 Window D failures: cap basis principal versus purchase price, pool and series caps, upsizes stated in an amendment, targets written as convertible notes or debentures, redeemed notes counted as targets, extended expirations.
+
+Window E, 90 days ending 2025-10-23, never seen before. Head to head test of regex extraction against model extraction on the same 105 documents, graded blind by two separate agents who did not know which extractor was which.
+Model extraction was done by Claude agents reading each release with the field definitions in the prompt. The regex side is parse.py v3.4 unchanged.
+Regex: is offer 86 percent, kind 97, securities 86, cap 89, expiration 89, early date 92.
+Model: is offer 98 percent, kind 100, securities 100, cap 99, expiration 99, early date 100.
+Among 87 true offers in the candidate set the regex found 73 and the model found 87. Regex missed Omnicom and Interpublic, Comcast pools, NCL, Fossil, Lazard, Greenidge and Getty releases.
+Caveats: the model and the graders are the same family of model, so shared blind spots are possible. Candidate set was the search results, so recall of the search itself is still unmeasured. A human spot check by Tony is still needed.
+verify.py checks that securities, caps and dates a model returns appear in the source text. On window E it flagged 8 of 89 model rows, mostly coupon formatting. It did not catch the 2 graded errors, which were wrong attribution rather than invented values.
