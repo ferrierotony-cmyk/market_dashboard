@@ -159,7 +159,7 @@ for mm in meta:
     title, ctext = get_title(text)
     subject = clean_issuer(mm["issuer"])
     kind = classify(ctext, text, mm["doc"])
-    if kind == "other" and re.search(r"offering", ctext, re.I) and re.search(r"tender offer|offer to purchase", text[:5000], re.I):
+    if kind == "other" and re.search(r"notes offering|offering of .{0,40}notes|pricing of .{0,60}notes", ctext, re.I) and not re.search(r"results|earnings|quarter", ctext, re.I) and re.search(r"(?:fund|finance|repurchase)[^.]{0,160}tender offer", text[:5000], re.I):
         kind = "financing_linked"
     if kind == "no_title":
         # fall back to the first 700 characters when no headline verb was found, and say so
@@ -188,7 +188,8 @@ other_rel = [e for e in uniq if e["kind"] == "financing_linked"]
 
 # offers: group lifecycle events by subject company and securities overlap, start a new offer at each launch
 groups = defaultdict(list)
-for e in sorted(ev_offer, key=lambda e: e["file_date"]):
+RANK = {"launch": 0, "amendment": 1, "extension": 2, "early_results": 3, "pricing_terms": 4, "final_results": 5, "unverified_offer": 6}
+for e in sorted(ev_offer, key=lambda e: (e["file_date"], RANK.get(e["kind"], 9))):
     groups[norm(e["issuer_sec"].split()[0] if e["issuer_sec"] else e["subject"])].append(e)
 offers = []
 for subj, lst in groups.items():
@@ -228,26 +229,19 @@ w("events.csv", uniq, ecols)
 w("offers.csv", [dict(o, n_events=len(o["events"])) for o in offers],
   ["subject", "first", "last", "status", "n_events", "event_kinds", "securities", "cap", "expiration_latest", "has_launch", "urls"])
 
-# hand check sample: stratified over kinds, fixed seed
+# hand check sheet: every offer event, plus 15 documents we called "not an offer" to estimate what the classifier misses
 random.seed(17)
-by = defaultdict(list)
-for e in ev_offer:
-    by[e["kind"]].append(e)
-sample = []
-per = max(1, 50 // max(1, len(by)))
-for k, lst in by.items():
-    sample += random.sample(lst, min(per, len(lst)))
-rest = [e for e in ev_offer if e not in sample]
-random.shuffle(rest)
-sample += rest[:max(0, 50 - len(sample))]
-sample = sorted(sample, key=lambda e: e["file_date"])[:50]
+non = [e for e in uniq if e["kind"] in ("other", "financing_linked", "redemption", "registered_exchange", "equity_offer")]
+neg = random.sample(non, min(15, len(non)))
 hc = []
-for e in sample:
-    hc.append({"file_date": e["file_date"], "subject": e["subject"], "url": e["url"], "title": e["title"],
-               "kind_found": e["kind"], "kind_ok_YN": "", "securities_found": e.get("securities", ""), "securities_ok_YN": "",
-               "cap_found": e.get("cap", ""), "cap_ok_YN": "", "expiration_found": e.get("expiration_date", ""),
-               "expiration_ok_YN": "", "early_found": e.get("early_date", ""), "early_ok_YN": "", "notes": ""})
-w("handcheck.csv", hc, list(hc[0].keys()) if hc else ["empty"])
+for grp, rows_ in (("offer event", ev_offer), ("called not an offer", neg)):
+    for e in sorted(rows_, key=lambda e: e["file_date"]):
+        hc.append({"group": grp, "file_date": e["file_date"], "subject": e["subject"], "url": e["url"], "title": e["title"],
+                   "kind_found": e["kind"], "kind_ok_YN": "", "securities_found": e.get("securities", ""), "securities_ok_YN": "",
+                   "cap_found": e.get("cap", ""), "cap_basis": e.get("cap_basis", ""), "cap_ok_YN": "",
+                   "expiration_found": e.get("expiration_date", ""), "expiration_ok_YN": "",
+                   "early_found": e.get("early_date", ""), "early_ok_YN": "", "notes": ""})
+w("handcheck.csv", hc, list(hc[0].keys()))
 
 # summary
 L = []
