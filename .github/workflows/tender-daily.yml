@@ -30,6 +30,7 @@ jobs:
         run: |
           python tender/fetch.py
           python tender/parse.py
+          python tender/build_page.py
       - name: Publish to the tender-results branch
         if: success()
         run: |
