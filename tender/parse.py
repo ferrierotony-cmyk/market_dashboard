@@ -55,19 +55,21 @@ def classify(title, text, doc=""):
         return "financing_linked" if has_offer else "other"
     if re.search(r"registered exchange", t):
         return "registered_exchange"
+    if re.search(r"consent solicitation|consents", t) and not re.search(r"tender|exchange|\boffers?\b", t):
+        return "consent_only"
     if not has_offer:
         return "other"
     if re.search(r"warrants|preferred stock|common stock|shares of", t) and not re.search(r"notes|debt|debentures|securities", t):
         return "equity_offer"
-    if re.search(r"early (?:tender |participation )?results|early tender", t):
+    if re.search(r"early (?:tender |participation |exchange )?results|results of early|early participation|early tender|early settlement", t):
         return "early_results"
-    if re.search(r"amendments? to|amended", t):
-        return "amendment"
-    if re.search(r"final results|expiration and (?:final )?results|results of|and results|expiration, pricing", t):
-        return "final_results"
     if re.search(r"extension|extends|extended", t):
         return "extension"
-    if re.search(r"pricing terms|pricing for|price determination", t):
+    if re.search(r"final results|final tender results|expiration and (?:final )?results|expiration of|settlement of|results of|and results|results and|announces results|expiration, pricing", t):
+        return "final_results"
+    if re.search(r"amendments? to|amended", t):
+        return "amendment"
+    if re.search(r"pricing terms|pricing for|price determination|pricing of (?:the )?(?:cash )?(?:tender|offers?)|pricing of .{0,40}tender", t):
         return "pricing_terms"
     if re.search(r"amend", t):
         return "amendment"
@@ -92,9 +94,9 @@ def money(m):
 
 
 AMT = r"\$\s?([\d,]+(?:\.\d+)?)\s*(million|billion)?"
-CAP_TERMS = r"(?:Aggregate Maximum Tender Amount|Maximum Tender Cap|Maximum Tender Amount|Maximum Amount|Tender Cap|Offer Cap|Waterfall Cap|Aggregate Cap|Total Cap|Maximum Purchase Price|Aggregate Maximum Purchase Price|Series Cap)"
-TERM_EXP = r"Expiration (?:Date|Time)"
-TERM_EARLY = r"Early (?:Tender|Participation|Consent|Exchange)? ?(?:Deadline|Date|Time)"
+CAP_TERMS = r"(?:Aggregate Maximum Tender Cap|Consideration Cap Amount|Consideration Cap|Aggregate Maximum Tender Amount|Maximum Tender Cap|Maximum Tender Amount|Maximum Amount|Tender Cap|Offer Cap|Waterfall Cap|Aggregate Cap|Total Cap|Maximum Purchase Price|Aggregate Maximum Purchase Price|Series Cap)"
+TERM_EXP = r"(?!Early)(?:[\w\- ]{0,40}?)Expiration (?:Date|Time|Deadline)"
+TERM_EARLY = r"(?:[\w\- ]{0,40}?)Early (?:Tender|Participation|Consent|Exchange)? ?(?:Deadline|Date|Time|Expiration)"
 
 
 def to_iso(d):
@@ -110,13 +112,12 @@ def to_iso(d):
 def def_date(text, term, kind=""):
     """date attached to a defined term. The definition looks like: on August 14, 2026 (such date and time, the “Expiration Date”).
     Using the definition avoids settlement dates, which are defined with different terms."""
-    if term == TERM_EXP and (kind in ("extension", "amendment") or re.search(r"extension|extends", text[:260], re.I)):
-        ds = []
-        for m in re.finditer(r"expir|extended|extends", text, re.I):
-            ds += re.findall(DATE, text[m.start():m.start() + 200])
-        parsed = [d for d in (to_iso(x) for x in ds) if d]
-        if parsed:
-            return max(parsed)
+    if term == TERM_EXP:
+        for pat in (rf"(?:Expiration (?:Time|Date|Deadline)|expiration (?:time|date|deadline)|Offers?|Exchange Offers?|Tender Offers?)[\s\S]{{0,60}}?(?:has been|have been|is being|was|were|are being) extended[\s\S]{{0,40}}?(?:to|until)[\s\S]{{0,70}}?({DATE})",
+                    rf"extended the (?:[\w ]{{0,30}})?(?:expiration|Expiration)[\s\S]{{0,80}}?(?:to|until)[\s\S]{{0,70}}?({DATE})"):
+            m = re.search(pat, text)
+            if m:
+                return m.group(1)
     for m in re.finditer(rf"[“\"]\s*{term}\s*[”\"]", text):
         before = re.findall(DATE, text[max(0, m.start() - 230):m.start()])
         if before:
@@ -134,8 +135,22 @@ def def_date(text, term, kind=""):
     return ""
 
 
-NEWNOTE_BEFORE = r"redeem|redemption|new .{0,25}notes|issuance of|offering of|priced|financing transaction"
 NEWNOTE_AFTER = r"^[^.]{0,90}?[“\"](?:New |Financing)"
+NEWNOTE_RULE_A = re.compile(r"\bnew(?:ly issued)?\b[\w\s\-&,]{0,35}$", re.I)
+NEWNOTE_RULE_B = re.compile(r"\$[\d\.,]+\s*(?:million|billion)?\s+(?:in\s+)?(?:aggregate\s+)?principal amount of\s+$", re.I)
+REDEEM = re.compile(r"(?:redeem|redemption|redeemed)[^.]{0,100}$", re.I)
+
+
+def is_new_or_redeemed(text, m):
+    before = text[max(0, m.start() - 300):m.start()]
+    after = text[m.end():m.end() + 140]
+    if NEWNOTE_RULE_A.search(before[-70:]):
+        return True
+    if NEWNOTE_RULE_B.search(before[-90:]) and re.search(r"offering|financing|priced|closing|issue|offered|consisting of", before, re.I):
+        return True
+    if REDEEM.search(before[-120:]):
+        return True
+    return bool(re.search(NEWNOTE_AFTER, after))
 
 
 def extract(text, kind=""):
@@ -148,12 +163,12 @@ def extract(text, kind=""):
         rf"subject to a {AMT} cap",
         rf"exceed(?:s|ing) {AMT}",
     ]
-    if not exchange:
+    if not exchange or re.search(r"offers? to purchase for cash|tender offer", text[:2500], re.I):
         pats.append(rf"up to (?:a combined )?(?:an )?(?:aggregate )?(?:principal )?(?:amount|purchase price)?(?: of)?\s*{AMT}")
     m = first(pats, text)
     r["cap"] = money(m)
-    if kind in ("amendment", "extension", "early_results"):
-        m2 = re.search(rf"(?:reduced|increased|decreased|raised|upsized)[\s\S]{{0,160}}?from {AMT}[\s\S]{{0,30}}?to {AMT}", text, re.I)
+    if True:
+        m2 = re.search(rf"(?:reduc|increas|decreas|rais|upsiz)[a-z]*[\s\S]{{0,160}}?from [^$]{{0,40}}{AMT}[\s\S]{{0,30}}?to {AMT}[\s\S]{{0,60}}[“\"]\s*{CAP_TERMS}", text, re.I)
         if m2:
             r["cap"] = m2.group(3).rstrip(",.") + (" " + m2.group(4).lower() if m2.group(4) else "")
     if m:
@@ -166,10 +181,8 @@ def extract(text, kind=""):
     r["expiration_date"] = to_iso(def_date(text, TERM_EXP, kind))
     # securities: coupon + maturity year, skipping new notes, redeemed notes and financing
     s = set()
-    for m in re.finditer(r"(\d{1,2}\.\d{1,3})%\s+(?:[A-Za-z\-]+\s+){0,5}?(?:notes|debentures|bonds|securities)\s+due\s+(?:\w+\s+\d{0,2},?\s*)?(20\d\d|21\d\d)", text, re.I):
-        before = text[max(0, m.start() - 150):m.start()]
-        after = text[m.end():m.end() + 140]
-        if re.search(NEWNOTE_BEFORE, before, re.I) or re.search(NEWNOTE_AFTER, after):
+    for m in re.finditer(r"(\d{1,2}\.\d{1,3})%\s+(?:[A-Za-z\-]+,?\s+){0,5}?(?:notes|debentures|bonds|securities)(?:,? Series [A-Z0-9]+)?\s+due\s+(?:(?:[A-Za-z]+\.?\s+\d{1,2},?\s+)|(?:[A-Za-z]+\s+))?(20\d\d|21\d\d)\b", text, re.I):
+        if is_new_or_redeemed(text, m):
             continue
         s.add(f"{m.group(1)}% {m.group(2)}")
     s = sorted(s)
@@ -204,6 +217,9 @@ for mm in meta:
     title, ctext = get_title(text)
     subject = clean_issuer(mm["issuer"])
     kind = classify(ctext, text, mm["doc"])
+    if kind in ("launch", "extension", "final_results", "early_results", "amendment", "pricing_terms") and re.search(
+            r"registration rights|unregistered notes|outstanding unregistered|(?:equal|like) principal amount of", text[:6000], re.I) and re.search(r"exchange offers?|offers? to exchange", text[:1500], re.I):
+        kind = "registered_exchange"
     if kind == "other" and re.search(r"notes offering|offering of .{0,40}notes|pricing of .{0,60}notes", ctext, re.I) and not re.search(r"results|earnings|quarter", ctext, re.I) and re.search(r"(?:fund|finance|repurchase)[^.]{0,160}tender offer", text[:5000], re.I):
         kind = "financing_linked"
     if kind == "no_title":
@@ -212,7 +228,7 @@ for mm in meta:
         kind = "unverified_offer" if re.search(r"tender offer|exchange offer|offer to purchase", probe) else "other"
     ev = {"file_date": mm["file_date"], "issuer_sec": mm["issuer"], "subject": subject, "doc": mm["doc"], "kind": kind,
           "title": title[:200], "url": mm["url"]}
-    if kind not in ("other", "equity_offer", "redemption", "financing_linked", "filing_body", "registered_exchange"):
+    if kind not in ("other", "equity_offer", "redemption", "financing_linked", "filing_body", "registered_exchange", "consent_only"):
         ev.update(extract(text, kind))
     events.append(ev)
 
