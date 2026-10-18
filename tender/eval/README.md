@@ -14,3 +14,9 @@ Out of sample test of parse.py v3.3, window of 90 days ending 2026-04-20, never 
 Across the three windows on offer events: kind 97 percent, 75 percent, 91 percent. Expiration 46, 86, 98 percent. Cap 74, 89, 81 percent. Securities 77, 79, 85 percent. Early date 80, 81, 96 percent.
 Window A was used to build the rules, B was used for the second round, C was blind. Only C is a fair number for v3.3.
 Remaining errors: cap basis marked principal when the cap is a purchase price, caps missed or stale after an upsize, new notes counted as targets, zero coupon and CAS style securities with no coupon.
+
+Out of sample test of parse.py v3.4, window of 90 days ending 2026-01-21, never seen before the rules were frozen. Checked blind by a separate agent.
+56 offer events: kind 50/56, securities 38/56, cap 39/56, expiration 49/56, early date 53/56. 15 documents called not an offer: 15/15.
+Blind windows C and D combined, 103 offer events: kind 90 percent, securities 76 percent, cap 75 percent, expiration 92 percent, early date 95 percent.
+Each new window exposed new failure modes in securities and caps, so regex rules are not converging on those two fields. They stay labeled unverified.
+Window D failures: cap basis principal versus purchase price, pool and series caps, upsizes stated in an amendment, targets written as convertible notes or debentures, redeemed notes counted as targets, extended expirations.
