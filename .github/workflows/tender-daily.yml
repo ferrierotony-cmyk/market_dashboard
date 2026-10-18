@@ -1,0 +1,41 @@
+name: Tender tracker daily
+
+# Scheduled runs only fire from the default branch (public-live), so this file lives there.
+# It checks out the tender-lab branch for the code. Regex pipeline only, no API calls, no cost.
+
+on:
+  schedule:
+    - cron: "17 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tender-lab
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - name: Pull and extract
+        env:
+          SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
+          OFFSET_DAYS: "0"
+        run: |
+          python tender/fetch.py
+          python tender/parse.py
+      - name: Publish to the tender-results branch
+        if: success()
+        run: |
+          cd tender/out
+          git init -q
+          git checkout -q -b tender-results
+          git add .
+          git -c user.name=github-actions -c user.email=actions@users.noreply.github.com commit -qm "Daily tender results ${GITHUB_RUN_ID}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" tender-results
