@@ -49,6 +49,9 @@ for q in queries:
         if frm >= j.get("hits", {}).get("total", {}).get("value", 0): break
     log("query", q, "-> unique hits so far", len(hits))
 log("total unique documents", len(hits))
+if not hits:
+    with open(os.path.join(OUT, "summary.txt"), "w") as f: f.write("\n".join(log_lines) + "\n")
+    sys.exit("No search results. Check the SEC response codes above.")
 
 # keep press release exhibits and the 8-K body, newest first
 docs = sorted(hits.values(), key=lambda h: h["_source"].get("file_date", ""), reverse=True)[:MAX_DOCS]
