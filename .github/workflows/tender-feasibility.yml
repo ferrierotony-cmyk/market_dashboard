@@ -19,6 +19,8 @@ jobs:
           python-version: "3.12"
       - run: pip install requests
       - name: Pull and extract
+        env:
+          SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
         run: python tender/feasibility.py
       - name: Publish results to the tender-results branch
         if: always()

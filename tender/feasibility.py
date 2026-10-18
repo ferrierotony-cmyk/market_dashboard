@@ -6,8 +6,10 @@ press release, extracts a few fields with plain rules, and writes coverage numbe
 import csv, datetime as dt, html, json, os, re, sys, time
 import requests
 
-UA = {"User-Agent": "TenderTrackerResearch student project github.com/ferrierotony-cmyk/market_dashboard",
-      "Accept-Encoding": "gzip, deflate"}
+CONTACT = os.environ.get("SEC_CONTACT_EMAIL", "").strip()
+if not CONTACT:
+    sys.exit("SEC_CONTACT_EMAIL is not set. The SEC requires a contact in the User-Agent, so no requests were sent.")
+UA = {"User-Agent": "TenderTrackerResearch student project " + CONTACT, "Accept-Encoding": "gzip, deflate"}
 OUT = os.path.join(os.path.dirname(__file__), "out")
 os.makedirs(OUT, exist_ok=True)
 MAX_DOCS = int(os.environ.get("MAX_DOCS", "300"))
