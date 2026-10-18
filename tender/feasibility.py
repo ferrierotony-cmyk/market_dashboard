@@ -106,9 +106,9 @@ for n, h in enumerate(docs):
     row["securities"] = "; ".join(sorted({f"{c}% {y}" for c, y in secs}))[:200]
     row["n_securities"] = len({f"{c}% {y}" for c, y in secs})
     row["cusips"] = "; ".join(sorted(set(re.findall(r"\b([0-9]{3}[0-9A-Z]{5}[0-9])\b", text)) ))[:120] if re.search(r"CUSIP", text) else ""
-    m = re.search(rf"[Ee]arly (?:[Tt]ender|[Pp]articipation|[Cc]onsent)[\\s\\S]{{0,80}}?(?:Date|Deadline)[\\s\\S]{{0,220}}?({DATE})", text)
+    m = re.search(rf"[Ee]arly (?:[Tt]ender|[Pp]articipation|[Cc]onsent)[\s\S]{{0,80}}?(?:Date|Deadline)[\s\S]{{0,220}}?({DATE})", text)
     row["early_date"] = m.group(1) if m else ""
-    m = re.search(rf"[Ee]xpiration (?:[Dd]ate|[Tt]ime)[\\s\\S]{{0,220}}?({DATE})", text)
+    m = re.search(rf"[Ee]xpiration (?:[Dd]ate|[Tt]ime)[\s\S]{{0,220}}?({DATE})", text)
     row["expiration_date"] = m.group(1) if m else ""
     m = re.search(r"(?:up to|maximum (?:aggregate )?(?:principal )?(?:amount|tender)[^$]{0,60})\s*(?:an aggregate principal amount of\s*)?\$\s?([\d,\.]+)\s*(million|billion)?", text, re.I)
     row["cap"] = (m.group(1) + (" " + m.group(2) if m.group(2) else "")) if m else ""
