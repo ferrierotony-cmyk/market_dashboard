@@ -125,9 +125,9 @@ def def_date(text, term, kind=""):
         if after:
             return after.group(1)
     if term == TERM_EXP:
-        m = re.search(rf"(?:will expire|is scheduled to expire|scheduled to expire|expired|will expire)[\s\S]{{0,40}}?(?:at|on)[\s\S]{{0,70}}?({DATE})", text, re.I)
-        if m:
-            return m.group(1)
+        for m in re.finditer(rf"(?:will expire|is scheduled to expire|scheduled to expire|offers? expired)[\s\S]{{0,40}}?(?:at|on)[\s\S]{{0,70}}?({DATE})", text, re.I):
+            if "ithdrawal" not in text[max(0, m.start() - 50):m.start() + 20]:
+                return m.group(1)
         m = re.search(rf"Expiration (?:Date|Time),? which is[\s\S]{{0,70}}?({DATE})", text)
         if m:
             return m.group(1)
@@ -200,6 +200,7 @@ def extract(text, kind=""):
 events = []
 for mm in meta:
     text = open(os.path.join(OUT, "texts", mm["key"] + ".txt"), encoding="utf-8").read()
+    text = re.sub(r"\b(Januar|Februar|Septembe|Octobe|Novembe|Decembe)\s(y|r)\b", r"\1\2", text)  # HTML sometimes splits a month
     title, ctext = get_title(text)
     subject = clean_issuer(mm["issuer"])
     kind = classify(ctext, text, mm["doc"])
@@ -260,6 +261,16 @@ for o in offers:
             e["cap"], e["cap_basis"], e["cap_source"] = last["cap"], last["cap_basis"], "inherited from an earlier release in the same offer"
         if e.get("cap") and last and e["cap"] == last["cap"] and last["cap_basis"] == "purchase_price":
             e["cap_basis"] = "purchase_price"
+    exp = early = ""
+    for e in o["events"]:
+        if e.get("expiration_date"):
+            exp = e["expiration_date"]
+        elif exp:
+            e["expiration_date"], e["expiration_source"] = exp, "inherited"
+        if e.get("early_date"):
+            early = e["early_date"]
+        elif early:
+            e["early_date"], e["early_source"] = early, "inherited"
 for o in offers:
     ks = [e["kind"] for e in o["events"]]
     o["status"] = "closed" if "final_results" in ks else "open_or_unknown"
@@ -277,7 +288,7 @@ def w(name, rows, cols):
             wr.writerow({c: r.get(c, "") for c in cols})
 
 ecols = ["file_date", "subject", "issuer_sec", "doc", "kind", "offer_type", "consent_solicitation", "securities", "n_securities", "n_cusips",
-         "cusips", "cap", "cap_basis", "any_and_all", "early_date", "expiration_date", "tendered_total", "table_only", "n_filers", "title", "url"]
+         "cusips", "cap", "cap_basis", "any_and_all", "early_date", "early_source", "expiration_date", "expiration_source", "cap_source", "tendered_total", "table_only", "n_filers", "title", "url"]
 w("events.csv", uniq, ecols)
 w("offers.csv", [dict(o, n_events=len(o["events"])) for o in offers],
   ["subject", "first", "last", "status", "n_events", "event_kinds", "securities", "cap", "expiration_latest", "has_launch", "urls"])
