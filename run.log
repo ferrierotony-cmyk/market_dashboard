@@ -1,0 +1,14 @@
+[2026-10-23 23:23:48] ==== dashboard build (morning) started in /home/runner/work/market_dashboard/market_dashboard ==== 
+[2026-10-23 23:23:48] FRED: 49 series 
+[2026-10-23 23:24:55] Treasury.gov: fetched, curve through 2026-10-23 
+[2026-10-23 23:24:55] Yahoo daily: 527 symbols (parallel) 
+[2026-10-23 23:25:01] Yahoo daily: 527 fetched, 0 from cache, 0 failed 
+[2026-10-23 23:25:01] Yahoo candles: 24 detail symbols (intraday + weekly bars) 
+[2026-10-23 23:25:45] Market universe: Nasdaq screener 
+[2026-10-23 23:25:46]   5593 common stocks from Nasdaq screener 
+[2026-10-23 23:25:46] Market universe: Yahoo quotes for 5593 symbols in batches of 200 
+[2026-10-23 23:26:03]   5593 of 5593 quoted 
+[2026-10-23 23:26:08] FRED calendar: 1232 release dates 
+[2026-10-23 23:26:11] Alert rules: 21 enabled, 22 fired 
+[2026-10-23 23:26:16] Built /home/runner/work/market_dashboard/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 77 STABLE, alerts: 44) 
+[2026-10-23 23:26:16] ==== finished OK ==== 
