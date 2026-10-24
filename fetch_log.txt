@@ -1,0 +1,14 @@
+query "cash tender offer" "notes" -> unique hits so far 32
+query "early tender" "expiration" "notes" -> unique hits so far 57
+query "announces" "exchange offer" "notes" -> unique hits so far 119
+query "announces" "tender offer" "any and all" -> unique hits so far 194
+query "announces" "tender offers" "notes" -> unique hits so far 207
+query "announces" "offer to purchase" "notes" -> unique hits so far 248
+total unique documents 248
+press release style documents 101 of 248
+fetched 1 of 101
+fetched 26 of 101
+fetched 51 of 101
+fetched 76 of 101
+fetched 101 of 101
+cached 101 documents
