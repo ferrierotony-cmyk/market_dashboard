@@ -67,6 +67,13 @@ jobs:
           cp output/market_dashboard.html site/index.html
           cp output/market_data.js output/market_universe.js site/
           cp output/market_dashboard.png site/ || true
+          mkdir -p site/portfolio
+          cp -r site_extra/portfolio/. site/portfolio/
+          # Tender tracker page is rebuilt daily on the tender-results branch. A failure here must not break the dashboard.
+          if git fetch --depth=1 origin tender-results; then
+            mkdir -p site/tender
+            git show FETCH_HEAD:index.html > site/tender/index.html || rm -rf site/tender
+          fi
 
       - uses: actions/upload-pages-artifact@v3
         with:

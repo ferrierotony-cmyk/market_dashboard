@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anthony Ferriero</title>
+<meta name="description" content="Finance student at UMass Lowell building public tools for debt capital markets: a market dashboard and a bond tender offer tracker.">
+<meta property="og:title" content="Anthony Ferriero">
+<meta property="og:description" content="Finance student at UMass Lowell building public tools for debt capital markets.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #f2f4f5;
+  --surface: #ffffff;
+  --ink: #14202a;
+  --muted: #55646f;
+  --line: #d8dfe3;
+  --accent: #0d6b62;
+  --accent-soft: #dcefec;
+  --sans: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1519; --surface: #172026; --ink: #e5ecef; --muted: #93a3ad; --line: #28343c;
+    --accent: #4fc2b4; --accent-soft: #15363a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1519; --surface: #172026; --ink: #e5ecef; --muted: #93a3ad; --line: #28343c;
+  --accent: #4fc2b4; --accent-soft: #15363a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 56px 72px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+h1 { font-size: 2.4rem; line-height: 1.05; letter-spacing: -0.025em; margin: 0; text-wrap: balance; }
+.lede { font-size: 1.15rem; margin: 14px 0 0; max-width: 56ch; color: var(--ink); }
+.links { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 22px 0 0; padding: 0; list-style: none; font-weight: 600; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+h2 { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 52px 0 6px; font-weight: 600; }
+.proj { border-top: 1px solid var(--line); padding: 22px 0; display: grid; gap: 6px; }
+.proj:last-of-type { border-bottom: 1px solid var(--line); }
+.proj h3 { margin: 0; font-size: 1.25rem; letter-spacing: -0.01em; }
+.proj p { margin: 0; max-width: 62ch; }
+.tag { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.status { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); margin-left: 8px; vertical-align: 2px; }
+.row { display: grid; grid-template-columns: 9.5rem 1fr; gap: 4px 20px; padding: 14px 0; border-top: 1px solid var(--line); }
+.row:last-of-type { border-bottom: 1px solid var(--line); }
+.row .when { color: var(--muted); font-size: 14px; font-family: var(--mono); }
+.row b { font-weight: 600; }
+.row p { margin: 2px 0 0; max-width: 60ch; }
+.plain { max-width: 62ch; margin: 10px 0 0; }
+footer { margin-top: 52px; color: var(--muted); font-size: 14px; max-width: 66ch; }
+@media (max-width: 560px) { h1 { font-size: 1.9rem; } .row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Anthony Ferriero</h1>
+    <p class="lede">I study finance at UMass Lowell and want to work in debt capital markets. I build tools that show what the bond market is doing, using public data only.</p>
+    <ul class="links">
+      <li><a href="https://www.linkedin.com/in/anthony-ferriero" rel="noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/ferrierotony-cmyk" rel="noopener">GitHub</a></li>
+    </ul>
+  </header>
+
+  <h2>Projects</h2>
+  <article class="proj">
+    <h3>Morning Market Dashboard <span class="status">Live</span></h3>
+    <p>One screen that answers one question every morning: is the new issue window open? It reads Treasury yields, credit spreads, volatility and macro data from free sources and scores the window from VIX, MOVE, the one week move in IG and HY spreads, stock futures and where spreads sit in their one year range. Built in R. It rebuilds several times a day on weekdays.</p>
+    <p class="tag"><a href="../">Open the dashboard</a> &nbsp; <a href="https://github.com/ferrierotony-cmyk/market_dashboard" rel="noopener">Code</a></p>
+  </article>
+  <article class="proj">
+    <h3>Tender Tracker <span class="status">Live</span></h3>
+    <p>A daily tracker of cash tender offers and exchange offers for corporate bonds, read from SEC filings. Each offer shows its securities, cap, expiration and the steps seen so far, with a link to the filing behind every row. The page states how often each column was right and what it can miss.</p>
+    <p class="tag"><a href="../tender/">Open the tracker</a> &nbsp; <a href="https://github.com/ferrierotony-cmyk/market_dashboard/tree/tender-lab/tender" rel="noopener">Code</a></p>
+  </article>
+  <article class="proj">
+    <h3>Green bond pricing research <span class="status">In progress</span></h3>
+    <p>A research project with a faculty supervisor on whether green bonds price differently from otherwise similar conventional bonds, and how recent events change that gap. I am still checking the sample and the matching, so I am not publishing any results yet.</p>
+  </article>
+
+  <h2>Experience</h2>
+  <div class="row"><div class="when">Spring and summer 2026</div><div><b>DCM Analyst Intern, Finsight</b><p>Tracked investment grade and high yield new issuance every day on a Bloomberg Terminal, monitored bond pricing and spreads, and covered liability management transactions. High yield in the spring, investment grade over the summer.</p></div></div>
+  <div class="row"><div class="when">September 2026 to now</div><div><b>Bloomberg Terminal Assistant, UMass Lowell</b><p>Pull Bloomberg data for faculty research and class assignments.</p></div></div>
+  <div class="row"><div class="when">Now</div><div><b>President, UML Finance Society</b><p>Run the club's events and programs.</p></div></div>
+
+  <h2>Education</h2>
+  <div class="row"><div class="when">UMass Lowell</div><div><b>Business Administration</b><p>Concentrations in Finance and Marketing, minor in Quantitative Economics. GPA 3.6 out of 4.0.</p></div></div>
+
+  <h2>How I work</h2>
+  <p class="plain">I use Claude to help write and debug code. I test the results, and each page says where its numbers can be wrong. Nothing here comes from a Bloomberg terminal or from any employer. Every page uses public filings and free data feeds.</p>
+
+  <footer>This site is a personal portfolio. It is not investment advice.</footer>
+</main>
+</body>
+</html>
