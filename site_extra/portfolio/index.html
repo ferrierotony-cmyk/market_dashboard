@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Anthony Ferriero</title>
-<meta name="description" content="Finance student at UMass Lowell building public tools for debt capital markets: a market dashboard and a bond tender offer tracker.">
+<meta name="description" content="Finance student at UMass Lowell. A market dashboard, a bond tender offer tracker and green bond pricing research, with the numbers and their error rates shown.">
 <meta property="og:title" content="Anthony Ferriero">
-<meta property="og:description" content="Finance student at UMass Lowell building public tools for debt capital markets.">
+<meta property="og:description" content="Finance student at UMass Lowell. Debt capital markets tools and green bond research.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
@@ -53,6 +53,11 @@ h2 { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color
 .row .when { color: var(--muted); font-size: 14px; font-family: var(--mono); }
 .row b { font-weight: 600; }
 .row p { margin: 2px 0 0; max-width: 60ch; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 14px 0 6px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+.stat .n { font-family: var(--mono); font-size: 1.5rem; font-weight: 500; letter-spacing: -0.02em; color: var(--accent); line-height: 1.2; }
+.stat .l { margin: 6px 0 0; font-size: 14px; color: var(--muted); line-height: 1.5; }
+.note { font-size: 14px; color: var(--muted); max-width: 62ch; }
 .plain { max-width: 62ch; margin: 10px 0 0; }
 footer { margin-top: 52px; color: var(--muted); font-size: 14px; max-width: 66ch; }
 @media (max-width: 560px) { h1 { font-size: 1.9rem; } .row { grid-template-columns: 1fr; } }
@@ -62,7 +67,7 @@ footer { margin-top: 52px; color: var(--muted); font-size: 14px; max-width: 66ch
 <main class="wrap">
   <header>
     <h1>Anthony Ferriero</h1>
-    <p class="lede">I study finance at UMass Lowell and want to work in debt capital markets. I build tools that show what the bond market is doing, using public data only.</p>
+    <p class="lede">I study finance at UMass Lowell and want to work in debt capital markets. I build tools that show what the bond market is doing from public data, and I research how green bonds price.</p>
     <ul class="links">
       <li><a href="https://www.linkedin.com/in/anthony-ferriero" rel="noopener">LinkedIn</a></li>
       <li><a href="https://github.com/ferrierotony-cmyk" rel="noopener">GitHub</a></li>
@@ -78,12 +83,23 @@ footer { margin-top: 52px; color: var(--muted); font-size: 14px; max-width: 66ch
   </article>
   <article class="proj">
     <h3>Tender Tracker <span class="status">Live</span></h3>
-    <p>A daily tracker of cash tender offers and exchange offers for corporate bonds, read from SEC filings. Each offer shows its securities, cap, expiration and the steps seen so far, with a link to the filing behind every row. The page states how often each column was right and what it can miss.</p>
+    <p>A daily tracker of cash tender offers and exchange offers for corporate bonds, read from SEC filings. Each offer shows its securities, cap, expiration and the steps seen so far, with a link to the filing behind every row. The page states how often each column was right and what it can miss. AI reviewers graded it against the filings on releases the rules had never seen: offer type and dates were right about nine times in ten, securities and caps about three times in four.</p>
     <p class="tag"><a href="../tender/">Open the tracker</a> &nbsp; <a href="https://github.com/ferrierotony-cmyk/market_dashboard/tree/tender-lab/tender" rel="noopener">Code</a></p>
   </article>
   <article class="proj">
-    <h3>Green bond pricing research <span class="status">In progress</span></h3>
-    <p>A research project with a faculty supervisor on whether green bonds price differently from otherwise similar conventional bonds, and how recent events change that gap. I am still checking the sample and the matching, so I am not publishing any results yet.</p>
+    <h3>Green bond pricing research <span class="status">Preliminary results</span></h3>
+    <p>Do investors accept a lower yield on a green bond than on a conventional bond from the same issuer? I built a dataset of green bonds, matched each one to a conventional bond from the same issuer, and adjusted for rates, credit spreads and maturity using free Treasury and Moody's data from FRED. The matches were first screened with help from Claude. Treat every number below as preliminary.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">4.7 bps</div><p class="l">Average gap, green bonds priced tighter than the matched conventional bonds. 177 pairs from 103 issuers. Not statistically significant, p 0.11. The 95 percent interval runs from 10.4 bps tighter to 1.1 bps wider.</p></div>
+      <div class="stat"><div class="n">1 to 8 bps</div><p class="l">Range across other estimators and sample choices. The median pair is 8.0 bps tighter. Adding back pairs I had excluded cuts the average to 2.5. The data cannot narrow it.</p></div>
+      <div class="stat"><div class="n">+2.0 bps</div><p class="l">Average for the 11 pairs sold within a week of each other. The tightest matches show no discount, though 11 is too few to be sure.</p></div>
+      <div class="stat"><div class="n">p 0.91</div><p class="l">Test that the gap was the same across four periods from 2016 to 2026. No detectable change. After the ChatGPT launch the gap was 2.5 bps smaller, p 0.66, not significant.</p></div>
+      <div class="stat"><div class="n">8.1 bps</div><p class="l">Smallest true gap this sample can detect reliably. A gap of 10 bps or more is rejected. Telling 5 bps from zero would take about 470 pairs. Tests for a shift over time only see changes of roughly 18 to 29 bps.</p></div>
+      <div class="stat"><div class="n">663 bonds</div><p class="l">Unique green bonds after cleaning 1,226 tracker rows. 291 parent issuers, 40 countries, about $386 billion of face value, issued April 2009 to May 2026. 270 have matured.</p></div>
+    </div>
+    <p>On a $500 million, 10 year deal one basis point of coupon is worth about $50,000 a year, so 4.7 bps would be about $235,000 a year if it were real. The data do not show that it is.</p>
+    <p>What I got wrong first: an early version showed the gap shrinking by 25 bps. It came from measuring credit spreads over the 10 year Treasury, which picks up the slope of the curve. Measured over the 30 year Treasury the credit index tracks the ICE BofA investment grade index with a correlation of 0.95, against 0.40 before. I fixed it and withdrew the claim.</p>
+    <p class="note">Built from Bloomberg, Climate Bonds Initiative and FRED data. My supervisor approved publishing summary statistics. No bond level data is shown. Last updated October 2026.</p>
   </article>
 
   <h2>Experience</h2>
@@ -99,9 +115,9 @@ footer { margin-top: 52px; color: var(--muted); font-size: 14px; max-width: 66ch
   <div class="row"><div class="when">UMass Lowell</div><div><b>Business Administration</b><p>Concentrations in Finance and Marketing, minor in Quantitative Economics. GPA 3.6 out of 4.0. Expected graduation May 2027.</p></div></div>
 
   <h2>How I work</h2>
-  <p class="plain">I use Claude to help write and debug code. I test the results, and each page says where its numbers can be wrong. Nothing here comes from a Bloomberg terminal or from any employer. Every page uses public filings and free data feeds.</p>
+  <p class="plain">I use Claude to help write and debug code and to screen first pass matches in the research. I test the results, and each page says where its numbers can be wrong. The dashboard and the tender tracker use public filings and free data feeds only. The research statistics were computed from Bloomberg, Climate Bonds Initiative and FRED data, and only summary numbers are shown. Nothing here comes from an employer.</p>
 
-  <footer>This site is a personal portfolio. It is not investment advice.</footer>
+  <footer>This site is a personal portfolio. The research figures are preliminary. Nothing here is investment advice.</footer>
 </main>
 </body>
 </html>
