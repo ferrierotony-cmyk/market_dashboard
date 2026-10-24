@@ -6,118 +6,55 @@
 <title>Anthony Ferriero</title>
 <meta name="description" content="Finance student at UMass Lowell. A market dashboard, a bond tender offer tracker and green bond pricing research, with the numbers and their error rates shown.">
 <meta property="og:title" content="Anthony Ferriero">
-<meta property="og:description" content="Finance student at UMass Lowell. Debt capital markets tools and green bond research.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<style>
-:root {
-  --bg: #f2f4f5;
-  --surface: #ffffff;
-  --ink: #14202a;
-  --muted: #55646f;
-  --line: #d8dfe3;
-  --accent: #0d6b62;
-  --accent-soft: #dcefec;
-  --sans: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f1519; --surface: #172026; --ink: #e5ecef; --muted: #93a3ad; --line: #28343c;
-    --accent: #4fc2b4; --accent-soft: #15363a; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0f1519; --surface: #172026; --ink: #e5ecef; --muted: #93a3ad; --line: #28343c;
-  --accent: #4fc2b4; --accent-soft: #15363a; color-scheme: dark;
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
-.wrap { max-width: 760px; margin: 0 auto; padding-block: 56px 72px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
-h1 { font-size: 2.4rem; line-height: 1.05; letter-spacing: -0.025em; margin: 0; text-wrap: balance; }
-.lede { font-size: 1.15rem; margin: 14px 0 0; max-width: 56ch; color: var(--ink); }
-.links { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 22px 0 0; padding: 0; list-style: none; font-weight: 600; }
-a { color: var(--accent); text-underline-offset: 3px; }
-a:hover { text-decoration-thickness: 2px; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-h2 { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 52px 0 6px; font-weight: 600; }
-.proj { border-top: 1px solid var(--line); padding: 22px 0; display: grid; gap: 6px; }
-.proj:last-of-type { border-bottom: 1px solid var(--line); }
-.proj h3 { margin: 0; font-size: 1.25rem; letter-spacing: -0.01em; }
-.proj p { margin: 0; max-width: 62ch; }
-.tag { font-family: var(--mono); font-size: 12px; color: var(--muted); }
-.status { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); margin-left: 8px; vertical-align: 2px; }
-.row { display: grid; grid-template-columns: 9.5rem 1fr; gap: 4px 20px; padding: 14px 0; border-top: 1px solid var(--line); }
-.row:last-of-type { border-bottom: 1px solid var(--line); }
-.row .when { color: var(--muted); font-size: 14px; font-family: var(--mono); }
-.row b { font-weight: 600; }
-.row p { margin: 2px 0 0; max-width: 60ch; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 14px 0 6px; }
-.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
-.stat .n { font-family: var(--mono); font-size: 1.5rem; font-weight: 500; letter-spacing: -0.02em; color: var(--accent); line-height: 1.2; }
-.stat .l { margin: 6px 0 0; font-size: 14px; color: var(--muted); line-height: 1.5; }
-.note { font-size: 14px; color: var(--muted); max-width: 62ch; }
-.plain { max-width: 62ch; margin: 10px 0 0; }
-footer { margin-top: 52px; color: var(--muted); font-size: 14px; max-width: 66ch; }
-@media (max-width: 560px) { h1 { font-size: 1.9rem; } .row { grid-template-columns: 1fr; } }
-</style>
+<meta property="og:description" content="Finance student at UMass Lowell. A market dashboard, a bond tender offer tracker and green bond pricing research, with the numbers and their error rates shown.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main class="wrap">
-  <header>
-    <h1>Anthony Ferriero</h1>
-    <p class="lede">I study finance at UMass Lowell and want to work in debt capital markets. I build tools that show what the bond market is doing from public data, and I research how green bonds price.</p>
-    <ul class="links">
-      <li><a href="https://www.linkedin.com/in/anthony-ferriero" rel="noopener">LinkedIn</a></li>
-      <li><a href="https://github.com/ferrierotony-cmyk" rel="noopener">GitHub</a></li>
-      <li><a href="mailto:ferrierotony@gmail.com">ferrierotony@gmail.com</a></li>
-    </ul>
-  </header>
-
-  <h2>Projects</h2>
-  <article class="proj">
-    <h3>Morning Market Dashboard <span class="status">Live</span></h3>
-    <p>One screen that answers one question every morning: is the new issue window open? It reads Treasury yields, credit spreads, volatility and macro data from free sources and scores the window from VIX, MOVE, the one week move in IG and HY spreads, stock futures and where spreads sit in their one year range. Built in R. It rebuilds several times a day on weekdays.</p>
-    <p class="tag"><a href="../">Open the dashboard</a> &nbsp; <a href="https://github.com/ferrierotony-cmyk/market_dashboard" rel="noopener">Code</a></p>
-  </article>
-  <article class="proj">
-    <h3>Tender Tracker <span class="status">Live</span></h3>
-    <p>A daily tracker of cash tender offers and exchange offers for corporate bonds, read from SEC filings. Each offer shows its securities, cap, expiration and the steps seen so far, with a link to the filing behind every row. The page states how often each column was right and what it can miss. AI reviewers graded it against the filings on releases the rules had never seen: offer type and dates were right about nine times in ten, securities and caps about three times in four.</p>
-    <p class="tag"><a href="../tender/">Open the tracker</a> &nbsp; <a href="https://github.com/ferrierotony-cmyk/market_dashboard/tree/tender-lab/tender" rel="noopener">Code</a></p>
-  </article>
-  <article class="proj">
-    <h3>Green bond pricing research <span class="status">Preliminary results</span></h3>
-    <p>Do investors accept a lower yield on a green bond than on a conventional bond from the same issuer? I built a dataset of green bonds, matched each one to a conventional bond from the same issuer, and adjusted for rates, credit spreads and maturity using free Treasury and Moody's data from FRED. The matches were first screened with help from Claude. Treat every number below as preliminary.</p>
-    <div class="stats">
-      <div class="stat"><div class="n">4.7 bps</div><p class="l">Average gap, green bonds priced tighter than the matched conventional bonds. 177 pairs from 103 issuers. Not statistically significant, p 0.11. The 95 percent interval runs from 10.4 bps tighter to 1.1 bps wider.</p></div>
-      <div class="stat"><div class="n">1 to 8 bps</div><p class="l">Range across other estimators and sample choices. The median pair is 8.0 bps tighter. Adding back pairs I had excluded cuts the average to 2.5. The data cannot narrow it.</p></div>
-      <div class="stat"><div class="n">+2.0 bps</div><p class="l">Average for the 11 pairs sold within a week of each other. The tightest matches show no discount, though 11 is too few to be sure.</p></div>
-      <div class="stat"><div class="n">p 0.91</div><p class="l">Test that the gap was the same across four periods from 2016 to 2026. No detectable change. After the ChatGPT launch the gap was 2.5 bps smaller, p 0.66, not significant.</p></div>
-      <div class="stat"><div class="n">8.1 bps</div><p class="l">Smallest true gap this sample can detect reliably. A gap of 10 bps or more is rejected. Telling 5 bps from zero would take about 470 pairs. Tests for a shift over time only see changes of roughly 18 to 29 bps.</p></div>
-      <div class="stat"><div class="n">663 bonds</div><p class="l">Unique green bonds after cleaning 1,226 tracker rows. 291 parent issuers, 40 countries, about $386 billion of face value, issued April 2009 to May 2026. 270 have matured.</p></div>
-    </div>
-    <p>On a $500 million, 10 year deal one basis point of coupon is worth about $50,000 a year, so 4.7 bps would be about $235,000 a year if it were real. The data do not show that it is.</p>
-    <p>What I got wrong first: an early version showed the gap shrinking by 25 bps. It came from measuring credit spreads over the 10 year Treasury, which picks up the slope of the curve. Measured over the 30 year Treasury the credit index tracks the ICE BofA investment grade index with a correlation of 0.95, against 0.40 before. I fixed it and withdrew the claim.</p>
-    <p class="note">Built from Bloomberg, Climate Bonds Initiative and FRED data. My supervisor approved publishing summary statistics. No bond level data is shown. Last updated October 2026.</p>
-  </article>
-
-  <h2>Experience</h2>
-  <div class="row"><div class="when">Dec 2025 to Sep 2026</div><div><b>Debt Capital Markets Analyst Intern, Finsight</b><p>Tracked investment grade and high yield new issuance every day on a Bloomberg Terminal, monitored bond pricing and spreads, and wrote the wire headlines for 25+ liability management deals across tenders, exchanges and consent solicitations. High yield in the spring, investment grade over the summer.</p></div></div>
-  <div class="row"><div class="when">September 2026 to now</div><div><b>Bloomberg Terminal Assistant, UMass Lowell</b><p>Train business school students on the Bloomberg Terminal across 10 classes, and pull Bloomberg data for faculty research and class assignments.</p></div></div>
-  <div class="row"><div class="when">May 2026 to now</div><div><b>Fixed Income Research Analyst, UMass Lowell</b><p>Research on how green bonds price against matched conventional bonds. The green bond project above.</p></div></div>
-  <h2>Leadership</h2>
-  <div class="row"><div class="when">Apr 2026 to now</div><div><b>President, UML Finance Society</b><p>Grew membership by 200+ to over 500 students while leading a nine person executive board. Ran 6+ events and trips, including a Pratt &amp; Whitney speaker and Boston Fintech Week at the Boston Fed.</p></div></div>
-  <div class="row"><div class="when">Nov 2025 to now</div><div><b>Captain, UML Intercollegiate Sales Team</b><p>Placed top four at the Love's Travel Stops national sales competition and run team prep on pitching and objections.</p></div></div>
-  <div class="row"><div class="when">Feb 2024 to now</div><div><b>Research Analyst, Commonwealth Capital Research</b><p>Write the group's rates and credit newsletter for 200 subscribers, plus research including a SpaceX IPO report.</p></div></div>
-
-  <h2>Education</h2>
-  <div class="row"><div class="when">UMass Lowell</div><div><b>Business Administration</b><p>Concentrations in Finance and Marketing, minor in Quantitative Economics. GPA 3.6 out of 4.0. Expected graduation May 2027.</p></div></div>
-
-  <h2>How I work</h2>
-  <p class="plain">I use Claude to help write and debug code and to screen first pass matches in the research. I test the results, and each page says where its numbers can be wrong. The dashboard and the tender tracker use public filings and free data feeds only. The research statistics were computed from Bloomberg, Climate Bonds Initiative and FRED data, and only summary numbers are shown. Nothing here comes from an employer.</p>
-
-  <footer>This site is a personal portfolio. The research figures are preliminary. Nothing here is investment advice.</footer>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head"><div class="wrap bar">
+  <a class="brand" href="index.html">AF<span>.</span></a>
+  <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="nav">Menu</button>
+  <ul class="nav" id="nav"><li><a href="index.html" aria-current="page">Home</a></li><li><a href="research.html">Research</a></li><li><a href="tender.html">Tender</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="finsight.html">Finsight</a></li><li><a href="bloomberg.html">Bloomberg</a></li><li><a href="finance-society.html">Finance Society</a></li><li><a href="sales-team.html">Sales Team</a></li><li><a href="ccr.html">CCR</a></li><li><a href="education.html">Education</a></li><li><a href="skills.html">Skills</a></li><li><a href="contact.html">Contact</a></li></ul>
+</div></header>
+<main id="main">
+<div class="wrap hero">
+  <p class="eyebrow">Finance &middot; UMass Lowell &middot; Lowell, MA</p>
+  <h1>Anthony Ferriero<span>.</span></h1>
+  <p class="tag">I study finance and want to work in debt capital markets. I build tools that show what the bond market is doing from public data, and I research how green bonds price.</p>
+  <div class="contact-row">
+    <a href="mailto:ferrierotony@gmail.com">&#9993; ferrierotony@gmail.com</a>
+    <a href="https://www.linkedin.com/in/anthony-ferriero" rel="noopener">in LinkedIn</a>
+    <a href="https://github.com/ferrierotony-cmyk" rel="noopener">GitHub</a>
+    <a href="contact.html">&rarr; Get in touch</a>
+  </div>
+</div>
+<section class="section"><div class="wrap">
+  <p class="label">Background</p>
+  <h2>Business Administration, Manning School of Business</h2>
+  <p>I am a senior at UMass Lowell studying Business Administration, with concentrations in Finance and Marketing and a minor in Quantitative Economics. My GPA is 3.6 out of 4.0 and I graduate in May 2027.</p>
+  <p>From December 2025 to September 2026 I was a debt capital markets analyst intern at Finsight, covering new issuance and liability management deals. I now train students on the Bloomberg Terminal, run the UML Finance Society and research green bond pricing.</p>
+</div></section>
+<section class="section"><div class="wrap">
+  <p class="label">What ties it together</p>
+  <h2>Debt markets, public data, and honest error rates</h2>
+  <p>Everything here starts from the same question: what is the bond market doing, and how sure can we be? The dashboard and the tender tracker use public filings and free data feeds. The research uses Bloomberg, Climate Bonds Initiative and FRED data, and only summary numbers are shown.</p>
+  <p>Each page says where its numbers can be wrong. I use Claude to help write and debug code and to screen first pass matches in the research, and I test the results. Nothing here comes from an employer.</p>
+</div></section>
+<section class="section" id="case-files"><div class="wrap">
+  <p class="label">Case Files &middot; explore each project and role</p>
+  <h2>Projects, roles and the numbers behind them</h2>
+  <ul class="cards"><li><a class="card" href="research.html"><b>Research</b><em>Green bond pricing, preliminary results</em><span class="go">Open &rarr;</span></a></li><li><a class="card" href="tender.html"><b>Tender Tracker</b><em>Daily bond tender and exchange offers from SEC filings</em><span class="go">Open &rarr;</span></a></li><li><a class="card" href="dashboard.html"><b>Morning Market Dashboard</b><em>Is the new issue window open?</em><span class="go">Open &rarr;</span></a></li><li><a class="card" href="finsight.html"><b>Finsight</b><em>Debt Capital Markets Analyst Intern</em><span class="go">Open &rarr;</span></a></li><li><a class="card" href="bloomberg.html"><b>Bloomberg</b><em>Terminal Assistant, UMass Lowell</em><span class="go">Open &rarr;</span></a></li><li><a class="card" href="finance-society.html"><b>Finance Society</b><em>President, UML Finance Society</em><span class="go">Open &rarr;</span></a></li><li><a class="card" href="sales-team.html"><b>Sales Team</b><em>Captain, UML Intercollegiate Sales Team</em><span class="go">Open &rarr;</span></a></li><li><a class="card" href="ccr.html"><b>CCR</b><em>Research Analyst, Commonwealth Capital Research</em><span class="go">Open &rarr;</span></a></li><li><a class="card" href="education.html"><b>Education</b><em>UMass Lowell, Business Administration</em><span class="go">Open &rarr;</span></a></li><li><a class="card" href="skills.html"><b>Skills</b><em>Tools, models and data</em><span class="go">Open &rarr;</span></a></li><li><a class="card" href="contact.html"><b>Contact</b><em>Email, LinkedIn and GitHub</em><span class="go">Open &rarr;</span></a></li></ul>
+  <a class="cta" href="research.html">Start with Research &rarr;</a>
+</div></section>
 </main>
+<footer class="site-foot"><div class="wrap">
+  <div class="row"><span>&copy; 2026 Anthony Ferriero &middot; Lowell, MA</span><span><a href="contact.html">Contact</a> &nbsp;&middot;&nbsp; <a href="https://www.linkedin.com/in/anthony-ferriero" rel="noopener">LinkedIn</a> &nbsp;&middot;&nbsp; <a href="https://github.com/ferrierotony-cmyk" rel="noopener">GitHub</a></span></div>
+  <p>This site is a personal portfolio. The research figures are preliminary. Nothing here is investment advice.</p>
+</div></footer>
+<script>
+(function(){var b=document.getElementById('menu-btn'),n=document.getElementById('nav');
+if(!b||!n)return;b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});})();
+</script>
 </body>
 </html>
