@@ -100,7 +100,7 @@ footer { margin-top: 28px; color: var(--muted); font-size: 12.5px; max-width: 80
     </div>
     <div class="stamp" id="stamp"></div>
   </header>
-  <div class="trust" role="note"><strong>Not hand checked.</strong><span>Dates and offer type are right about nine times in ten. Securities and caps are right about three times in four, so open the filing before you rely on either one. The Reliability tab has the numbers.</span></div>
+  <div class="trust" role="note"><strong>Read the filing before you rely on it.</strong><span>On filings the rules had never seen, offer type and dates were right about nine times in ten, and securities and caps about three times in four. Every row links to its filing. The Reliability tab shows how this was measured.</span></div>
   <ul class="facts" id="facts"></ul>
   <nav role="tablist" aria-label="Views">
     <button role="tab" id="t-offers" aria-selected="true" aria-controls="p-offers">Offers</button>
@@ -123,10 +123,10 @@ footer { margin-top: 28px; color: var(--muted); font-size: 12.5px; max-width: 80
     <div class="scroll"><table><thead><tr><th>Filed</th><th>Issuer</th><th>Type</th><th>Securities<span class="flag">UNVERIFIED</span></th><th>Cap<span class="flag">UNVERIFIED</span></th><th>Expires</th><th>Filing</th></tr></thead><tbody id="eb"></tbody></table></div>
   </section>
   <section id="p-rel" role="tabpanel" aria-labelledby="t-rel" hidden>
-    <p class="notes">Each figure is the share of rows an independent reviewer marked correct against the filing text, on two windows of filings the rules had never seen. Total 103 offer releases. Nobody has yet checked the rows on this page by hand.</p>
+    <p class="notes">Each figure is the share of rows a reviewer marked correct against the text of the filing. The large number comes from two blind tests on filings the rules had never seen, 103 offer releases in all. The small number comes from the last 90 days, the period the rules were built on, so it is the best case. The reviewers were AI models reading the filings. A person has not checked these rows.</p>
     <div class="rel" id="rel"></div>
     <ul class="notes">
-      <li>Recall is unmeasured. A real offer that the search never found is not on this page, and nothing here says how many.</li>
+      <li>Recall is unmeasured. In the last 90 day check the extractor found 32 of 33 offer releases it was shown, but that says nothing about filings the search never returned.</li>
       <li>Caps in euros and caps split by pool or series are known weak spots.</li>
       <li>Status is worked out from the releases seen. A finished offer shows as past expiration if its result filing was missed.</li>
       <li>A model reading each filing scored far higher on one 105 row test, but it is not running here because it costs money per call.</li>
@@ -188,8 +188,8 @@ function renderEvents() {
 }
 $("q2").addEventListener("input", renderEvents); $("kd").addEventListener("change", renderEvents); $("all").addEventListener("change", renderEvents);
 
-const REL = [["Release type", 90, "Launch, results, extension and so on."], ["Early tender date", 95, "Where the release states one."], ["Expiration date", 92, "After any extension."], ["Securities", 76, "Coupon and maturity of the targeted notes."], ["Cap", 75, "Overall maximum amount, where there is one."]];
-$("rel").innerHTML = REL.map(r => '<div class="relrow ' + (r[1] >= 90 ? "hi" : "mid") + '"><div class="pct">' + r[1] + '%</div><strong>' + r[0] + "</strong><p>" + r[2] + "</p></div>").join("");
+const REL = [["Offer type", 90, 98, "Launch, results, extension and so on."], ["Early tender date", 95, 94, "Where the release states one."], ["Expiration date", 92, 94, "After any extension."], ["Securities", 76, 85, "Coupon and maturity of the targeted notes."], ["Cap", 75, 94, "Overall maximum amount, where there is one."]];
+$("rel").innerHTML = REL.map(r => '<div class="relrow ' + (r[1] >= 90 ? "hi" : "mid") + '"><div class="pct">' + r[1] + '%</div><strong>' + r[0] + "</strong><p>" + r[3] + " Last 90 days, best case: " + r[2] + "%.</p></div>").join("");
 
 const tabs = ["offers", "events", "rel"];
 function show(t) { tabs.forEach(n => { $("p-" + n).hidden = n !== t; $("t-" + n).setAttribute("aria-selected", n === t); }); try { localStorage.setItem("tt-tab", t); } catch (e) {} }
