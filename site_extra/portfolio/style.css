@@ -66,6 +66,19 @@ h1 i { font-style: normal; color: var(--amber); }
   .hero-img { min-height: 0; aspect-ratio: 1; order: -1; }
 }
 
+/* live tape from the dashboard */
+.tape { display: none; margin: 14px 0 0; background: #0e0e10; border: 1px solid var(--line2); border-radius: 12px; overflow: hidden; }
+.tape.on { display: block; }
+.tape-head { display: flex; justify-content: space-between; gap: 12px; padding: 9px 18px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); border-bottom: 1px solid var(--line); background: var(--bg2); }
+.tape-head b { color: var(--amber); font-weight: 500; }
+.tape ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.tape li { padding: 12px 18px; border-right: 1px dashed var(--line); font-size: 13px; color: var(--muted); }
+.tape li:last-child { border-right: 0; }
+.tape li b { display: block; font-family: var(--mono); font-weight: 500; font-size: 1.15rem; color: var(--ink); }
+.tape li b.good { color: #4fc38a; } .tape li b.warn { color: var(--amber); } .tape li b.bad { color: #e45b5b; }
+.tape li small { font-family: var(--mono); font-size: 11.5px; }
+.tape-foot { padding: 8px 18px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); }
+
 /* quote board: the signature element */
 .board { margin: 10px 0 0; background: #0e0e10; border: 1px solid var(--line2); border-radius: 12px; overflow: hidden; box-shadow: 0 30px 60px -40px rgba(0,0,0,.9); }
 .board-head { display: flex; justify-content: space-between; gap: 12px; padding: 10px 18px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); border-bottom: 1px solid var(--line); background: var(--bg2); }
@@ -201,6 +214,49 @@ table.cmp td a { color: var(--accent); font-weight: 600; }
 .rv { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
 .rv.in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } .card, .stat, .figs img { transition: none; } }
+
+
+/* interactive widgets */
+.xp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 20px; margin: 18px 0 0; }
+.xp > div { min-width: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
+.seg button { font: inherit; font-size: 14px; font-weight: 600; color: var(--muted); background: var(--bg2); border: 1px solid var(--line2); border-radius: 999px; padding: 6px 14px; cursor: pointer; transition: all .15s; }
+.seg button:hover { color: var(--ink); border-color: var(--amber); }
+.seg button[aria-pressed="true"] { color: var(--amber-ink); background: var(--amber); border-color: var(--amber); }
+.ctl { margin: 0 0 14px; }
+.ctl label { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); margin: 0 0 4px; }
+.ctl label b { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+.ctl input[type=range] { width: 100%; accent-color: var(--amber); cursor: pointer; }
+.ctl .hint { font-size: 12.5px; color: var(--muted); margin: 2px 0 0; font-family: var(--mono); }
+.outs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.out { background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.out .n { font-family: var(--mono); font-size: 1.65rem; color: var(--amber); line-height: 1.15; transition: color .2s; }
+.out .n.neg { color: #e45b5b; }
+.out p { margin: 4px 0 0; font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+.vbar { position: relative; height: 10px; background: var(--bg2); border: 1px solid var(--line); border-radius: 999px; margin: 16px 0 6px; overflow: visible; }
+.vbar .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--amber); border-radius: 999px; transition: width .25s ease; }
+.vbar .mk { position: absolute; top: -6px; width: 2px; height: 22px; background: var(--ink); }
+.vbar-lab { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.xp .note { margin-top: 14px; }
+@media (max-width: 760px) { .xp { grid-template-columns: 1fr; } .outs { grid-template-columns: 1fr 1fr; } }
+
+/* day on the desk */
+.day { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 18px; margin: 18px 0 0; align-items: start; }
+.day ol { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line2); }
+.day ol li { padding: 0; }
+.day ol button { font: inherit; width: 100%; text-align: left; background: none; border: 0; color: var(--muted); padding: 9px 0 9px 16px; cursor: pointer; position: relative; font-family: var(--mono); font-size: 13.5px; transition: color .15s; }
+.day ol button::before { content: ""; position: absolute; left: -7px; top: 13px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--line2); transition: all .15s; }
+.day ol button:hover { color: var(--ink); }
+.day ol button[aria-selected="true"] { color: var(--amber); }
+.day ol button[aria-selected="true"]::before { background: var(--amber); border-color: var(--amber); }
+.day .panel h3 { font-family: var(--display); font-size: 1.25rem; margin: 0 0 8px; }
+.day .panel p { margin: 0; color: var(--ink); max-width: none; }
+.day .panel small { display: block; margin-top: 10px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+@media (max-width: 640px) { .day { grid-template-columns: 1fr; } .day ol { display: flex; overflow-x: auto; border-left: 0; border-bottom: 2px solid var(--line2); padding-bottom: 4px; } .day ol button { white-space: nowrap; padding: 8px 10px; } .day ol button::before { display: none; } }
+
+/* progress bar */
+.prog { position: fixed; left: 0; top: 0; height: 2px; width: 0; background: var(--amber); z-index: 30; transition: width .1s linear; }
 
 /* footer */
 .site-foot { border-top: 1px solid var(--line); margin-top: 40px; padding: 26px 0 48px; color: var(--muted); font-size: 14px; }

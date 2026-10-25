@@ -67,6 +67,7 @@ jobs:
           cp output/market_dashboard.html site/index.html
           cp output/market_data.js output/market_universe.js site/
           cp output/market_dashboard.png site/ || true
+          cp output/market_snapshot.json site/ || true
           mkdir -p site/portfolio
           cp -r site_extra/portfolio/. site/portfolio/
           # Tender tracker page is rebuilt daily on the tender-results branch. A failure here must not break the dashboard.

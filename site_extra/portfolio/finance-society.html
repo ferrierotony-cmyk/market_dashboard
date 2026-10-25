@@ -43,6 +43,35 @@ var els=document.querySelectorAll('.section .wrap > *, .cards li, .stat, .figs l
 if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){return;}
 els.forEach(function(el,i){el.classList.add('rv');el.style.transitionDelay=((i%6)*60)+'ms';});
 var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.05});
-els.forEach(function(el){io.observe(el);});})();</script>
+els.forEach(function(el){io.observe(el);});})();
+(function(){var t=document.getElementById('tape');if(!t)return;
+fetch('../market_snapshot.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(s){
+function find(o,keys){if(!o)return null;var ks=Object.keys(o);for(var i=0;i<keys.length;i++){for(var j=0;j<ks.length;j++){if(ks[j].toUpperCase().indexOf(keys[i].toUpperCase())>=0)return o[ks[j]];}}return null;}
+function num(x,d,suf){return (x==null||isNaN(x))?null:(Number(x).toFixed(d)+(suf||''));}
+var items=[];
+if(s.window){var w=String(s.window);var cls=/open/i.test(w)?'good':(/closed|shut/i.test(w)?'bad':'warn');items.push(['New issue window',w,cls,'my score']);}
+if(s.health&&s.health.score!=null){items.push(['Market health',s.health.score,'',s.health.label||'']);}
+var f=s.fred||{},y=s.yahoo||{};
+var r10=find(f,['DGS10','10Y']);if(r10&&r10.last!=null)items.push(['UST 10Y',num(r10.last,2,'%'),'',r10.d1!=null?('1d '+(r10.d1>=0?'+':'')+num(r10.d1*100,0,' bp')):'']);
+var ig=find(f,['BAMLC0A0CM','IG OAS','US IG']);if(ig&&ig.last!=null)items.push(['IG OAS',num(ig.last*100,0,' bp'),'',ig.w1!=null?('1w '+(ig.w1>=0?'+':'')+num(ig.w1*100,0,' bp')):'']);
+var hy=find(f,['BAMLH0A0HYM2','HY OAS','US HY']);if(hy&&hy.last!=null)items.push(['HY OAS',num(hy.last*100,0,' bp'),'',hy.w1!=null?('1w '+(hy.w1>=0?'+':'')+num(hy.w1*100,0,' bp')):'']);
+var vix=find(y,['^VIX','VIX']);if(vix&&vix.last!=null)items.push(['VIX',num(vix.last,1),'',vix.d1_pct!=null?('1d '+(vix.d1_pct>=0?'+':'')+num(vix.d1_pct,1,'%')):'']);
+var mv=find(y,['MOVE']);if(mv&&mv.last!=null)items.push(['MOVE',num(mv.last,0),'',mv.d1_pct!=null?('1d '+(mv.d1_pct>=0?'+':'')+num(mv.d1_pct,1,'%')):'']);
+var es=find(y,['ES=F']);if(es&&es.last!=null)items.push(['S&P futures',num(es.last,0),'',es.d1_pct!=null?('1d '+(es.d1_pct>=0?'+':'')+num(es.d1_pct,2,'%')):'']);
+if(items.length<3)return;
+document.getElementById('tape-ul').innerHTML=items.map(function(i){return '<li>'+i[0]+'<b class="'+i[2]+'">'+i[1]+'</b><small>'+i[3]+'</small></li>';}).join('');
+document.getElementById('tape-when').textContent=s.built_at?('built '+String(s.built_at).slice(0,16)):'';t.classList.add('on');}).catch(function(){});})();
+
+(function(){var p=document.createElement('div');p.className='prog';document.body.appendChild(p);
+function u(){var h=document.documentElement;var s=h.scrollTop||document.body.scrollTop;var m=h.scrollHeight-h.clientHeight;p.style.width=(m>0?(s/m*100):0)+'%';}
+window.addEventListener('scroll',u,{passive:true});u();})();
+(function(){if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+var els=document.querySelectorAll('.board li b, .stat .n, .card .num');
+els.forEach(function(el){var t=el.firstChild;if(!t||t.nodeType!==3)return;var s=t.nodeValue;var m=s.match(/^([^0-9\-]*)(-?[0-9][0-9,]*\.?[0-9]*)(.*)$/);if(!m)return;
+var v=parseFloat(m[2].replace(/,/g,''));if(isNaN(v))return;var dec=(m[2].split('.')[1]||'').length;var comma=m[2].indexOf(',')>=0;
+function fmt(x){var r=x.toFixed(dec);if(comma)r=r.replace(/\B(?=(\d{3})+(?!\d))/g,',');return m[1]+r+m[3];}
+var done=false;var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting&&!done){done=true;var t0=null;function step(ts){if(!t0)t0=ts;var k=Math.min(1,(ts-t0)/900);k=1-Math.pow(1-k,3);t.nodeValue=fmt(v*k);if(k<1)requestAnimationFrame(step);else t.nodeValue=s;}requestAnimationFrame(step);io.disconnect();}});},{threshold:0.3});
+t.nodeValue=fmt(0);io.observe(el);});})();
+</script>
 </body>
 </html>
