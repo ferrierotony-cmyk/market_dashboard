@@ -149,7 +149,7 @@ h3.group:first-of-type { margin-top: 10px; border-top: 0; padding-top: 0; }
 .figs li { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
 .figs li.full { grid-column: 1 / -1; }
 .tablewrap { overflow-x: auto; margin: 18px 0; border: 1px solid var(--line); border-radius: 10px; }
-table.cmp { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14px; }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; }
 table.cmp th, table.cmp td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
 table.cmp th:first-child, table.cmp td:first-child { text-align: left; }
 table.cmp th { background: var(--surface); color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; white-space: normal; }
