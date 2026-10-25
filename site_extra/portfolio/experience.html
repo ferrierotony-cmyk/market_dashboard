@@ -8,7 +8,18 @@
 <meta name="description" content="Roles, projects and competitions in order.">
 <meta property="og:title" content="Experience | Anthony Ferriero">
 <meta property="og:description" content="Roles, projects and competitions in order.">
-<meta property="og:image" content="https://ferrierotony-cmyk.github.io/market_dashboard/portfolio/assets/headshot.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ferrierotony-cmyk.github.io/market_dashboard/portfolio/experience.html">
+<meta property="og:image" content="https://ferrierotony-cmyk.github.io/market_dashboard/portfolio/assets/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Experience | Anthony Ferriero">
+<meta name="twitter:description" content="Roles, projects and competitions in order.">
+<meta name="twitter:image" content="https://ferrierotony-cmyk.github.io/market_dashboard/portfolio/assets/og-card.png">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="canonical" href="https://ferrierotony-cmyk.github.io/market_dashboard/portfolio/experience.html">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -40,7 +51,7 @@ var els=document.querySelectorAll('.section .wrap > *, .cards li, .stat, .figs l
 if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){return;}
 els.forEach(function(el,i){el.classList.add('rv');el.style.transitionDelay=((i%6)*60)+'ms';});
 var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.05});
-els.forEach(function(el){io.observe(el);});})();
+els.forEach(function(el){io.observe(el);});setTimeout(function(){els.forEach(function(el){el.classList.add('in');});},1400);})();
 (function(){var t=document.getElementById('tape');if(!t)return;
 fetch('../market_snapshot.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(s){
 function find(o,keys){if(!o)return null;var ks=Object.keys(o);for(var i=0;i<keys.length;i++){for(var j=0;j<ks.length;j++){if(ks[j].toUpperCase().indexOf(keys[i].toUpperCase())>=0)return o[ks[j]];}}return null;}
@@ -67,7 +78,7 @@ els.forEach(function(el){var t=el.firstChild;if(!t||t.nodeType!==3)return;var s=
 var v=parseFloat(m[2].replace(/,/g,''));if(isNaN(v))return;var dec=(m[2].split('.')[1]||'').length;var comma=m[2].indexOf(',')>=0;
 function fmt(x){var r=x.toFixed(dec);if(comma)r=r.replace(/\B(?=(\d{3})+(?!\d))/g,',');return m[1]+r+m[3];}
 var done=false;var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting&&!done){done=true;var t0=null;function step(ts){if(!t0)t0=ts;var k=Math.min(1,(ts-t0)/900);k=1-Math.pow(1-k,3);t.nodeValue=fmt(v*k);if(k<1)requestAnimationFrame(step);else t.nodeValue=s;}requestAnimationFrame(step);io.disconnect();}});},{threshold:0.3});
-t.nodeValue=fmt(0);io.observe(el);});})();
+t.nodeValue=fmt(0);io.observe(el);setTimeout(function(){if(!done){done=true;t.nodeValue=s;io.disconnect();}},1600);});})();
 </script>
 </body>
 </html>
