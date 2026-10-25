@@ -24,7 +24,7 @@
   <div class="hero-text">
     <p class="badge">Debt capital markets &middot; syndicate &middot; fixed income</p>
     <h1>Anthony Ferriero<i>.</i></h1>
-    <p class="tag">Nine months on a primary bond market desk, then tools that score the new issue window, track liability management and measure new issue pricing. Everything here is about bonds, and every page says how often it is right.</p>
+    <p class="tag">Nine months on a primary bond market desk, then tools that score the new issue window, track liability management and measure new issue pricing. Every page says how often it is right.</p>
     <div class="hero-cta">
       <a class="btn primary" href="#case-files">See the case files <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       <a class="btn outline" href="contact.html">Get in touch</a>
@@ -42,14 +42,14 @@
   <div>
     <p class="label">About</p>
     <h2>Manning School of Business, class of 2027</h2>
-    <p>Senior at UMass Lowell. Business Administration, finance and marketing, with a minor in quantitative economics. GPA 3.6.</p>
-    <p>I spent December 2025 to September 2026 at Finsight as a debt capital markets analyst intern. Most of my day was the book chase: calling syndicate desks for order books on 15 to 20 new bond deals, then getting the terms out to bankers and investors. Now I train students on the Bloomberg Terminal, run the Finance Society and work on green bond research.</p>
+    <p>Senior at UMass Lowell. Finance and marketing, minor in quantitative economics, GPA 3.6.</p>
+    <p>December 2025 to September 2026 at Finsight as a debt capital markets analyst intern, chasing order books on 15 to 20 new bond deals a day. Now I train students on the Bloomberg Terminal, run the Finance Society and work on green bond research.</p>
   </div>
   <div>
     <p class="label">What a desk would want to know</p>
     <h2>The primary market, from the book to the print</h2>
-    <p>At Finsight I collected order books and allocations, tracked initial price talk to the print, kept the tally of volume against Street estimates, book attrition and new issue concession, and wrote headlines on 25 or more liability management deals. I ran the tenor screens that found the lowest spreads and coupons printed since 2022.</p>
-    <p>On my own time I built the pieces of that job that could run on public data: a score for whether the new issue window is open, a daily tracker of tender and exchange offers from SEC filings, and a measure of whether green bonds price tighter at issue. Each page says where its numbers can be wrong.</p>
+    <p>At Finsight: order books and allocations, price talk to print, volume against Street estimates, attrition, new issue concession, and headlines on 25 or more liability management deals.</p>
+    <p>On my own time: a score for whether the new issue window is open, a daily tracker of tender and exchange offers from SEC filings, and a measure of whether green bonds price tighter at issue.</p>
   </div>
 </div></section>
 <section class="section" id="case-files"><div class="wrap">
@@ -67,7 +67,11 @@
   <div class="row"><span>&copy; 2026 Anthony Ferriero &middot; Lowell, MA</span><span><a href="contact.html">Contact</a> &nbsp;&middot;&nbsp; <a href="https://www.linkedin.com/in/anthony-ferriero" rel="noopener">LinkedIn</a> &nbsp;&middot;&nbsp; <a href="https://github.com/ferrierotony-cmyk" rel="noopener">GitHub</a></span></div>
   <p>Personal portfolio. The research figures are preliminary. Nothing here is investment advice, and nothing here comes from an employer.</p>
 </div></footer>
-<script>(function(){var b=document.getElementById('menu-btn'),n=document.getElementById('nav');if(!b||!n)return;
-b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});})();</script>
+<script>(function(){var b=document.getElementById('menu-btn'),n=document.getElementById('nav');if(b&&n){b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});}
+var els=document.querySelectorAll('.section .wrap > *, .cards li, .stat, .figs li, .tl li, .photos li');
+if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){return;}
+els.forEach(function(el,i){el.classList.add('rv');el.style.transitionDelay=((i%6)*60)+'ms';});
+var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.05});
+els.forEach(function(el){io.observe(el);});})();</script>
 </body>
 </html>
