@@ -37,20 +37,34 @@ h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.0
   .nav a { padding: 10px 6px; font-size: 16px; }
 }
 
-/* hero */
-.hero { padding-top: 64px; padding-bottom: 36px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 40px; align-items: center; }
-.hero > div { min-width: 0; }
-.eyebrow { font-family: var(--mono); font-size: 13.5px; color: var(--amber); margin: 0 0 16px; }
-h1 { font-size: clamp(2.8rem, 7.5vw, 5.2rem); line-height: .98; letter-spacing: -0.035em; font-weight: 800; }
+/* hero, after shadcn hero-34: text on a muted panel, image bleeding the other column */
+.hero-wrap { padding-top: 40px; }
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: var(--surface); border: 1px solid var(--line2); border-radius: 16px; overflow: hidden; box-shadow: 0 40px 80px -50px rgba(0,0,0,.9); }
+.hero-text { min-width: 0; padding: 56px 48px 52px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; }
+.badge { display: inline-block; font-family: var(--mono); font-size: 12.5px; color: var(--amber); border: 1px solid var(--line2); background: var(--bg2); border-radius: 999px; padding: 5px 12px; margin: 0 0 20px; }
+h1 { font-size: clamp(2.6rem, 5.4vw, 4.4rem); line-height: 1; letter-spacing: -0.035em; font-weight: 700; margin: 0; }
 h1 i { font-style: normal; color: var(--amber); }
-.tag { font-size: 1.22rem; line-height: 1.5; max-width: 32em; margin: 22px 0 0; color: var(--ink); }
-.contact-row { display: flex; flex-wrap: wrap; gap: 10px 24px; margin: 26px 0 0; font-weight: 500; }
-.contact-row a { overflow-wrap: anywhere; text-decoration: none; color: var(--ink); border-bottom: 2px solid var(--line2); padding-bottom: 2px; }
+.tag { font-size: 1.12rem; line-height: 1.6; max-width: 30em; margin: 20px 0 0; color: var(--muted); }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 28px 0 0; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 15px; text-decoration: none; border: 1px solid transparent; transition: background .15s, border-color .15s, color .15s; }
+.btn.primary { background: var(--amber); color: var(--amber-ink); }
+.btn.primary:hover { background: #f7c45e; }
+.btn.outline { border-color: var(--line2); color: var(--ink); background: transparent; }
+.btn.outline:hover { border-color: var(--amber); color: var(--amber); }
+.btn svg { width: 16px; height: 16px; }
+.contact-row { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 26px 0 0; font-size: 14.5px; font-weight: 500; }
+.contact-row a { overflow-wrap: anywhere; text-decoration: none; color: var(--muted); border-bottom: 1px solid var(--line2); padding-bottom: 1px; }
 .contact-row a:hover { border-bottom-color: var(--amber); color: var(--amber); }
-.portrait { position: relative; justify-self: end; width: min(100%, 340px); aspect-ratio: 1; }
-.portrait img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 10px; border: 1px solid var(--line2); position: relative; z-index: 1; }
-.portrait::after { content: ""; position: absolute; inset: 12px -10px -10px 12px; border: 1.5px solid var(--amber); border-radius: 10px; opacity: .75; }
-@media (max-width: 760px) { .hero { grid-template-columns: 1fr; gap: 30px; padding-top: 40px; } .portrait { justify-self: start; width: min(100%, 260px); order: -1; } }
+.hero-img { min-width: 0; min-height: 420px; position: relative; background: #fff; }
+.hero-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+@media (max-width: 760px) {
+  .hero-wrap { padding-top: 24px; }
+  .hero { grid-template-columns: 1fr; }
+  .hero-text { padding: 36px 22px 34px; align-items: center; text-align: center; }
+  .tag { margin-left: auto; margin-right: auto; }
+  .hero-cta, .contact-row { justify-content: center; }
+  .hero-img { min-height: 0; aspect-ratio: 1; order: -1; }
+}
 
 /* quote board: the signature element */
 .board { margin: 10px 0 0; background: #061021; border: 1px solid var(--line2); border-radius: 12px; overflow: hidden; box-shadow: 0 30px 60px -40px rgba(0,0,0,.9); }
@@ -132,6 +146,13 @@ h2 { font-size: clamp(1.6rem, 3.6vw, 2.3rem); line-height: 1.12; margin: 0 0 16p
 .figs { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .figs li { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
 .figs li.full { grid-column: 1 / -1; }
+.tablewrap { overflow-x: auto; margin: 18px 0; border: 1px solid var(--line); border-radius: 10px; }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14px; }
+table.cmp th, table.cmp td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.cmp th:first-child, table.cmp td:first-child { text-align: left; }
+table.cmp th { background: var(--surface); color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; white-space: normal; }
+table.cmp tbody tr:last-child td { border-bottom: 0; }
+table.cmp td a { color: var(--accent); font-weight: 600; }
 .figs li.dark a.img { background: #0a1628; }
 .figs li.full a.img { max-width: 900px; margin: 0 auto; width: 100%; }
 .figs a.img { display: block; background: #fff; padding: 10px; }
