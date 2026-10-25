@@ -117,7 +117,10 @@ h2 { font-size: clamp(1.6rem, 3.6vw, 2.3rem); line-height: 1.12; margin: 0 0 16p
 h3.group { font-family: var(--mono); font-weight: 500; font-size: 13.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 26px 0 0; padding-top: 18px; border-top: 1px solid var(--line); }
 h3.group:first-of-type { margin-top: 10px; border-top: 0; padding-top: 0; }
 .card { position: relative; display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 20px 20px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; color: var(--ink); text-decoration: none; transition: border-color .2s, background .2s, transform .2s, box-shadow .2s; }
-.card::after { content: "\2192"; position: absolute; right: 16px; top: 14px; color: var(--amber); opacity: 0; transition: opacity .2s, transform .2s; transform: translateX(-4px); }
+.card .thumb { display: block; margin: -20px -20px 14px; aspect-ratio: 16 / 9; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--bg); }
+.card .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: saturate(.8) brightness(.92); transition: transform .4s ease, filter .3s; }
+.card:hover .thumb img { transform: scale(1.04); filter: saturate(1.05) brightness(1); }
+.card::after { content: "\2192"; position: absolute; right: 16px; bottom: 16px; color: var(--amber); opacity: 0; transition: opacity .2s, transform .2s; transform: translateX(-4px); }
 .card:hover { border-color: var(--amber); background: var(--surface2); transform: translateY(-3px); box-shadow: 0 20px 40px -28px rgba(242,106,27,.5); }
 .card:hover::after { opacity: 1; transform: none; }
 .card .kind { font-family: var(--mono); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--amber); }
@@ -141,6 +144,24 @@ h3.group:first-of-type { margin-top: 10px; border-top: 0; padding-top: 0; }
 .tl b { display: block; font-family: var(--display); font-size: 1.12rem; margin: 2px 0 2px; }
 .tl p { margin: 0; color: var(--muted); max-width: 60ch; }
 .tl a { color: var(--ink); }
+
+/* banners and strips */
+.banner { margin: 28px 0 0; border-radius: 14px; overflow: hidden; border: 1px solid var(--line2); aspect-ratio: 21 / 9; position: relative; background: var(--bg2); }
+.banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.banner figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 28px 18px 12px; font-size: 13px; color: var(--ink); background: linear-gradient(transparent, rgba(0,0,0,.75)); font-family: var(--mono); }
+@media (max-width: 640px) { .banner { aspect-ratio: 16 / 10; } }
+.mosaic { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 180px; gap: 10px; }
+.mosaic li { position: relative; overflow: hidden; border-radius: 10px; border: 1px solid var(--line); background: var(--bg2); }
+.mosaic li.big { grid-column: span 2; grid-row: span 2; }
+.mosaic li.tall { grid-row: span 2; }
+.mosaic a, .mosaic img { display: block; width: 100%; height: 100%; }
+.mosaic img { object-fit: cover; transition: transform .5s ease; }
+.mosaic li:hover img { transform: scale(1.05); }
+.mosaic span { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 12px 10px; font-size: 12.5px; color: var(--ink); background: linear-gradient(transparent, rgba(0,0,0,.8)); opacity: 0; transition: opacity .25s; }
+.mosaic li:hover span { opacity: 1; }
+@media (max-width: 760px) { .mosaic { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 150px; } }
+.logo-row { display: flex; align-items: center; gap: 18px; margin: 10px 0 18px; }
+.logo-row img { width: 96px; height: 96px; border-radius: 12px; border: 1px solid var(--line2); background: #fff; }
 
 /* case file pages */
 .crumb { font-family: var(--mono); font-size: 13px; margin: 0 0 22px; }
