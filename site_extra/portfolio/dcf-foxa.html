@@ -22,8 +22,9 @@
 <link rel="canonical" href="https://ferrierotony-cmyk.github.io/market_dashboard/portfolio/dcf-foxa.html">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add('js')</script>
 </head>
-<body>
+<body class="inner hashead">
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-head"><div class="wrap bar">
   <a class="brand" href="index.html">AF<i>.</i></a>
@@ -31,14 +32,7 @@
   <ul class="nav" id="nav"><li><a href="index.html">Home</a></li><li><a href="projects.html">Projects</a></li><li><a href="experience.html">Experience</a></li><li><a href="leadership.html">Leadership</a></li><li><a href="education.html">Education</a></li><li><a href="contact.html">Contact</a></li></ul>
 </div></header>
 <main id="main">
-<div class="wrap" style="padding-top:56px;padding-bottom:36px">
-  <p class="crumb"><a href="index.html#case-files">&larr; All case files</a></p>
-  <p class="eyebrow">Project</p>
-  <h1>Fox DCF model<i>.</i></h1>
-  <p class="meta">Built October 24, 2026. Excel, 323 formulas, 9 sources. Fiscal year ends June 30. Market data as of October 22, 2026.</p>
-  <p class="lede">A pure linear network company with no debt problem, so it isolates the one assumption that drives the Skydance bear case: how fast cable networks decline.</p>
-
-</div>
+<div class="chead"><div class="chead-bg" data-px><img src="assets/banners/foxa.jpg" alt="" fetchpriority="high" style="object-position:center center"></div><div class="wrap chead-in"><p class="crumb"><a href="index.html#case-files">&larr; All case files</a></p><p class="eyebrow">Project</p><h1><span class="w"><span style="animation-delay:120ms">Fox</span></span> <span class="w"><span style="animation-delay:210ms">DCF</span></span> <span class="w"><span style="animation-delay:300ms">model<i>.</i></span></span></h1><p class="meta">Built October 24, 2026. Excel, 323 formulas, 9 sources. Fiscal year ends June 30. Market data as of October 22, 2026.</p></div><p class="chead-cap">Fox on the shared DCF template. Cost of capital, leverage and coverage from my model.</p></div><div class="wrap lede-wrap"><p class="lede">A pure linear network company with no debt problem, so it isolates the one assumption that drives the Skydance bear case: how fast cable networks decline.</p></div>
 <section class="section"><div class="wrap"><p class="label">Why this company</p><h2>The clean read on linear decline</h2><p>Skydance's bear case breaks because linear television shrinks 11 percent a year under $89 billion of debt. Fox is two thirds cable and broadcast networks with almost no net debt, so it shows what linear is worth on its own. Fiscal 2026 revenue still grew 5 percent with Super Bowl LX, so the decline is not a straight line.</p><p>Fox agreed in June 2026 to buy Roku for about $22 billion. It has not closed, so Roku is out.</p></div></section>
 <section class="section"><div class="wrap"><p class="label">The result</p><h2>The numbers</h2><div class="stats"><div class="stat"><div class="n">$72.52</div><p>Base case, perpetuity method at a 7.6 percent WACC and 1 percent long term growth. Just above the $68.27 price.</p></div><div class="stat"><div class="n">$58.88</div><p>Base case, exit multiple method at 7 times FY2032 EBITDA. The market pays about 8 times today.</p></div><div class="stat"><div class="n">0.5%</div><p>Perpetual growth the price implies. The market and I agree on Fox within a point, which is the best check I have that the template works.</p></div><div class="stat"><div class="n">67%</div><p>Share of value past FY2032. Lowest of the five. A long first year and flat cash flow put more of the value inside the forecast.</p></div><div class="stat"><div class="n">$42 to $97</div><p>Bear to bull across both methods. Bear runs cable down 4 to 5 percent a year with margins at 17 percent. Bull holds margins at 23 and grows Tubi.</p></div></div><p>Model outputs under stated assumptions. Nothing on this page is a recommendation to buy or sell anything.</p></div></section>
 <section class="section"><div class="wrap"><p class="label">How it is built</p><h2>Inputs that differ from the template</h2><ul class="bul"><li><b>Base year.</b> Fiscal 2026 actuals: revenue $17.1 billion, adjusted EBITDA $3.9 billion, capex $502 million, depreciation $410 million.</li><li><b>Revenue.</b> Three lines. Cable $7.5 billion, Television $9.9 billion and Other $400 million for FY2027. Growth alternates, up in even fiscal years with political advertising, Super Bowls and the World Cup, down in odd years.</li><li><b>EBITDA.</b> Margin 22 percent drifting down to 20 as sports rights grow faster than revenue. Fiscal 2026 was 22.8 percent.</li><li><b>Cash flow.</b> Capex 2.5 percent of revenue and a 0.5 percent working capital line for sports rights prepayments. Fiscal 2026 free cash flow fell to $1.5 billion from $3 billion with no explanation in the release, and the model does not assume it recovers all the way.</li><li><b>Discount rate.</b> Unlevered beta 0.6, under 0.1 debt to equity, cost of equity 7.8 percent, cost of debt 6.2 percent. WACC 7.6 percent.</li><li><b>Equity bridge.</b> $6.6 billion of debt, $4.2 billion of cash, 419.65 million shares from the 10-K cover, Class A and B together. The stub is 68 percent of FY2027.</li></ul></div></section>
@@ -53,7 +47,7 @@
   <p>Personal portfolio. The research figures are preliminary. Nothing here is investment advice, and nothing here comes from an employer.</p>
 </div></footer>
 <script>(function(){var b=document.getElementById('menu-btn'),n=document.getElementById('nav');if(b&&n){b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});}
-var els=document.querySelectorAll('.section .wrap > *, .cards li, .stat, .figs li, .tl li, .photos li');
+var els=document.querySelectorAll('.section .wrap > *, .cards li, .stat, .figs li, .tl li, .photos li, .mosaic li, .band .big');
 if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){return;}
 els.forEach(function(el,i){el.classList.add('rv');el.style.transitionDelay=((i%6)*60)+'ms';});
 var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.05});
@@ -85,6 +79,23 @@ var v=parseFloat(m[2].replace(/,/g,''));if(isNaN(v))return;var dec=(m[2].split('
 function fmt(x){var r=x.toFixed(dec);if(comma)r=r.replace(/\B(?=(\d{3})+(?!\d))/g,',');return m[1]+r+m[3];}
 var done=false;var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting&&!done){done=true;var t0=null;function step(ts){if(!t0)t0=ts;var k=Math.min(1,(ts-t0)/900);k=1-Math.pow(1-k,3);t.nodeValue=fmt(v*k);if(k<1)requestAnimationFrame(step);else t.nodeValue=s;}requestAnimationFrame(step);io.disconnect();}});},{threshold:0.3});
 t.nodeValue=fmt(0);io.observe(el);setTimeout(function(){if(!done){done=true;t.nodeValue=s;io.disconnect();}},1600);});})();
+
+(function(){var H=document.documentElement;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+var g=document.createElement('div');g.className='grain';g.setAttribute('aria-hidden','true');document.body.appendChild(g);
+if(window.matchMedia('(hover: hover) and (pointer: fine)').matches){var gl=document.createElement('div');gl.className='glow';gl.setAttribute('aria-hidden','true');document.body.appendChild(gl);var gx=0,gy=0,gr=false;
+window.addEventListener('pointermove',function(ev){gx=ev.clientX;gy=ev.clientY;gl.classList.add('on');if(!gr){gr=true;requestAnimationFrame(function(){gl.style.transform='translate('+gx+'px,'+gy+'px)';gr=false;});}},{passive:true});
+document.addEventListener('pointerleave',function(){gl.classList.remove('on');});
+document.querySelectorAll('.card, .stat').forEach(function(c){c.addEventListener('pointermove',function(ev){var r=c.getBoundingClientRect();var dx=(ev.clientX-r.left)/r.width-.5,dy=(ev.clientY-r.top)/r.height-.5;c.style.transform='perspective(900px) rotateX('+(-dy*7).toFixed(2)+'deg) rotateY('+(dx*7).toFixed(2)+'deg) translateY(-3px)';});
+c.addEventListener('pointerleave',function(){c.style.transform='';});});}
+var px=[].slice.call(document.querySelectorAll('[data-px]')),tl=document.querySelector('.tl'),tick=false;
+function run(){tick=false;var y=window.scrollY||window.pageYOffset,vh=window.innerHeight;if(y>40)H.classList.add('scrolled');else H.classList.remove('scrolled');
+px.forEach(function(el){var p=el.parentNode,r=p.getBoundingClientRect();if(r.bottom<0||r.top>vh)return;var k=(r.top+r.height/2-vh/2)/vh;el.style.transform='translateY('+(k*-9).toFixed(2)+'%)';});
+if(tl){var r=tl.getBoundingClientRect();var f=Math.max(0,Math.min(100,(vh*0.75-r.top)/r.height*100));tl.style.setProperty('--fill',f+'%');}}
+window.addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(run);}},{passive:true});window.addEventListener('resize',run);run();
+document.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('a[href]');if(!a||ev.defaultPrevented||ev.metaKey||ev.ctrlKey||ev.shiftKey||ev.altKey||ev.button!==0)return;
+var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(https?:|mailto:|tel:)/i.test(h)||a.target||a.hasAttribute('download')||!/\.html(#.*)?$/.test(h)||h.indexOf('#')>=0)return;
+ev.preventDefault();document.body.classList.add('leaving');setTimeout(function(){location.href=h;},200);});
+window.addEventListener('pageshow',function(ev){if(ev.persisted)document.body.classList.remove('leaving');});})();
 </script>
 </body>
 </html>

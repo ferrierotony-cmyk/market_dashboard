@@ -22,8 +22,9 @@
 <link rel="canonical" href="https://ferrierotony-cmyk.github.io/market_dashboard/portfolio/ccr.html">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add('js')</script>
 </head>
-<body>
+<body class="inner">
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-head"><div class="wrap bar">
   <a class="brand" href="index.html">AF<i>.</i></a>
@@ -31,13 +32,12 @@
   <ul class="nav" id="nav"><li><a href="index.html">Home</a></li><li><a href="projects.html">Projects</a></li><li><a href="experience.html">Experience</a></li><li><a href="leadership.html">Leadership</a></li><li><a href="education.html">Education</a></li><li><a href="contact.html">Contact</a></li></ul>
 </div></header>
 <main id="main">
-<div class="wrap" style="padding-top:56px;padding-bottom:36px">
+<div class="wrap phead" style="padding-top:64px;padding-bottom:36px">
   <p class="crumb"><a href="index.html#case-files">&larr; All case files</a></p>
   <p class="eyebrow">Role</p>
-  <h1>Commonwealth Capital Research<i>.</i></h1>
+  <h1><span class="w"><span style="animation-delay:120ms">Commonwealth</span></span> <span class="w"><span style="animation-delay:210ms">Capital</span></span> <span class="w"><span style="animation-delay:300ms">Research<i>.</i></span></span></h1>
   <p class="meta">Research Analyst. February 2024 to now.</p>
   <p class="lede">I write the group&#x27;s rates and credit newsletter.</p>
-
 </div>
 <section class="section"><div class="wrap"><p class="label">What I do</p><h2>Newsletter and research</h2><div class="logo-row"><img src="assets/ccr-logo.png" alt="Commonwealth Capital Research logo"><p class="note" style="margin:0">Commonwealth Capital Research, a student run research group. Rates and credit newsletter, about 200 subscribers.</p></div><p>I write the rates and credit section of the group's newsletter, which goes to about 200 subscribers. I co-wrote a SpaceX IPO report with a friend from the group, and we are working on an oil market piece that tracks how the Middle East risk premium faded through 2026.</p></div></section>
 <section class="section"><div class="wrap"><p class="label">Photos</p><h2>Fireside chat</h2><ul class="photos"><li class="tall"><figure><a href="assets/photos/ccr-elward.jpg"><img src="assets/photos/ccr-elward.jpg" alt="With Nick Elward of Natixis after the Commonwealth Capital Research fireside chat." loading="lazy"></a><figcaption>With Nick Elward of Natixis after the Commonwealth Capital Research fireside chat.</figcaption></figure></li></ul></div></section>
@@ -48,7 +48,7 @@
   <p>Personal portfolio. The research figures are preliminary. Nothing here is investment advice, and nothing here comes from an employer.</p>
 </div></footer>
 <script>(function(){var b=document.getElementById('menu-btn'),n=document.getElementById('nav');if(b&&n){b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});}
-var els=document.querySelectorAll('.section .wrap > *, .cards li, .stat, .figs li, .tl li, .photos li');
+var els=document.querySelectorAll('.section .wrap > *, .cards li, .stat, .figs li, .tl li, .photos li, .mosaic li, .band .big');
 if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){return;}
 els.forEach(function(el,i){el.classList.add('rv');el.style.transitionDelay=((i%6)*60)+'ms';});
 var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.05});
@@ -80,6 +80,23 @@ var v=parseFloat(m[2].replace(/,/g,''));if(isNaN(v))return;var dec=(m[2].split('
 function fmt(x){var r=x.toFixed(dec);if(comma)r=r.replace(/\B(?=(\d{3})+(?!\d))/g,',');return m[1]+r+m[3];}
 var done=false;var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting&&!done){done=true;var t0=null;function step(ts){if(!t0)t0=ts;var k=Math.min(1,(ts-t0)/900);k=1-Math.pow(1-k,3);t.nodeValue=fmt(v*k);if(k<1)requestAnimationFrame(step);else t.nodeValue=s;}requestAnimationFrame(step);io.disconnect();}});},{threshold:0.3});
 t.nodeValue=fmt(0);io.observe(el);setTimeout(function(){if(!done){done=true;t.nodeValue=s;io.disconnect();}},1600);});})();
+
+(function(){var H=document.documentElement;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+var g=document.createElement('div');g.className='grain';g.setAttribute('aria-hidden','true');document.body.appendChild(g);
+if(window.matchMedia('(hover: hover) and (pointer: fine)').matches){var gl=document.createElement('div');gl.className='glow';gl.setAttribute('aria-hidden','true');document.body.appendChild(gl);var gx=0,gy=0,gr=false;
+window.addEventListener('pointermove',function(ev){gx=ev.clientX;gy=ev.clientY;gl.classList.add('on');if(!gr){gr=true;requestAnimationFrame(function(){gl.style.transform='translate('+gx+'px,'+gy+'px)';gr=false;});}},{passive:true});
+document.addEventListener('pointerleave',function(){gl.classList.remove('on');});
+document.querySelectorAll('.card, .stat').forEach(function(c){c.addEventListener('pointermove',function(ev){var r=c.getBoundingClientRect();var dx=(ev.clientX-r.left)/r.width-.5,dy=(ev.clientY-r.top)/r.height-.5;c.style.transform='perspective(900px) rotateX('+(-dy*7).toFixed(2)+'deg) rotateY('+(dx*7).toFixed(2)+'deg) translateY(-3px)';});
+c.addEventListener('pointerleave',function(){c.style.transform='';});});}
+var px=[].slice.call(document.querySelectorAll('[data-px]')),tl=document.querySelector('.tl'),tick=false;
+function run(){tick=false;var y=window.scrollY||window.pageYOffset,vh=window.innerHeight;if(y>40)H.classList.add('scrolled');else H.classList.remove('scrolled');
+px.forEach(function(el){var p=el.parentNode,r=p.getBoundingClientRect();if(r.bottom<0||r.top>vh)return;var k=(r.top+r.height/2-vh/2)/vh;el.style.transform='translateY('+(k*-9).toFixed(2)+'%)';});
+if(tl){var r=tl.getBoundingClientRect();var f=Math.max(0,Math.min(100,(vh*0.75-r.top)/r.height*100));tl.style.setProperty('--fill',f+'%');}}
+window.addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(run);}},{passive:true});window.addEventListener('resize',run);run();
+document.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('a[href]');if(!a||ev.defaultPrevented||ev.metaKey||ev.ctrlKey||ev.shiftKey||ev.altKey||ev.button!==0)return;
+var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(https?:|mailto:|tel:)/i.test(h)||a.target||a.hasAttribute('download')||!/\.html(#.*)?$/.test(h)||h.indexOf('#')>=0)return;
+ev.preventDefault();document.body.classList.add('leaving');setTimeout(function(){location.href=h;},200);});
+window.addEventListener('pageshow',function(ev){if(ev.persisted)document.body.classList.remove('leaving');});})();
 </script>
 </body>
 </html>
