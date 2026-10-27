@@ -113,7 +113,13 @@ for src, mk in RSS_SOURCES.items():
             lk = re.search(r"<link>\s*(https?://[^<\s]+)", item) or re.search(r"<link[^>]*href=\"(https?://[^\"]+)", item)
             if not lk:
                 continue
-            u = html.unescape(lk.group(1).strip()).split("?")[0] if "bing.com" not in lk.group(1) else html.unescape(lk.group(1).strip())
+            u = html.unescape(lk.group(1).strip())
+            if "bing.com/news/apiclick" in u:
+                m = re.search(r"[?&]url=([^&]+)", u)
+                if not m:
+                    continue
+                u = requests.utils.unquote(m.group(1))
+            u = u.split("?")[0]
             t = re.search(r"(?s)<title>(.*?)</title>", item)
             d = re.search(r"<pubDate>(.*?)</pubDate>", item)
             if u not in found:
@@ -163,7 +169,11 @@ for n, (u, src) in enumerate(list(found.items())[:MAX_WIRE * 3]):
         continue  # headline from the feed is not about a notes offer, so skip the page fetch
     r = get(u, tries=1)
     time.sleep(0.4)
-    raw = r.text if r is not None else ""
+    raw = ""
+    if r is not None:
+        if "charset" not in (r.headers.get("content-type") or "").lower():
+            r.encoding = "utf-8"
+        raw = r.text
     d = page_date(raw, u) if raw else ""
     if not d and rss_date:
         try:
@@ -190,7 +200,13 @@ for n, (u, src) in enumerate(list(found.items())[:MAX_WIRE * 3]):
     key = "wire_" + re.sub(r"[^A-Za-z0-9]", "_", u.split("//", 1)[-1])[-120:]
     with open(os.path.join(TXT, key + ".txt"), "w", encoding="utf-8") as f:
         f.write(text)
-    issuer = dateline_name(text) or re.split(r"\s+(?:Announces|Commences|Extends|Launches|Reports|Prices)\b", title, 1, re.I)[0].strip()
+    issuer = ""
+    parts = re.split(r"\s+(?:Announces?|Commences?|Extends?|Launches?|Reports?|Prices?|Increases?|Amends?|Completes?|Receives?)\b", title, 1, flags=re.I)
+    if len(parts) == 2 and 2 < len(parts[0]) < 70:
+        issuer = parts[0]
+    issuer = issuer or dateline_name(text) or title[:60]
+    issuer = re.sub(r"^(?:[A-Z][a-z]{2,8}\.? \d{1,2}, 20\d\d\s*-+\s*)?", "", issuer)  # a leading dateline date
+    issuer = re.split(r"\s+\((?:NYSE|NASDAQ|Nasdaq|TSX|LSE|OTC)[^)]*\)", issuer)[0].strip(" ,-–—|")
     meta.append({"key": key, "file_date": d, "issuer": issuer, "doc": doc, "url": u, "adsh": src})
     added += 1
     if added % 25 == 0:

@@ -42,6 +42,14 @@ def norm(s):
     return re.sub(r"[^a-z0-9]", "", s.lower())
 
 
+def company_key(name):
+    """One key for one company however a source spells it: 'Oneok Inc /New/', 'ONEOK, Inc.', 'Kimberly-Clark Corporation', 'Kimberly Clark Corp'."""
+    n = re.sub(r"[^a-z0-9 ]", "", name.lower().replace("-", ""))
+    n = re.sub(r"\b(inc|incorporated|corp|corporation|company|co|plc|ltd|limited|llc|lp|sa|sab|de|cv|nv|ag|the|new|holdings|holding|group)\b", " ", n)
+    n = re.sub(r"\s+", "", n)
+    return n[:6] or norm(name)[:6]
+
+
 def classify(title, text, doc=""):
     """kind from the headline only; the body is never used to decide the kind."""
     t = title.lower()
@@ -254,14 +262,28 @@ for mm in meta:
 
 # dedupe: same headline on the same date is one release filed by several entities
 seen, uniq = {}, []
-for e in sorted(events, key=lambda e: e["file_date"]):
+SRC_RANK = {"EX-99.1": 0, "EX-99.2": 1, "EX-99.3": 1, "EX-99": 1, "6-K": 2, "WIRE": 3, "WIRE-TITLE": 4, "8-K": 5}
+for e in sorted(events, key=lambda e: (e["file_date"], SRC_RANK.get(e["doc"], 6))):
     k = (norm(e["title"])[:100], e["kind"]) if e["title"] else (e["url"],)
+    if k not in seen and e["kind"] in ("launch", "early_results", "final_results", "extension", "pricing_terms", "amendment", "terminated"):
+        # the same release reaches us as an SEC exhibit and as a newswire page with slightly different headlines
+        for o in uniq:
+            if o["kind"] == e["kind"] and company_key(o["issuer_sec"] or o["subject"]) == company_key(e["issuer_sec"] or e["subject"]) \
+                    and abs((datetime.fromisoformat(o["file_date"]) - datetime.fromisoformat(e["file_date"])).days) <= 1 \
+                    and (o.get("securities", "") == e.get("securities", "") or not o.get("securities") or not e.get("securities")):
+                k = (norm(o["title"])[:100], o["kind"]) if o["title"] else (o["url"],)
+                break
     if k in seen:
         seen[k]["n_filers"] = seen[k].get("n_filers", 1) + 1
+        src = seen[k]
+        for f in ("securities", "cap", "expiration_date", "early_date", "cusips"):  # fill gaps from the duplicate
+            if not src.get(f) and e.get(f):
+                src[f] = e[f]
         continue
     e["n_filers"] = 1
     seen[k] = e
     uniq.append(e)
+# the newswire page for the same company and day often has no SEC twin but the same facts. keep SEC first (already sorted).
 
 offer_kinds = ("launch", "early_results", "final_results", "extension", "pricing_terms", "amendment", "terminated", "unverified_offer")
 ev_offer = [e for e in uniq if e["kind"] in offer_kinds and e["kind"] != "unverified_offer"]
@@ -271,7 +293,7 @@ other_rel = [e for e in uniq if e["kind"] == "financing_linked"]
 groups = defaultdict(list)
 RANK = {"launch": 0, "amendment": 1, "extension": 2, "early_results": 3, "pricing_terms": 4, "final_results": 5, "terminated": 5, "unverified_offer": 6}
 for e in sorted(ev_offer, key=lambda e: (e["file_date"], RANK.get(e["kind"], 9))):
-    groups[norm(e["issuer_sec"].split()[0] if e["issuer_sec"] else e["subject"])].append(e)
+    groups[company_key(e["issuer_sec"] or e["subject"])].append(e)
 offers = []
 for subj, lst in groups.items():
     mine = []
@@ -279,6 +301,13 @@ for subj, lst in groups.items():
         sec = set(filter(None, e.get("securities", "").split("; ")))
         cands = [o for o in mine if (datetime.fromisoformat(e["file_date"]) - datetime.fromisoformat(o["last"])).days <= 75]
         target = None
+        if e["kind"] == "launch" and cands:
+            # the same launch seen twice within two days, from two sources or two filers, is one offer
+            for o in cands:
+                if o["has_launch"] and (datetime.fromisoformat(e["file_date"]) - datetime.fromisoformat(o["first"])).days <= 2 \
+                        and ((sec and o["sec"] and len(sec & o["sec"]) / len(sec | o["sec"]) >= 0.5) or ((not sec or not o["sec"]) and e.get("cap", "") == next((x.get("cap", "") for x in o["events"] if x["kind"] == "launch"), ""))):
+                    target = o
+                    break
         if e["kind"] != "launch" and cands:
             if sec:
                 # assign a result or amendment to the offer whose securities it overlaps most, so two offers by one company do not mix
