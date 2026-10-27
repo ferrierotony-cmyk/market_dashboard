@@ -415,6 +415,29 @@ h2.rv.in { filter: blur(0); }
   .label::after { width: 48px; }
 }
 
+/* portrait hero */
+.cine.portrait .cine-bg { background: radial-gradient(720px 520px at 78% 40%, rgba(242,106,27,.14), transparent 65%), radial-gradient(900px 600px at 10% 90%, rgba(255,255,255,.03), transparent 60%); }
+.cine.portrait .cine-bg::after { display: none; }
+.cine-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); gap: 48px; align-items: center; }
+.cine-grid > .cine-text > * { max-width: 620px; }
+.portrait-box { margin: 0; justify-self: end; width: 100%; opacity: 0; animation: fadeup 1.1s .35s cubic-bezier(.2,.75,.15,1) forwards; }
+.portrait-box img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 18px; border: 1px solid var(--line2); box-shadow: 0 0 0 1px rgba(242,106,27,.35), 0 30px 80px rgba(0,0,0,.65), 0 0 120px rgba(242,106,27,.12); background: #fff; }
+.portrait-box figcaption { margin: 12px 2px 0; font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: right; }
+@media (max-width: 760px) {
+  .cine.portrait { align-items: center; }
+  .cine.portrait .cine-in { padding-top: 88px; padding-bottom: 80px; }
+  .cine-grid { grid-template-columns: 1fr; gap: 28px; }
+  .portrait-box { order: -1; justify-self: start; width: min(62vw, 260px); }
+  .portrait-box figcaption { text-align: left; }
+}
+
+/* one grade for every photo so phone shots sit with the dark charts */
+.card .thumb.photo img, .mosaic img, .photos img, .banner img[src*="/photos/"] { filter: saturate(.72) brightness(.82) contrast(1.06); }
+.card .thumb.photo::after, .mosaic li::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(11,11,12,.08), rgba(11,11,12,.0) 40%, rgba(11,11,12,.55) 100%); }
+.card .thumb { position: relative; }
+.card:hover .thumb.photo img { filter: saturate(.9) brightness(.95) contrast(1.04); }
+.mosaic li:hover img { filter: saturate(.9) brightness(.95) contrast(1.04); }
+
 /* footer */
 .site-foot { border-top: 1px solid var(--line); margin-top: 40px; padding: 26px 0 48px; color: var(--muted); font-size: 14px; }
 .site-foot .row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; }
