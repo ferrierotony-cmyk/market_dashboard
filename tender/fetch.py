@@ -11,7 +11,7 @@ UA = {"User-Agent": "TenderTrackerResearch student project " + CONTACT, "Accept-
 OUT = os.path.join(os.path.dirname(__file__), "out")
 TXT = os.path.join(OUT, "texts")
 os.makedirs(TXT, exist_ok=True)
-MAX_DOCS = int(os.environ.get("MAX_DOCS", "400"))
+MAX_DOCS = int(os.environ.get("MAX_DOCS", "1200"))
 OFFSET = int(os.environ.get("OFFSET_DAYS", "0"))
 today = dt.date.today() - dt.timedelta(days=OFFSET)
 start = today - dt.timedelta(days=90)
@@ -31,14 +31,31 @@ def get(url, **kw):
     return None
 
 # 1. search -------------------------------------------------------------------------------------
-queries = ['"cash tender offer" "notes"', '"early tender" "expiration" "notes"', '"announces" "exchange offer" "notes"',
-           '"announces" "tender offer" "any and all"', '"announces" "tender offers" "notes"', '"announces" "offer to purchase" "notes"']
+# Phrase search is exact, so singular and plural are separate queries. Foreign issuers file 6-K, not 8-K.
+queries = ['"cash tender offer" "notes"', '"cash tender offers" "notes"',
+           '"tender offer" "senior notes"', '"tender offers" "senior notes"', '"tender offer" "notes due"', '"tender offers" "notes due"',
+           '"early tender" "expiration" "notes"', '"early tender date"', '"early tender deadline"', '"early tender premium"', '"early tender payment"',
+           '"early participation payment"', '"early participation date"',
+           '"announces" "exchange offer" "notes"', '"announces" "exchange offers" "notes"', '"offer to exchange" "notes"', '"offers to exchange" "notes"',
+           '"exchange offer" "consent solicitation"', '"exchange offers" "consent solicitations"',
+           '"announces" "tender offer" "any and all"', '"any and all" "tender offer"', '"any and all" "tender offers"',
+           '"announces" "tender offers" "notes"', '"announces" "tender offer" "notes"',
+           '"announces" "offer to purchase" "notes"', '"offer to purchase for cash"', '"offers to purchase for cash"',
+           '"tender offer consideration"', '"total consideration" "tender offer"', '"total consideration" "tender offers"',
+           '"tender cap"', '"maximum tender amount"', '"aggregate maximum tender"', '"maximum aggregate purchase price"',
+           '"results of" "tender offer"', '"results of" "tender offers"', '"expiration" "tender offer" "notes"', '"expiration" "tender offers" "notes"',
+           '"final results" "tender"', '"extends" "tender offer"', '"extends" "tender offers"', '"extends" "exchange offer"',
+           '"commencement of" "tender offer"', '"commencement of" "tender offers"', '"commenced" "tender offer" "notes"',
+           '"debentures" "tender offer"', '"acceptance priority level"', '"waterfall" "tender"',
+           '"dealer manager" "tender offer"', '"dealer managers" "tender offers"', '"dealer manager" "exchange offer"', '"information agent" "tender"',
+           '"consent solicitation" "consent payment" "notes"', '"consent solicitation statement"']
+FORMS = os.environ.get("FORMS", "8-K,6-K")
 hits = {}
 for q in queries:
     frm = 0
     while frm < 600:
-        url = ("https://efts.sec.gov/LATEST/search-index?q=%s&forms=8-K&dateRange=custom&startdt=%s&enddt=%s&from=%d"
-               % (requests.utils.quote(q), start, today, frm))
+        url = ("https://efts.sec.gov/LATEST/search-index?q=%s&forms=%s&dateRange=custom&startdt=%s&enddt=%s&from=%d"
+               % (requests.utils.quote(q), FORMS, start, today, frm))
         r = get(url)
         time.sleep(0.2)
         if r is None: break
@@ -59,7 +76,7 @@ if not hits:
 # keep press release exhibits and the 8-K body, newest first
 def pr_like(h):
     ft = (h["_source"].get("file_type") or "")
-    return ft.startswith("EX-99") or ft == "8-K"
+    return ft.startswith("EX-99") or ft in ("8-K", "6-K")
 cands = [h for h in hits.values() if pr_like(h)]
 log("press release style documents", len(cands), "of", len(hits))
 docs = sorted(cands, key=lambda h: h["_source"].get("file_date", ""), reverse=True)[:MAX_DOCS]
@@ -91,7 +108,7 @@ for n, h in enumerate(docs):
     with open(os.path.join(TXT, key + ".txt"), "w", encoding="utf-8") as f: f.write(text)
     meta.append({"key": key, "file_date": s.get("file_date"), "issuer": (s.get("display_names") or [""])[0],
                  "doc": s.get("file_type"), "url": url, "adsh": adsh})
-    if n % 25 == 0: log("fetched", n + 1, "of", len(docs))
+    if n % 100 == 0: log("fetched", n + 1, "of", len(docs))
 json.dump(meta, open(os.path.join(OUT, "meta.json"), "w"))
 log("cached", len(meta), "documents")
 with open(os.path.join(OUT, "fetch_log.txt"), "w") as f: f.write("\n".join(log_lines) + "\n")
