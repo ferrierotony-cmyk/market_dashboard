@@ -184,7 +184,7 @@ for n, (u, src) in enumerate(list(found.items())[:MAX_WIRE * 3]):
         continue
     tm = re.search(r"<title>(.*?)</title>", raw, re.I | re.S)
     title = clean(tm.group(1)) if tm else rss_title
-    if not raw or len(raw) < 2000 or re.search(r"access denied|request blocked|captcha|are you a robot", raw[:3000], re.I):
+    if not raw or len(raw) < 2000 or re.search(r"access denied|request blocked|captcha|are you a robot|oops, something went wrong|just a moment", raw[:6000], re.I):
         title = rss_title or title
         raw = ""  # page blocked: keep the headline and the link, the parser reads the kind from the headline
     head = title[:260]
@@ -207,6 +207,7 @@ for n, (u, src) in enumerate(list(found.items())[:MAX_WIRE * 3]):
     issuer = issuer or dateline_name(text) or title[:60]
     issuer = re.sub(r"^(?:[A-Z][a-z]{2,8}\.? \d{1,2}, 20\d\d\s*-+\s*)?", "", issuer)  # a leading dateline date
     issuer = re.split(r"\s+\((?:NYSE|NASDAQ|Nasdaq|TSX|LSE|OTC)[^)]*\)", issuer)[0].strip(" ,-–—|")
+    issuer = re.split(r"\s+(?:intends|plans|to issue|completes|successfully|has|today)\b", issuer, 1, flags=re.I)[0].strip(" ,-–—|")[:60]
     meta.append({"key": key, "file_date": d, "issuer": issuer, "doc": doc, "url": u, "adsh": src})
     added += 1
     if added % 25 == 0:

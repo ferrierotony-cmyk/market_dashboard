@@ -44,7 +44,8 @@ def norm(s):
 
 def company_key(name):
     """One key for one company however a source spells it: 'Oneok Inc /New/', 'ONEOK, Inc.', 'Kimberly-Clark Corporation', 'Kimberly Clark Corp'."""
-    n = re.sub(r"[^a-z0-9 ]", "", name.lower().replace("-", ""))
+    n = re.sub(r"\(.*?\)", " ", name.lower()).replace("-", "")  # drop tickers and CIKs the SEC index appends
+    n = re.sub(r"[^a-z0-9 ]", "", n)
     n = re.sub(r"\b(inc|incorporated|corp|corporation|company|co|plc|ltd|limited|llc|lp|sa|sab|de|cv|nv|ag|the|new|holdings|holding|group)\b", " ", n)
     n = re.sub(r"\s+", "", n)
     return n[:6] or norm(name)[:6]
@@ -74,6 +75,8 @@ def classify(title, text, doc=""):
         return "early_results"
     if re.search(r"extension|extends|extended", t):
         return "extension"
+    if re.search(r"increase|upsiz|upsize|decrease|reduc", t) and not re.search(r"results", t):
+        return "amendment"
     if re.search(r"final results|final tender results|expiration and (?:final )?results|expiration of|settlement of|results of|and results|results and|announces results|expiration, pricing", t):
         return "final_results"
     if re.search(r"terminat", t):
@@ -305,7 +308,7 @@ for subj, lst in groups.items():
             # the same launch seen twice within two days, from two sources or two filers, is one offer
             for o in cands:
                 if o["has_launch"] and (datetime.fromisoformat(e["file_date"]) - datetime.fromisoformat(o["first"])).days <= 2 \
-                        and ((sec and o["sec"] and len(sec & o["sec"]) / len(sec | o["sec"]) >= 0.5) or ((not sec or not o["sec"]) and e.get("cap", "") == next((x.get("cap", "") for x in o["events"] if x["kind"] == "launch"), ""))):
+                        and ((sec and o["sec"] and (len(sec & o["sec"]) / len(sec | o["sec"]) >= 0.5 or sec <= o["sec"] or o["sec"] <= sec)) or ((not sec or not o["sec"]) and e.get("cap", "") == next((x.get("cap", "") for x in o["events"] if x["kind"] == "launch"), ""))):
                     target = o
                     break
         if e["kind"] != "launch" and cands:
