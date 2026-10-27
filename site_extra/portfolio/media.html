@@ -94,7 +94,7 @@ var mx=Math.max(d.price*2.2,(isNaN(vp)?0:vp)*1.1,ve*1.1);$('xp-fill').style.widt
   <p>Personal portfolio. The research figures are preliminary. Nothing here is investment advice, and nothing here comes from an employer.</p>
 </div></footer>
 <script>(function(){var b=document.getElementById('menu-btn'),n=document.getElementById('nav');if(b&&n){b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});}
-var els=document.querySelectorAll('.section .wrap > *, .cards li, .stat, .figs li, .tl li, .photos li, .mosaic li, .band .big');
+var els=document.querySelectorAll('.section .wrap > *, .cards li, .stat, .figs li, .tl li, .photos li, .mosaic li, .band .big, .sband .big');
 if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){return;}
 els.forEach(function(el,i){el.classList.add('rv');el.style.transitionDelay=((i%6)*60)+'ms';});
 var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.05});
