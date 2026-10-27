@@ -308,7 +308,7 @@ for subj, lst in groups.items():
             # the same launch seen twice within two days, from two sources or two filers, is one offer
             for o in cands:
                 if o["has_launch"] and (datetime.fromisoformat(e["file_date"]) - datetime.fromisoformat(o["first"])).days <= 2 \
-                        and ((sec and o["sec"] and (len(sec & o["sec"]) / len(sec | o["sec"]) >= 0.5 or sec <= o["sec"] or o["sec"] <= sec)) or ((not sec or not o["sec"]) and e.get("cap", "") == next((x.get("cap", "") for x in o["events"] if x["kind"] == "launch"), ""))):
+                        and ((sec and o["sec"] and (len(sec & o["sec"]) / len(sec | o["sec"]) >= 0.5 or ((sec <= o["sec"] or o["sec"] <= sec) and min(len(sec), len(o["sec"])) >= 2 and e.get("cap", "") == next((x.get("cap", "") for x in o["events"] if x["kind"] == "launch"), "")))) or ((not sec or not o["sec"]) and e.get("cap", "") == next((x.get("cap", "") for x in o["events"] if x["kind"] == "launch"), ""))):
                     target = o
                     break
         if e["kind"] != "launch" and cands:
