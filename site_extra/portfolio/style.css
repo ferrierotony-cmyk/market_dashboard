@@ -155,6 +155,7 @@ h3.group:first-of-type { margin-top: 10px; border-top: 0; padding-top: 0; }
 .mosaic li { position: relative; overflow: hidden; border-radius: 10px; border: 1px solid var(--line); background: var(--bg2); }
 .mosaic li.big { grid-column: span 2; grid-row: span 2; }
 .mosaic li.tall { grid-row: span 2; }
+.mosaic li.wide { grid-column: span 2; }
 .mosaic a, .mosaic img { display: block; width: 100%; height: 100%; }
 .mosaic img { object-fit: cover; transition: transform .5s ease; }
 .mosaic li:hover img { transform: scale(1.05); }
@@ -226,7 +227,11 @@ table.cmp td a { color: var(--accent); font-weight: 600; }
 .photos a { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: #0e0e10; }
 .photos li.tall a { aspect-ratio: 3 / 4; }
 .photos li.wide { grid-column: span 2; }
-.photos li.wide a { aspect-ratio: 16 / 9; }
+.photos li.wide a { aspect-ratio: 2 / 1; }
+.photos li.sq a { aspect-ratio: 1 / 1; }
+.photos.duo { grid-template-columns: repeat(2, 1fr); }
+.photos.duo li a { aspect-ratio: 1 / 1; }
+@media (max-width: 480px) { .photos.duo { grid-template-columns: 1fr; } }
 .photos img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .photos figcaption { padding: 10px 14px 12px; font-size: 14px; line-height: 1.45; color: var(--muted); }
 @media (max-width: 760px) { .photos { grid-template-columns: repeat(2, 1fr); } .photos li.wide { grid-column: span 2; } }
