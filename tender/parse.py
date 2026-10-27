@@ -144,7 +144,7 @@ def def_date(text, term, kind=""):
 NEWNOTE_AFTER = r"^[^.]{0,90}?[“\"]\s*(?:the )?(?:New|Financing)"
 NEWNOTE_RULE_A = re.compile(r"\bnew(?:ly[\- ]issued)?\b[\w\s\-&,’']{0,35}$", re.I)
 NEWNOTE_RULE_B = re.compile(r"\$[\d\.,]+\s*(?:million|billion)?\s+(?:in\s+)?(?:aggregate\s+)?principal amount of\s+$", re.I)
-REDEEM = re.compile(r"(?:redeem|redemption|redeemed)[^.]{0,100}$", re.I)
+REDEEM = re.compile(r"(?:redeem|redemption|redeemed)(?:[^.]|\.(?=\d)){0,110}$", re.I)
 
 
 def is_new_or_redeemed(text, m):
@@ -154,8 +154,10 @@ def is_new_or_redeemed(text, m):
         return True
     if NEWNOTE_RULE_B.search(before[-90:]) and re.search(r"offering|financing|priced|closing|issue|offered|consisting of", before, re.I):
         return True
-    if REDEEM.search(before[-120:]):
+    if REDEEM.search(before[-130:]):
         return True
+    if re.search(r"\$1,000 in aggregate principal amount of\s+$", before[-60:]):
+        return True  # exchange consideration table: the notes given in exchange are new notes, not targets
     return bool(re.search(NEWNOTE_AFTER, after))
 
 
@@ -234,7 +236,7 @@ for mm in meta:
     title, ctext = get_title(text)
     subject = clean_issuer(mm["issuer"])
     kind = classify(ctext, text, mm["doc"])
-    if kind in ("launch", "extension", "final_results", "early_results", "amendment", "pricing_terms") and re.search(
+    if kind in ("launch", "extension", "final_results", "early_results", "amendment", "pricing_terms") and not re.search(r"private (?:exchange )?offers?|private exchange", ctext + " " + text[:600], re.I) and re.search(
             r"registration rights|unregistered notes|outstanding unregistered|(?:equal|like) principal amount of", text[:6000], re.I) and re.search(r"exchange offers?|offers? to exchange", text[:1500], re.I):
         kind = "registered_exchange"
     if kind == "other" and re.search(r"notes offering|offering of .{0,40}notes|pricing of .{0,60}notes", ctext, re.I) and not re.search(r"results|earnings|quarter", ctext, re.I) and re.search(r"(?:fund|finance|repurchase)[^.]{0,160}tender offer", text[:5000], re.I):
@@ -271,20 +273,44 @@ for e in sorted(ev_offer, key=lambda e: (e["file_date"], RANK.get(e["kind"], 9))
     groups[norm(e["issuer_sec"].split()[0] if e["issuer_sec"] else e["subject"])].append(e)
 offers = []
 for subj, lst in groups.items():
-    cur = None
+    mine = []
     for e in lst:
         sec = set(filter(None, e.get("securities", "").split("; ")))
-        newoffer = (cur is None or e["kind"] == "launch"
-                    or (sec and cur["sec"] and not (sec & cur["sec"]))
-                    or (datetime.fromisoformat(e["file_date"]) - datetime.fromisoformat(cur["last"])).days > 75)
-        if newoffer:
-            cur = {"subject": e["subject"] or e["issuer_sec"], "first": e["file_date"], "last": e["file_date"], "events": [],
-                   "sec": set(), "has_launch": False}
-            offers.append(cur)
-        cur["events"].append(e)
-        cur["last"] = e["file_date"]
-        cur["sec"] |= sec
-        cur["has_launch"] |= e["kind"] == "launch"
+        cands = [o for o in mine if (datetime.fromisoformat(e["file_date"]) - datetime.fromisoformat(o["last"])).days <= 75]
+        target = None
+        if e["kind"] != "launch" and cands:
+            if sec:
+                # assign a result or amendment to the offer whose securities it overlaps most, so two offers by one company do not mix
+                scored = [(len(sec & o["sec"]) / len(sec | o["sec"]), o["last"], i) for i, o in enumerate(cands) if o["sec"] and sec & o["sec"]]
+                if scored:
+                    target = cands[max(scored)[2]]
+                elif not any(o["sec"] for o in cands):
+                    target = cands[-1]
+            else:
+                target = cands[-1]
+        if target is None:
+            target = {"subject": e["subject"] or e["issuer_sec"], "first": e["file_date"], "last": e["file_date"], "events": [],
+                      "sec": set(), "has_launch": False}
+            mine.append(target)
+            offers.append(target)
+        target["events"].append(e)
+        target["last"] = max(target["last"], e["file_date"])
+        target["sec"] |= sec
+        target["has_launch"] |= e["kind"] == "launch"
+# a subsidiary can issue a release for its parent's offer (Vylor for Corteva). Attach an offer with no launch of its own to another
+# company's offer when the securities are identical and the dates are close.
+for o in list(offers):
+    if o["has_launch"] or not o["sec"]:
+        continue
+    for p_ in offers:
+        if p_ is o or p_["subject"] == o["subject"] or p_["sec"] != o["sec"]:
+            continue
+        gap = abs((datetime.fromisoformat(o["first"]) - datetime.fromisoformat(p_["last"])).days)
+        if gap <= 75 and p_["has_launch"]:
+            p_["events"] = sorted(p_["events"] + o["events"], key=lambda e: (e["file_date"], RANK.get(e["kind"], 9)))
+            p_["last"] = max(p_["last"], o["last"])
+            offers.remove(o)
+            break
 for o in offers:
     last = None
     for e in o["events"]:
