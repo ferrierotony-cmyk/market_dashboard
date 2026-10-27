@@ -1,144 +1,219 @@
 <title>Tender Tracker</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<meta name="theme-color" content="#0d0d0d">
 <style>
-/* Layout: one narrow column header, a trust strip, then a tabbed work surface of dense tables. */
+/* Same system as the Morning Market Dashboard: near black page, flat panels with hairline borders, 12px type, one accent per job.
+   Always dark. Numbers are tabular and right aligned. Status is a dot and a word, not a pill. */
 :root {
-  --bg: #f2f4f5;
-  --surface: #ffffff;
-  --ink: #14202a;
-  --muted: #5b6a75;
-  --line: #d8dfe3;
-  --accent: #0d6b62;
-  --accent-soft: #dcefec;
-  --warn: #8a5a00;
-  --warn-soft: #fbefd2;
-  --bad: #a3332b;
-  --bad-soft: #f7dedb;
-  --ok: #1d6b3a;
-  --ok-soft: #dcf0e2;
-  --sans: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f1519; --surface: #172026; --ink: #e5ecef; --muted: #93a3ad; --line: #28343c;
-    --accent: #4fc2b4; --accent-soft: #15363a; --warn: #f0c36a; --warn-soft: #3a2f14;
-    --bad: #f08a80; --bad-soft: #3d1f1d; --ok: #7ad49a; --ok-soft: #173424; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0f1519; --surface: #172026; --ink: #e5ecef; --muted: #93a3ad; --line: #28343c;
-  --accent: #4fc2b4; --accent-soft: #15363a; --warn: #f0c36a; --warn-soft: #3a2f14;
-  --bad: #f08a80; --bad-soft: #3d1f1d; --ok: #7ad49a; --ok-soft: #173424; color-scheme: dark;
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface2: #222220; --ink: #ffffff; --ink2: #c3c2b7; --muted: #9a9890;
+  --grid: #2c2c2a; --axis: #45453f; --border: rgba(255,255,255,.10); --hover: rgba(255,255,255,.05);
+  --blue: #3987e5; --orange: #d95926; --green: #3ccf3c; --red: #e66767; --amber: #f5c75a;
+  --warn-bg: #3a2e10; --warn: #f5c75a;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --gap: 7px; --top: 46px;
 }
 * { box-sizing: border-box; }
-body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.5; margin: 0; }
-.wrap { max-width: 1120px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 8px 24px; }
-h1 { font-size: 2rem; line-height: 1.1; margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
-.sub { color: var(--muted); margin: 6px 0 0; max-width: 62ch; }
-.stamp { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: right; }
-.trust { display: flex; gap: 12px; align-items: flex-start; margin: 22px 0 18px; padding: 12px 14px; background: var(--warn-soft); color: var(--warn); border-radius: 6px; font-size: 14px; }
-.trust strong { white-space: nowrap; }
-.facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0 0 22px; padding: 0; list-style: none; }
-.facts li { display: flex; align-items: baseline; gap: 8px; }
-.facts b { font-family: var(--mono); font-size: 1.35rem; font-weight: 500; font-variant-numeric: tabular-nums; }
-.facts span { color: var(--muted); font-size: 13px; }
-nav[role=tablist] { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 14px; overflow-x: auto; }
-nav button { font: inherit; font-weight: 600; background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted); padding: 10px 14px; cursor: pointer; white-space: nowrap; }
-nav button[aria-selected=true] { color: var(--ink); border-bottom-color: var(--accent); }
-nav button:hover { color: var(--ink); }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.tools { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; align-items: center; }
-input[type=search], select { font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; min-width: 0; }
-input[type=search] { flex: 1 1 220px; max-width: 360px; }
-label.chk { display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: 13px; }
-.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
-table { border-collapse: collapse; width: 100%; min-width: 760px; }
-th { text-align: left; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
-tr:last-child td { border-bottom: 0; }
-tr.main { cursor: pointer; }
-tr.main:hover td { background: var(--accent-soft); }
-td.num, td.date { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+html, body { margin: 0; background: var(--page); color: var(--ink); font: 12px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
+button, select, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+
+/* top bar */
+.top { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; padding: 6px 10px; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 20; min-height: var(--top); }
+.brand { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
+.brand h1 { font-size: 15px; margin: 0; font-weight: 700; }
+.brand .sub { color: var(--ink2); font-size: 11.5px; }
+.tabs { display: flex; gap: 2px; }
+.tabs button { border: 0; background: none; padding: 5px 10px; border-radius: 6px; color: var(--ink2); font-weight: 600; white-space: nowrap; }
+.tabs button:hover { background: var(--hover); }
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--surface); }
+.status { display: flex; align-items: center; gap: 10px; margin-left: auto; color: var(--ink2); font-size: 11px; white-space: nowrap; flex-wrap: wrap; }
+.status i { font-style: normal; color: var(--muted); }
+.chip { border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; font-weight: 600; background: var(--warn-bg); color: var(--warn); }
+
+main { padding: var(--gap); display: flex; flex-direction: column; gap: var(--gap); }
+.view[hidden] { display: none; }
+
+/* trust strip */
+.note { background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--amber); border-radius: 7px; padding: 6px 10px; color: var(--ink2); font-size: 11.5px; }
+.note b { color: var(--amber); font-weight: 600; margin-right: 6px; }
+
+/* ribbon tiles */
+.ribbon { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--gap); }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 6px 9px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tile .lbl { font-size: 10px; color: var(--ink2); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile .val { font-size: 19px; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tile .chg { font-size: 10.5px; color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile.hero .val { font-size: 26px; }
+.tile.warn .val { color: var(--amber); }
+
+/* grid and panels */
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); align-items: start; }
+.c8 { grid-column: span 8; } .c4 { grid-column: span 4; } .c12 { grid-column: span 12; }
+.col { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
+.w { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.wh { display: flex; align-items: baseline; gap: 8px; padding: 6px 9px 3px; min-height: 24px; flex-wrap: wrap; }
+.wh h2 { margin: 0; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.wh h2 .s { font-weight: 400; color: var(--muted); font-size: 10.5px; margin-left: 4px; }
+.wh .src { margin-left: auto; font-size: 10px; color: var(--muted); white-space: nowrap; }
+.wb { padding: 0 9px 8px; }
+.ctl { display: flex; gap: 6px; align-items: center; margin-left: auto; flex-wrap: wrap; }
+.ctl input[type=search], .ctl select { border: 1px solid var(--border); background: var(--surface2); border-radius: 6px; padding: 3px 8px; min-width: 0; }
+.ctl input[type=search] { width: 200px; }
+.ctl label { color: var(--ink2); font-size: 11px; display: flex; gap: 5px; align-items: center; }
+.scroll { overflow: auto; max-height: 68vh; }
+
+/* tables */
+table.tbl { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 11px; }
+.tbl th { position: sticky; top: 0; background: var(--surface); font-weight: 600; color: var(--ink2); padding: 4px 8px; border-bottom: 1px solid var(--grid); font-size: 10.5px; z-index: 1; white-space: nowrap; text-align: left; }
+.tbl th.sortable { cursor: pointer; user-select: none; }
+.tbl th.sortable:hover { color: var(--ink); }
+.tbl th[aria-sort="descending"]::after { content: " \25BE"; }
+.tbl th[aria-sort="ascending"]::after { content: " \25B4"; }
+.tbl td { padding: 3px 8px; border-bottom: 1px solid var(--grid); white-space: nowrap; vertical-align: top; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl tr.main { cursor: pointer; }
+.tbl tr.main:hover td, .tbl tr.main:focus td { background: var(--hover); outline: none; }
+.tbl tr.main[aria-expanded="true"] td:first-child { box-shadow: inset 2px 0 0 var(--blue); }
+.tbl .ar { text-align: right; }
 .who { font-weight: 600; }
-.sec { font-family: var(--mono); font-size: 12.5px; }
-.more { color: var(--muted); }
-.pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
-.pill.open { background: var(--ok-soft); color: var(--ok); }
-.pill.done { background: var(--accent-soft); color: var(--accent); }
-.pill.stale { background: var(--warn-soft); color: var(--warn); }
-.pill.dead { background: var(--bad-soft); color: var(--bad); }
-.steps { display: flex; flex-wrap: wrap; gap: 4px; }
-.step { font-size: 11.5px; padding: 1px 7px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); white-space: nowrap; }
-tr.detail td { background: var(--bg); }
-.detail h4 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-.detail ul { margin: 0 0 10px; padding-left: 18px; }
-.detail li { margin: 2px 0; }
-a { color: var(--accent); }
-.flag { font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; color: var(--warn); margin-left: 4px; }
-.empty { padding: 28px; color: var(--muted); text-align: center; }
-.rel { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
-.relrow { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; min-width: 0; }
-.relrow .pct { font-family: var(--mono); font-size: 1.6rem; font-weight: 500; }
-.relrow.hi .pct { color: var(--ok); }
-.relrow.mid .pct { color: var(--warn); }
-.relrow p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
-.notes { max-width: 70ch; color: var(--muted); font-size: 14px; }
-.notes li { margin: 6px 0; }
-footer { margin-top: 28px; color: var(--muted); font-size: 12.5px; max-width: 80ch; }
-@media (max-width: 600px) { h1 { font-size: 1.6rem; } .stamp { text-align: left; } }
-@media (prefers-reduced-motion: no-preference) { tr.main td { transition: background 0.12s; } }
+.mono { font-family: var(--mono); font-size: 10.5px; }
+.cut { max-width: 168px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dim { color: var(--muted); }
+.flag { font-size: 9px; font-weight: 600; letter-spacing: .05em; color: var(--amber); margin-left: 4px; opacity: .9; }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+.s-open .dot { background: var(--green); } .s-done .dot { background: var(--blue); } .s-stale .dot { background: var(--amber); } .s-dead .dot { background: var(--red); }
+.s-stale { color: var(--amber); }
+.trail { color: var(--muted); }
+.trail b { text-transform: none; }
+.trail b { color: var(--ink2); font-weight: 600; }
+.trail i { font-style: normal; opacity: .6; padding: 0 3px; }
+tr.detail td { background: var(--page); white-space: normal; padding: 8px 10px 10px 14px; }
+.detail h4 { margin: 0 0 3px; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink2); font-weight: 600; }
+.detail ul { margin: 0 0 8px; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 2px 14px; }
+.detail ul.col1 { display: block; }
+.empty { padding: 22px; color: var(--muted); text-align: center; white-space: normal; }
+
+/* side panels */
+.bars { display: flex; flex-direction: column; gap: 4px; }
+.bar { display: grid; grid-template-columns: 112px 1fr 24px; align-items: center; gap: 8px; width: 100%; border: 0; background: none; padding: 1px 0; text-align: left; }
+.bar:hover .track i { filter: brightness(1.2); }
+.bar .nm { color: var(--ink2); white-space: nowrap; }
+.bar .track { height: 8px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+.bar .track i { display: block; height: 100%; border-radius: 2px; }
+.bar .n { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.spark svg { display: block; width: 100%; height: 96px; }
+.spark text { fill: var(--muted); font-size: 9.5px; }
+.legend { display: flex; gap: 12px; color: var(--ink2); font-size: 10.5px; margin-top: 2px; }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.soon { list-style: none; margin: 0; padding: 0; }
+.soon li { display: flex; gap: 8px; align-items: baseline; padding: 3px 0; border-bottom: 1px solid var(--grid); }
+.soon li:last-child { border-bottom: 0; }
+.soon .d { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--ink2); white-space: nowrap; }
+
+/* reliability */
+.rel { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.rel td, .rel th { padding: 5px 8px; border-bottom: 1px solid var(--grid); text-align: left; font-size: 11px; }
+.rel th { color: var(--ink2); font-weight: 600; font-size: 10.5px; }
+.rel .pc { font-size: 15px; font-weight: 600; white-space: nowrap; }
+.rel .pc.hi { color: var(--green); } .rel .pc.mid { color: var(--amber); }
+.rel .tr { width: 34%; }
+.rel .track { height: 8px; background: var(--surface2); border-radius: 2px; position: relative; }
+.rel .track i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; }
+.rel .track em { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--ink2); }
+.notes { margin: 0; padding: 0 0 0 16px; color: var(--ink2); line-height: 1.5; }
+.notes li { margin: 4px 0; }
+.para { color: var(--ink2); line-height: 1.5; margin: 0 0 8px; max-width: 90ch; }
+footer { color: var(--muted); font-size: 10.5px; padding: 2px 2px 10px; max-width: 110ch; }
+
+@media (max-width: 1000px) { .ribbon { grid-template-columns: repeat(3, minmax(0, 1fr)); } .c8, .c4 { grid-column: span 12; } }
+@media (max-width: 600px) {
+  .ribbon { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .brand .sub { display: none; }
+  .status { margin-left: 0; }
+  .ctl { margin-left: 0; width: 100%; } .ctl input[type=search] { flex: 1; width: auto; }
+  .scroll { max-height: none; }
+  .hm { display: none; }
+  .tile.hero { grid-column: span 2; }
+  .cut { max-width: 112px; }
+  tr.detail td > * { max-width: calc(100vw - 52px); }
+  .tbl td:first-child, .tbl th:first-child { position: sticky; left: 0; background: var(--surface); z-index: 2; box-shadow: 1px 0 0 var(--grid); }
+  .tbl td, .tbl th { padding-left: 6px; padding-right: 6px; }
+  .bar { grid-template-columns: 96px 1fr 22px; }
+}
 </style>
-<div class="wrap">
-  <header>
-    <div>
-      <h1>Tender Tracker</h1>
-      <p class="sub">Cash tender offers and exchange offers for corporate bonds, read from public SEC filings.</p>
+<header class="top">
+  <div class="brand"><h1>Tender Tracker</h1><span class="sub">Bond tender and exchange offers from SEC filings</span></div>
+  <div class="tabs" role="tablist" aria-label="Views">
+    <button role="tab" id="t-offers" aria-selected="true" aria-controls="v-offers">Offers</button>
+    <button role="tab" id="t-events" aria-selected="false" aria-controls="v-events">Releases</button>
+    <button role="tab" id="t-rel" aria-selected="false" aria-controls="v-rel">Reliability</button>
+  </div>
+  <div class="status"><span id="stamp"></span><span class="chip">No person has checked these rows</span></div>
+</header>
+<main>
+  <div class="note" role="note"><b>Read the filing before you rely on it.</b>On filings the rules had never seen, offer type and dates were right about nine times in ten, and securities and caps about three times in four. Every row links to its filing.</div>
+  <div class="ribbon" id="ribbon"></div>
+
+  <section class="view" id="v-offers" role="tabpanel" aria-labelledby="t-offers">
+    <div class="grid">
+      <div class="w c8">
+        <div class="wh"><h2>Offers<span class="s" id="ocount"></span></h2>
+          <div class="ctl">
+            <input type="search" id="q" placeholder="Search issuer or coupon" aria-label="Search offers">
+            <select id="st" aria-label="Status"><option value="">All statuses</option><option value="open">Open</option><option value="done">Finished</option><option value="stale">Past expiration, no result seen</option><option value="dead">Terminated</option></select>
+          </div>
+        </div>
+        <div class="scroll"><table class="tbl" id="otbl"><thead><tr>
+          <th class="sortable" data-k="subject">Issuer</th><th class="sortable" data-k="status">Status</th><th>Securities<span class="flag">UNVERIFIED</span></th>
+          <th class="sortable ar" data-k="cap">Cap<span class="flag">UNVERIFIED</span></th><th class="sortable" data-k="exp">Expires</th><th class="sortable hm" data-k="last">Last release</th><th class="hm">Stage</th></tr></thead><tbody id="ob"></tbody></table></div>
+      </div>
+      <div class="col c4">
+        <div class="w"><div class="wh"><h2>Offers by status</h2><span class="src">click to filter</span></div><div class="wb"><div class="bars" id="bars"></div></div></div>
+        <div class="w"><div class="wh"><h2>Filings read by day<span class="s">last 90 days</span></h2></div><div class="wb"><div class="spark" id="spark"></div>
+          <div class="legend"><span><i style="background:var(--orange)"></i>Offer release</span><span><i style="background:var(--axis)"></i>Other filing that matched</span></div></div></div>
+        <div class="w"><div class="wh"><h2>Expiring next</h2><span class="src">open offers only</span></div><div class="wb"><ul class="soon" id="soon"></ul></div></div>
+      </div>
     </div>
-    <div class="stamp" id="stamp"></div>
-  </header>
-  <div class="trust" role="note"><strong>Read the filing before you rely on it.</strong><span>On filings the rules had never seen, offer type and dates were right about nine times in ten, and securities and caps about three times in four. Every row links to its filing. The Reliability tab shows how this was measured.</span></div>
-  <ul class="facts" id="facts"></ul>
-  <nav role="tablist" aria-label="Views">
-    <button role="tab" id="t-offers" aria-selected="true" aria-controls="p-offers">Offers</button>
-    <button role="tab" id="t-events" aria-selected="false" aria-controls="p-events">Releases</button>
-    <button role="tab" id="t-rel" aria-selected="false" aria-controls="p-rel">Reliability</button>
-  </nav>
-  <section id="p-offers" role="tabpanel" aria-labelledby="t-offers">
-    <div class="tools">
-      <input type="search" id="q" placeholder="Search issuer or coupon" aria-label="Search offers">
-      <select id="st" aria-label="Status"><option value="">All statuses</option><option value="open">Open</option><option value="done">Finished</option><option value="stale">Past expiration, no result seen</option><option value="dead">Terminated</option></select>
+  </section>
+
+  <section class="view" id="v-events" role="tabpanel" aria-labelledby="t-events" hidden>
+    <div class="w">
+      <div class="wh"><h2>Releases<span class="s" id="ecount"></span></h2>
+        <div class="ctl">
+          <input type="search" id="q2" placeholder="Search issuer or title" aria-label="Search releases">
+          <select id="kd" aria-label="Release type"><option value="">All offer releases</option></select>
+          <label><input type="checkbox" id="all"> Include non-offer releases</label>
+        </div>
+      </div>
+      <div class="scroll"><table class="tbl"><thead><tr><th>Filed</th><th>Issuer</th><th>Type</th><th>Securities<span class="flag">UNVERIFIED</span></th><th class="ar">Cap<span class="flag">UNVERIFIED</span></th><th>Expires</th><th>Filing</th></tr></thead><tbody id="eb"></tbody></table></div>
     </div>
-    <div class="scroll"><table><thead><tr><th>Issuer</th><th>Status</th><th>Securities<span class="flag">UNVERIFIED</span></th><th>Cap<span class="flag">UNVERIFIED</span></th><th>Expires</th><th>Last release</th><th>Steps seen</th></tr></thead><tbody id="ob"></tbody></table></div>
   </section>
-  <section id="p-events" role="tabpanel" aria-labelledby="t-events" hidden>
-    <div class="tools">
-      <input type="search" id="q2" placeholder="Search issuer or title" aria-label="Search releases">
-      <select id="kd" aria-label="Release type"><option value="">All offer releases</option></select>
-      <label class="chk"><input type="checkbox" id="all"> Include earnings and other non-offer releases</label>
+
+  <section class="view" id="v-rel" role="tabpanel" aria-labelledby="t-rel" hidden>
+    <div class="grid">
+      <div class="w c8"><div class="wh"><h2>Share of rows a reviewer marked correct</h2><span class="src">against the filing text</span></div><div class="wb">
+        <p class="para">The large figure comes from two blind tests on filings the rules had never seen, 103 offer releases in all. The tick on each bar is the last 90 days, the period the rules were built on, so it is the best case. The reviewers were AI models reading the filings. A person has not checked these rows.</p>
+        <table class="rel"><thead><tr><th>Field</th><th>Blind</th><th class="tr"></th><th>Last 90 days</th><th>What it means</th></tr></thead><tbody id="rel"></tbody></table>
+      </div></div>
+      <div class="w c4"><div class="wh"><h2>Known limits</h2></div><div class="wb"><ul class="notes">
+        <li>Recall is unmeasured. The extractor found 32 of 33 offer releases it was shown, but that says nothing about filings the search never returned.</li>
+        <li>Caps in euros and caps split by pool or series are known weak spots.</li>
+        <li>Status is worked out from the releases seen. A finished offer shows as past expiration if its result filing was missed.</li>
+        <li>A model reading each filing scored far higher on one 105 row test. It is not running here because it costs money per call.</li>
+      </ul></div></div>
     </div>
-    <div class="scroll"><table><thead><tr><th>Filed</th><th>Issuer</th><th>Type</th><th>Securities<span class="flag">UNVERIFIED</span></th><th>Cap<span class="flag">UNVERIFIED</span></th><th>Expires</th><th>Filing</th></tr></thead><tbody id="eb"></tbody></table></div>
   </section>
-  <section id="p-rel" role="tabpanel" aria-labelledby="t-rel" hidden>
-    <p class="notes">Each figure is the share of rows a reviewer marked correct against the text of the filing. The large number comes from two blind tests on filings the rules had never seen, 103 offer releases in all. The small number comes from the last 90 days, the period the rules were built on, so it is the best case. The reviewers were AI models reading the filings. A person has not checked these rows.</p>
-    <div class="rel" id="rel"></div>
-    <ul class="notes">
-      <li>Recall is unmeasured. In the last 90 day check the extractor found 32 of 33 offer releases it was shown, but that says nothing about filings the search never returned.</li>
-      <li>Caps in euros and caps split by pool or series are known weak spots.</li>
-      <li>Status is worked out from the releases seen. A finished offer shows as past expiration if its result filing was missed.</li>
-      <li>A model reading each filing scored far higher on one 105 row test, but it is not running here because it costs money per call.</li>
-    </ul>
-  </section>
-  <footer>Source: SEC EDGAR full text search, exhibits to Form 8-K. Built by a script that runs once a day. Public filings only. This is a research aid, not advice and not a record of what any holder was paid.</footer>
-</div>
+  <footer>Source: SEC EDGAR full text search, exhibits to Form 8-K. Built by a script that runs once a day. Public filings only. A research aid, not advice and not a record of what any holder was paid.</footer>
+</main>
 <script>
 const D = __DATA__;
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const KIND = { launch: "Launch", early_results: "Early results", final_results: "Final results", extension: "Extension", pricing_terms: "Pricing terms", amendment: "Amendment", terminated: "Terminated" };
+const SHORT = { launch: "Launch", early_results: "Early", final_results: "Final", extension: "Extended", pricing_terms: "Pricing", amendment: "Amended", terminated: "Terminated" };
 const OFFER_KINDS = new Set(D.offerKinds);
 const today = new Date().toISOString().slice(0, 10);
 
@@ -148,51 +223,103 @@ function status(o) {
   if (o.exp && o.exp < today) return "stale";
   return "open";
 }
-const STATUS_TEXT = { open: "Open", done: "Finished", stale: "Past expiration", dead: "Terminated" };
+const ST = { open: "Open", done: "Finished", stale: "Past expiration", dead: "Terminated" };
+const ORDER = { open: 0, stale: 1, done: 2, dead: 3 };
+D.offers.forEach(o => { o.status = status(o); });
+const count = s => D.offers.filter(o => o.status === s).length;
+const offerReleases = D.events.filter(e => OFFER_KINDS.has(e[2]));
 
-$("stamp").innerHTML = "Filings through " + esc(D.through) + "<br>Page built " + esc(D.built);
-const nOpen = D.offers.filter(o => status(o) === "open").length;
-$("facts").innerHTML =
-  [[D.offers.length, "offers tracked"], [nOpen, "open now"], [D.events.filter(e => OFFER_KINDS.has(e[2])).length, "offer releases"], [D.events.length, "filings read"]]
-    .map(([n, t]) => "<li><b>" + n + "</b><span>" + t + "</span></li>").join("");
+$("stamp").innerHTML = "Filings through <b>" + esc(D.through) + "</b> <i>built " + esc(D.built) + "</i>";
+$("ribbon").innerHTML = [
+  ["Offers tracked", D.offers.length, "", "hero", ""],
+  ["Open now", count("open"), "not yet at expiration", "", ""],
+  ["Past expiration", count("stale"), "no result filing seen", "", count("stale") ? "warn" : ""],
+  ["Offer releases", offerReleases.length, "launches, results, extensions", "", ""],
+  ["Filings read", D.events.length, "through " + D.through, "", ""]
+].map(t => '<div class="tile ' + t[3] + " " + t[4] + '"><span class="lbl">' + t[0] + '</span><span class="val">' + t[1] + '</span><span class="chg">' + t[2] + "</span></div>").join("");
 
 function secText(list) {
-  if (!list.length) return '<span class="more">none read</span>';
+  if (!list.length) return '<span class="dim">none read</span>';
   const head = list.slice(0, 2).map(esc).join("; ");
-  return list.length > 2 ? head + ' <span class="more">+' + (list.length - 2) + " more</span>" : head;
+  return list.length > 2 ? head + ' <span class="dim">+' + (list.length - 2) + "</span>" : head;
 }
+function capNum(c) { const m = String(c || "").match(/([\d.]+)(bn|m)?/); return m ? parseFloat(m[1]) * (m[2] === "bn" ? 1000 : 1) : -1; }
+let sortK = "last", sortDir = -1;
 const open = new Set();
 function renderOffers() {
   const q = $("q").value.trim().toLowerCase(), st = $("st").value;
-  const list = D.offers.filter(o => (!st || status(o) === st) && (!q || (o.subject + " " + o.securities.join(" ")).toLowerCase().includes(q)));
-  $("ob").innerHTML = list.length ? list.map((o, i) => {
-    const s = status(o), key = o.subject + "|" + o.first;
-    const rel = D.events.filter(e => e[1] === o.subject && OFFER_KINDS.has(e[2]));
-    let h = '<tr class="main" data-k="' + esc(key) + '" tabindex="0" aria-expanded="' + open.has(key) + '"><td class="who">' + esc(o.subject) + '</td><td><span class="pill ' + s + '">' + STATUS_TEXT[s] + '</span></td><td class="sec">' + secText(o.securities) + '</td><td class="num">' + (esc(o.cap) || '<span class="more">none read</span>') + '</td><td class="date">' + (esc(o.exp) || "") + '</td><td class="date">' + esc(o.last) + '</td><td><div class="steps">' + o.kinds.map(k => '<span class="step">' + (KIND[k] || esc(k)) + "</span>").join("") + "</div></td></tr>";
+  let list = D.offers.filter(o => (!st || o.status === st) && (!q || (o.subject + " " + o.securities.join(" ")).toLowerCase().includes(q)));
+  list.sort((a, b) => {
+    let x, y;
+    if (sortK === "status") { x = ORDER[a.status]; y = ORDER[b.status]; }
+    else if (sortK === "cap") { x = capNum(a.cap); y = capNum(b.cap); }
+    else { x = a[sortK] || ""; y = b[sortK] || ""; }
+    return (x < y ? -1 : x > y ? 1 : 0) * sortDir;
+  });
+  $("ocount").textContent = list.length + " of " + D.offers.length;
+  document.querySelectorAll("#otbl th.sortable").forEach(th => th.setAttribute("aria-sort", th.dataset.k === sortK ? (sortDir > 0 ? "ascending" : "descending") : "none"));
+  $("ob").innerHTML = list.length ? list.map(o => {
+    const key = o.subject + "|" + o.first + "|" + o.kinds.join();
+    const rel = D.events.filter(e => e[1] === o.subject && OFFER_KINDS.has(e[2]) && o.urls.includes(e[7]));
+    const lastK = o.kinds[o.kinds.length - 1], trail = "<b>" + (SHORT[lastK] || esc(lastK)) + "</b> <span class=\"dim\">· " + o.kinds.length + "</span>";
+    let h = '<tr class="main" data-k="' + esc(key) + '" tabindex="0" aria-expanded="' + open.has(key) + '"><td class="who">' + esc(o.subject) + '</td><td class="s-' + o.status + '"><span class="dot"></span>' + ST[o.status] + '</td><td class="mono sec"><div class="cut">' + secText(o.securities) + '</div></td><td class="ar mono">' + (esc(o.cap) || '<span class="dim">none read</span>') + '</td><td class="mono">' + (esc(o.exp) || "") + '</td><td class="mono hm">' + esc(o.last) + '</td><td class="trail hm">' + trail + "</td></tr>";
     if (open.has(key)) {
-      h += '<tr class="detail"><td colspan="7"><h4>All securities read</h4><ul class="sec">' + (o.securities.map(x => "<li>" + esc(x) + "</li>").join("") || "<li>none</li>") + "</ul><h4>Releases</h4><ul>" +
-        rel.map(e => "<li>" + esc(e[0]) + " " + (KIND[e[2]] || esc(e[2])) + ' <a href="' + esc(e[7]) + '" target="_blank" rel="noopener">open filing</a></li>').join("") + "</ul></td></tr>";
+      h += '<tr class="detail"><td colspan="7"><h4>All securities read</h4><ul class="mono">' + (o.securities.map(x => "<li>" + esc(x) + "</li>").join("") || "<li>none</li>") + "</ul><h4>Releases</h4><ul class=\"col1\">" +
+        rel.map(e => "<li><span class=\"mono dim\">" + esc(e[0]) + "</span>  " + (KIND[e[2]] || esc(e[2])) + ' <a href="' + esc(e[7]) + '" target="_blank" rel="noopener">open filing</a></li>').join("") + "</ul></td></tr>";
     }
     return h;
   }).join("") : '<tr><td colspan="7" class="empty">No offers match.</td></tr>';
 }
 $("ob").addEventListener("click", e => { const r = e.target.closest("tr.main"); if (!r || e.target.closest("a")) return; const k = r.dataset.k; open.has(k) ? open.delete(k) : open.add(k); renderOffers(); });
 $("ob").addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches("tr.main")) { e.preventDefault(); e.target.click(); } });
+document.querySelectorAll("#otbl th.sortable").forEach(th => th.addEventListener("click", () => { const k = th.dataset.k; if (sortK === k) sortDir = -sortDir; else { sortK = k; sortDir = (k === "subject" || k === "status") ? 1 : -1; } renderOffers(); }));
 $("q").addEventListener("input", renderOffers); $("st").addEventListener("change", renderOffers);
 
+// side panels
+const COLORS = { open: "var(--green)", stale: "var(--amber)", done: "var(--blue)", dead: "var(--red)" };
+const maxN = Math.max(1, ...Object.keys(ST).map(count));
+$("bars").innerHTML = ["open", "stale", "done", "dead"].map(s => '<button class="bar" data-s="' + s + '"><span class="nm">' + ST[s] + '</span><span class="track"><i style="width:' + (count(s) / maxN * 100) + "%;background:" + COLORS[s] + '"></i></span><span class="n">' + count(s) + "</span></button>").join("");
+$("bars").addEventListener("click", e => { const b = e.target.closest(".bar"); if (!b) return; $("st").value = $("st").value === b.dataset.s ? "" : b.dataset.s; renderOffers(); });
+
+(function spark() {
+  const end = new Date(D.through + "T00:00:00Z"), days = 90, per = {};
+  D.events.forEach(e => { const k = e[0]; (per[k] = per[k] || [0, 0])[OFFER_KINDS.has(e[2]) ? 0 : 1]++; });
+  const W = 400, H = 96, base = 80, top = 6, bw = W / days;
+  const mx = Math.max(1, ...Object.values(per).map(v => v[0] + v[1]));
+  let svg = '<svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" role="img" aria-label="Filings read by day">';
+  svg += '<line x1="0" x2="' + W + '" y1="' + base + '" y2="' + base + '" stroke="var(--axis)" stroke-width="0.6"/>';
+  for (let i = 0; i < days; i++) {
+    const d = new Date(end - (days - 1 - i) * 864e5), k = d.toISOString().slice(0, 10), v = per[k];
+    if (!v) continue;
+    const h1 = v[0] / mx * (base - top), h2 = v[1] / mx * (base - top);
+    svg += '<rect x="' + (i * bw + 0.4).toFixed(1) + '" width="' + (bw - 0.8).toFixed(1) + '" y="' + (base - h1).toFixed(1) + '" height="' + h1.toFixed(1) + '" fill="var(--orange)"/>';
+    svg += '<rect x="' + (i * bw + 0.4).toFixed(1) + '" width="' + (bw - 0.8).toFixed(1) + '" y="' + (base - h1 - h2).toFixed(1) + '" height="' + h2.toFixed(1) + '" fill="var(--axis)"/>';
+  }
+  const lab = i => new Date(end - (days - 1 - i) * 864e5).toISOString().slice(5, 10);
+  svg += '<text x="0" y="93">' + lab(0) + '</text><text x="' + W / 2 + '" y="93" text-anchor="middle">' + lab(45) + '</text><text x="' + W + '" y="93" text-anchor="end">' + lab(days - 1) + "</text></svg>";
+  $("spark").innerHTML = svg;
+})();
+
+(function soon() {
+  const l = D.offers.filter(o => o.status === "open" && o.exp).sort((a, b) => a.exp < b.exp ? -1 : 1).slice(0, 5);
+  $("soon").innerHTML = l.length ? l.map(o => "<li><span class=\"who\">" + esc(o.subject) + '</span><span class="d">' + esc(o.exp) + "</span></li>").join("") : '<li class="dim">Nothing open with a known expiration.</li>';
+})();
+
+// releases
 $("kd").insertAdjacentHTML("beforeend", D.offerKinds.map(k => '<option value="' + k + '">' + KIND[k] + "</option>").join(""));
 function renderEvents() {
   const q = $("q2").value.trim().toLowerCase(), kd = $("kd").value, all = $("all").checked;
   const list = D.events.filter(e => (all || OFFER_KINDS.has(e[2])) && (!kd || e[2] === kd) && (!q || (e[1] + " " + e[8]).toLowerCase().includes(q)));
-  $("eb").innerHTML = list.length ? list.map(e => '<tr><td class="date">' + esc(e[0]) + '</td><td class="who">' + esc(e[1]) + '</td><td>' + (KIND[e[2]] || esc(e[2].replace(/_/g, " "))) + '</td><td class="sec">' + (esc(e[3]) || "") + '</td><td class="num">' + esc(e[4]) + '</td><td class="date">' + esc(e[5]) + '</td><td><a href="' + esc(e[7]) + '" target="_blank" rel="noopener">open</a></td></tr>').join("") : '<tr><td colspan="7" class="empty">No releases match.</td></tr>';
+  $("ecount").textContent = list.length + " shown";
+  $("eb").innerHTML = list.length ? list.map(e => '<tr><td class="mono">' + esc(e[0]) + '</td><td class="who">' + esc(e[1]) + '</td><td>' + (KIND[e[2]] || esc(e[2].replace(/_/g, " "))) + '</td><td class="mono">' + (esc(e[3]).slice(0, 90) || "") + '</td><td class="ar mono">' + esc(e[4]) + '</td><td class="mono">' + esc(e[5]) + '</td><td><a href="' + esc(e[7]) + '" target="_blank" rel="noopener">open</a></td></tr>').join("") : '<tr><td colspan="7" class="empty">No releases match.</td></tr>';
 }
 $("q2").addEventListener("input", renderEvents); $("kd").addEventListener("change", renderEvents); $("all").addEventListener("change", renderEvents);
 
 const REL = [["Offer type", 90, 98, "Launch, results, extension and so on."], ["Early tender date", 95, 94, "Where the release states one."], ["Expiration date", 92, 94, "After any extension."], ["Securities", 76, 85, "Coupon and maturity of the targeted notes."], ["Cap", 75, 94, "Overall maximum amount, where there is one."]];
-$("rel").innerHTML = REL.map(r => '<div class="relrow ' + (r[1] >= 90 ? "hi" : "mid") + '"><div class="pct">' + r[1] + '%</div><strong>' + r[0] + "</strong><p>" + r[3] + " Last 90 days, best case: " + r[2] + "%.</p></div>").join("");
+$("rel").innerHTML = REL.map(r => '<tr><td class="who">' + r[0] + '</td><td class="pc ' + (r[1] >= 90 ? "hi" : "mid") + '">' + r[1] + '%</td><td class="tr"><div class="track"><i style="width:' + r[1] + "%;background:" + (r[1] >= 90 ? "var(--green)" : "var(--amber)") + '"></i><em style="left:' + r[2] + '%"></em></div></td><td class="dim">' + r[2] + "%</td><td class=\"dim\">" + r[3] + "</td></tr>").join("");
 
 const tabs = ["offers", "events", "rel"];
-function show(t) { tabs.forEach(n => { $("p-" + n).hidden = n !== t; $("t-" + n).setAttribute("aria-selected", n === t); }); try { localStorage.setItem("tt-tab", t); } catch (e) {} }
+function show(t) { tabs.forEach(n => { $("v-" + n).hidden = n !== t; $("t-" + n).setAttribute("aria-selected", n === t); }); try { localStorage.setItem("tt-tab", t); } catch (e) {} }
 tabs.forEach(n => $("t-" + n).addEventListener("click", () => show(n)));
 renderOffers(); renderEvents();
 try { const t = localStorage.getItem("tt-tab"); if (tabs.includes(t)) show(t); } catch (e) {}
