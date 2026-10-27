@@ -37,21 +37,55 @@ def rows(name):
     return list(csv.DictReader(open(p, encoding="utf-8"))) if os.path.exists(p) else []
 
 
+SUPP = os.path.join(os.path.dirname(__file__), "supplement.csv")
+
+
+def hand_rows(seen_urls):
+    """Offers added by hand from press releases the SEC search did not return. Kept in tender/supplement.csv with a source URL on
+    every row. They are shown with a hand tag and never counted as filings read or in the accuracy numbers."""
+    if not os.path.exists(SUPP):
+        return [], []
+    ev, groups = [], {}
+    for r in csv.DictReader(open(SUPP, encoding="utf-8")):
+        if not r.get("date") or r["url"] in seen_urls:
+            continue
+        secs = [x.strip() for x in (r.get("securities") or "").split(";") if x.strip() and x.strip() != "?"]
+        cap = "" if (r.get("cap") or "").strip() in ("", "?") else ("any and all" if "any and all" in r["cap"].lower() else money(r["cap"]))
+        exp = "" if (r.get("expiration") or "").strip() in ("", "?") else r["expiration"].strip()
+        early = "" if (r.get("early_date") or "").strip() in ("", "?") else r["early_date"].strip()
+        ev.append([r["date"], r["issuer"], r["kind"], "; ".join(secs), cap, exp, early, r["url"], (r.get("title") or "")[:160], "hand"])
+        g = groups.setdefault(r.get("offer") or r["issuer"], {"subject": r["issuer"], "first": r["date"], "last": r["date"], "kinds": [],
+                                                                 "securities": [], "cap": "", "exp": "", "launch": False, "urls": [], "hand": True, "note": r.get("note") or ""})
+        g["first"], g["last"] = min(g["first"], r["date"]), max(g["last"], r["date"])
+        g["kinds"].append(r["kind"]); g["urls"].append(r["url"])
+        for x in secs:
+            if x not in g["securities"]:
+                g["securities"].append(x)
+        g["cap"] = cap or g["cap"]; g["exp"] = exp or g["exp"]; g["launch"] |= r["kind"] == "launch"
+    for g in groups.values():
+        g["securities"].sort()
+    return list(groups.values()), ev
+
+
 def build():
     offers, events = rows("offers.csv"), rows("events.csv")
     ev = []
     for e in events:
         ev.append([e["file_date"], e["subject"], e["kind"], e["securities"], money(e["cap"]), e["expiration_date"],
-                   e["early_date"], e["url"], e["title"][:160]])
+                   e["early_date"], e["url"], e["title"][:160], "sec"])
     off = []
     for o in offers:
         off.append({"subject": o["subject"], "first": o["first"], "last": o["last"], "kinds": [k for k in o["event_kinds"].split(">") if k],
                     "securities": [s.strip() for s in o["securities"].split(";") if s.strip()], "cap": money(o["cap"]),
-                    "exp": o["expiration_latest"], "launch": o["has_launch"] == "True", "urls": o["urls"].split()})
+                    "exp": o["expiration_latest"], "launch": o["has_launch"] == "True", "urls": o["urls"].split(), "hand": False})
+    hoff, hev = hand_rows({e[7] for e in ev})
+    off += hoff
+    ev += hev
     off.sort(key=lambda x: x["last"], reverse=True)
-    last_date = max([e[0] for e in ev] or [""])
+    ev.sort(key=lambda e: e[0], reverse=True)
+    last_date = max([e[0] for e in ev if e[9] == "sec"] or [""])
     data = {"offers": off, "events": ev, "through": last_date, "built": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d"),
-            "offerKinds": sorted(OFFER_KINDS)}
+            "offerKinds": sorted(OFFER_KINDS), "hand": len(hoff)}
     return json.dumps(data, separators=(",", ":")).replace("</", "<\\/")
 
 

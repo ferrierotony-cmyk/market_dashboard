@@ -143,6 +143,7 @@ footer { color: var(--muted); font-size: 10.5px; padding: 2px 2px 10px; max-widt
   .tbl td, .tbl th { padding-left: 6px; padding-right: 6px; }
   .bar { grid-template-columns: 96px 1fr 22px; }
 }
+.flag.hand { background: var(--amber); color: #0b0b0c; padding: 1px 5px; border-radius: 3px; opacity: 1; }
 </style>
 <header class="top">
   <div class="brand"><h1>Tender Tracker</h1><span class="sub">Bond tender and exchange offers from SEC filings</span></div>
@@ -203,10 +204,11 @@ footer { color: var(--muted); font-size: 10.5px; padding: 2px 2px 10px; max-widt
         <li>Caps in euros and caps split by pool or series are known weak spots.</li>
         <li>Status is worked out from the releases seen. A finished offer shows as past expiration if its result filing was missed.</li>
         <li>A model reading each filing scored far higher on one 105 row test. It is not running here because it costs money per call.</li>
+        <li>Rows tagged HAND were added by hand from press releases the SEC search did not return, with the source linked. Their fields were typed from the release, not read by the rules, and are not in the accuracy numbers.</li>
       </ul></div></div>
     </div>
   </section>
-  <footer>Source: SEC EDGAR full text search, exhibits to Form 8-K. Built by a script that runs once a day. Public filings only. A research aid, not advice and not a record of what any holder was paid.</footer>
+  <footer>Source: SEC EDGAR full text search, exhibits to Forms 8-K and 6-K, plus press releases added by hand where marked. Built by a script that runs once a day. Public filings only. A research aid, not advice and not a record of what any holder was paid.</footer>
 </main>
 <script>
 const D = __DATA__;
@@ -234,8 +236,9 @@ $("ribbon").innerHTML = [
   ["Offers tracked", D.offers.length, "", "hero", ""],
   ["Open now", count("open"), "not yet at expiration", "", ""],
   ["Past expiration", count("stale"), "no result filing seen", "", count("stale") ? "warn" : ""],
-  ["Offer releases", offerReleases.length, "launches, results, extensions", "", ""],
-  ["Filings read", D.events.length, "through " + D.through, "", ""]
+  ["Offer releases", offerReleases.filter(e => e[9] !== "hand").length, "launches, results, extensions", "", ""],
+  ["Filings read", D.events.filter(e => e[9] !== "hand").length, "through " + D.through, "", ""],
+  ["Added by hand", D.hand || 0, "press releases the search missed", "", ""]
 ].map(t => '<div class="tile ' + t[3] + " " + t[4] + '"><span class="lbl">' + t[0] + '</span><span class="val">' + t[1] + '</span><span class="chg">' + t[2] + "</span></div>").join("");
 
 function secText(list) {
@@ -262,10 +265,10 @@ function renderOffers() {
     const key = o.subject + "|" + o.first + "|" + o.kinds.join();
     const rel = D.events.filter(e => e[1] === o.subject && OFFER_KINDS.has(e[2]) && o.urls.includes(e[7]));
     const lastK = o.kinds[o.kinds.length - 1], trail = "<b>" + (SHORT[lastK] || esc(lastK)) + "</b> <span class=\"dim\">· " + o.kinds.length + "</span>";
-    let h = '<tr class="main" data-k="' + esc(key) + '" tabindex="0" aria-expanded="' + open.has(key) + '"><td class="who">' + esc(o.subject) + '</td><td class="s-' + o.status + '"><span class="dot"></span>' + ST[o.status] + '</td><td class="mono sec"><div class="cut">' + secText(o.securities) + '</div></td><td class="ar mono">' + (esc(o.cap) || '<span class="dim">none read</span>') + '</td><td class="mono">' + (esc(o.exp) || "") + '</td><td class="mono hm">' + esc(o.last) + '</td><td class="trail hm">' + trail + "</td></tr>";
+    let h = '<tr class="main" data-k="' + esc(key) + '" tabindex="0" aria-expanded="' + open.has(key) + '"><td class="who">' + esc(o.subject) + (o.hand ? ' <span class="flag hand" title="Added by hand from the press release. Not read by the rules.">HAND</span>' : '') + '</td><td class="s-' + o.status + '"><span class="dot"></span>' + ST[o.status] + '</td><td class="mono sec"><div class="cut">' + secText(o.securities) + '</div></td><td class="ar mono">' + (esc(o.cap) || '<span class="dim">none read</span>') + '</td><td class="mono">' + (esc(o.exp) || "") + '</td><td class="mono hm">' + esc(o.last) + '</td><td class="trail hm">' + trail + "</td></tr>";
     if (open.has(key)) {
       h += '<tr class="detail"><td colspan="7"><h4>All securities read</h4><ul class="mono">' + (o.securities.map(x => "<li>" + esc(x) + "</li>").join("") || "<li>none</li>") + "</ul><h4>Releases</h4><ul class=\"col1\">" +
-        rel.map(e => "<li><span class=\"mono dim\">" + esc(e[0]) + "</span>  " + (KIND[e[2]] || esc(e[2])) + ' <a href="' + esc(e[7]) + '" target="_blank" rel="noopener">open filing</a></li>').join("") + "</ul></td></tr>";
+        rel.map(e => "<li><span class=\"mono dim\">" + esc(e[0]) + "</span>  " + (KIND[e[2]] || esc(e[2])) + ' <a href="' + esc(e[7]) + '" target="_blank" rel="noopener">' + (e[9] === "hand" ? "press release" : "open filing") + '</a></li>').join("") + "</ul></td></tr>";
     }
     return h;
   }).join("") : '<tr><td colspan="7" class="empty">No offers match.</td></tr>';
@@ -283,7 +286,7 @@ $("bars").addEventListener("click", e => { const b = e.target.closest(".bar"); i
 
 (function spark() {
   const end = new Date(D.through + "T00:00:00Z"), days = 90, per = {};
-  D.events.forEach(e => { const k = e[0]; (per[k] = per[k] || [0, 0])[OFFER_KINDS.has(e[2]) ? 0 : 1]++; });
+  D.events.forEach(e => { if (e[9] === "hand") return; const k = e[0]; (per[k] = per[k] || [0, 0])[OFFER_KINDS.has(e[2]) ? 0 : 1]++; });
   const W = 400, H = 96, base = 80, top = 6, bw = W / days;
   const mx = Math.max(1, ...Object.values(per).map(v => v[0] + v[1]));
   let svg = '<svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" role="img" aria-label="Filings read by day">';
@@ -311,7 +314,7 @@ function renderEvents() {
   const q = $("q2").value.trim().toLowerCase(), kd = $("kd").value, all = $("all").checked;
   const list = D.events.filter(e => (all || OFFER_KINDS.has(e[2])) && (!kd || e[2] === kd) && (!q || (e[1] + " " + e[8]).toLowerCase().includes(q)));
   $("ecount").textContent = list.length + " shown";
-  $("eb").innerHTML = list.length ? list.map(e => '<tr><td class="mono">' + esc(e[0]) + '</td><td class="who">' + esc(e[1]) + '</td><td>' + (KIND[e[2]] || esc(e[2].replace(/_/g, " "))) + '</td><td class="mono">' + (esc(e[3]).slice(0, 90) || "") + '</td><td class="ar mono">' + esc(e[4]) + '</td><td class="mono">' + esc(e[5]) + '</td><td><a href="' + esc(e[7]) + '" target="_blank" rel="noopener">open</a></td></tr>').join("") : '<tr><td colspan="7" class="empty">No releases match.</td></tr>';
+  $("eb").innerHTML = list.length ? list.map(e => '<tr><td class="mono">' + esc(e[0]) + '</td><td class="who">' + esc(e[1]) + '</td><td>' + (KIND[e[2]] || esc(e[2].replace(/_/g, " "))) + '</td><td class="mono">' + (esc(e[3]).slice(0, 90) || "") + '</td><td class="ar mono">' + esc(e[4]) + '</td><td class="mono">' + esc(e[5]) + '</td><td><a href="' + esc(e[7]) + '" target="_blank" rel="noopener">' + (e[9] === "hand" ? "press release" : "open") + '</a></td></tr>').join("") : '<tr><td colspan="7" class="empty">No releases match.</td></tr>';
 }
 $("q2").addEventListener("input", renderEvents); $("kd").addEventListener("change", renderEvents); $("all").addEventListener("change", renderEvents);
 

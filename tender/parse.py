@@ -21,7 +21,8 @@ OFFERKW = r"tender|exchange offer|offers? to purchase|offer to exchange|consent 
 
 def get_title(text):
     """headline = text from the announcing verb to the dateline. Returns (display title, classify text)."""
-    ms = list(re.finditer(rf"\b{VERB}\b", text[:3000], re.I))
+    ms = [m for m in re.finditer(rf"\b{VERB}\b", text[:3000], re.I)
+          if not re.match(r"\s+under cover of Form", text[m.end():m.end() + 30], re.I)]  # 6-K cover page: "reports under cover of Form 20-F"
     if not ms:
         return "", ""
     pick = next((m for m in ms if re.search(OFFERKW, text[m.start():m.start() + 260], re.I)), ms[0])
@@ -59,7 +60,7 @@ def classify(title, text, doc=""):
         return "consent_only"
     if not has_offer:
         return "other"
-    if re.search(r"warrants|preferred stock|common stock|shares of", t) and not re.search(r"notes|debt|debentures|securities", t):
+    if re.search(r"warrants|preferred stock|common stock|common shares|ordinary shares|shares of|\bshares\b|per share|dutch auction|units\b|closed-end fund", t) and not re.search(r"notes|debt|debentures|securities", t):
         return "equity_offer"
     if re.search(r"early (?:tender |participation |exchange )?results|results of early|early participation|early tender|early settlement", t):
         return "early_results"
@@ -244,7 +245,7 @@ for mm in meta:
     if kind == "no_title":
         # fall back to the first 700 characters when no headline verb was found, and say so
         probe = text[:700].lower()
-        kind = "unverified_offer" if re.search(r"tender offer|exchange offer|offer to purchase", probe) else "other"
+        kind = "unverified_offer" if re.search(r"tender offer|exchange offer|offer to purchase", probe) and re.search(r"\bnotes?\b|debentures|bonds", probe) and not re.search(r"common stock|common shares|per share|dutch auction", probe) else "other"
     ev = {"file_date": mm["file_date"], "issuer_sec": mm["issuer"], "subject": subject, "doc": mm["doc"], "kind": kind,
           "title": title[:200], "url": mm["url"]}
     if kind not in ("other", "equity_offer", "redemption", "financing_linked", "filing_body", "registered_exchange", "consent_only"):
@@ -263,7 +264,7 @@ for e in sorted(events, key=lambda e: e["file_date"]):
     uniq.append(e)
 
 offer_kinds = ("launch", "early_results", "final_results", "extension", "pricing_terms", "amendment", "terminated", "unverified_offer")
-ev_offer = [e for e in uniq if e["kind"] in offer_kinds]
+ev_offer = [e for e in uniq if e["kind"] in offer_kinds and e["kind"] != "unverified_offer"]
 other_rel = [e for e in uniq if e["kind"] == "financing_linked"]
 
 # offers: group lifecycle events by subject company and securities overlap, start a new offer at each launch
