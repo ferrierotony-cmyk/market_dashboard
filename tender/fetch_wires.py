@@ -90,7 +90,36 @@ def dateline_name(text):
     return ""
 
 
+RSS_SOURCES = {
+    # Bing News returns direct article links, so it covers GlobeNewswire, Business Wire and investor relations sites that block scrapers.
+    "bing": lambda term: "https://www.bing.com/news/search?q=%s&format=rss&count=100" % requests.utils.quote(term),
+    "globenewswire_rss": lambda term: "https://www.globenewswire.com/RssFeed/keyword/%s/feedTitle/tender" % requests.utils.quote(term),
+}
+RSS_TERMS = ['"tender offer" notes', '"tender offers" "senior notes"', '"exchange offer" notes', '"any and all" notes tender', '"consent solicitation" notes',
+             '"early tender" results notes', '"offer to purchase" notes cash', '"cash tender offer"', '"tender offer" debentures', '"expiration" "tender offer" notes results']
+
 found = {}
+titles = {}
+for src, mk in RSS_SOURCES.items():
+    n0 = len(found)
+    for term in RSS_TERMS:
+        r = get(mk(term), tries=2)
+        time.sleep(0.5)
+        if r is None or "<item" not in r.text:
+            if src == "globenewswire_rss":
+                break
+            continue
+        for item in re.findall(r"(?s)<item>(.*?)</item>", r.text):
+            lk = re.search(r"<link>\s*(https?://[^<\s]+)", item) or re.search(r"<link[^>]*href=\"(https?://[^\"]+)", item)
+            if not lk:
+                continue
+            u = html.unescape(lk.group(1).strip()).split("?")[0] if "bing.com" not in lk.group(1) else html.unescape(lk.group(1).strip())
+            t = re.search(r"(?s)<title>(.*?)</title>", item)
+            d = re.search(r"<pubDate>(.*?)</pubDate>", item)
+            if u not in found:
+                found[u] = src
+                titles[u] = (clean(t.group(1)) if t else "", d.group(1) if d else "")
+    log(src, "release links", len(found) - n0)
 for src, cfg in SOURCES.items():
     n0 = len(found)
     for term in TERMS:
@@ -102,12 +131,19 @@ for src, cfg in SOURCES.items():
             links = cfg["link"].findall(r.text)
             if not links:
                 break
+            anchors = {}
+            for m in re.finditer(r'(?s)<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>', r.text):
+                t = clean(m.group(2))
+                if len(t) > 25:
+                    anchors[m.group(1)] = t
             new = 0
             for lk in links:
                 u = cfg["base"] + lk if lk.startswith("/") else lk
                 u = u.split("?")[0]
                 if u not in found:
                     found[u] = src; new += 1
+                    if lk in anchors:
+                        titles[u] = (anchors[lk], "")
             if new == 0:
                 break
     log(src, "release links", len(found) - n0)
@@ -122,30 +158,40 @@ for n, (u, src) in enumerate(list(found.items())[:MAX_WIRE * 3]):
         break
     if u in have:
         continue
-    r = get(u, tries=2)
-    time.sleep(0.5)
-    if r is None:
-        continue
-    raw = r.text
-    d = page_date(raw, u)
+    rss_title, rss_date = titles.get(u, ("", ""))
+    if rss_title and not (KEEP.search(rss_title) and NOTES.search(rss_title)):
+        continue  # headline from the feed is not about a notes offer, so skip the page fetch
+    r = get(u, tries=1)
+    time.sleep(0.4)
+    raw = r.text if r is not None else ""
+    d = page_date(raw, u) if raw else ""
+    if not d and rss_date:
+        try:
+            d = dt.datetime.strptime(rss_date[:25].strip(), "%a, %d %b %Y %H:%M:%S").strftime("%Y-%m-%d")
+        except ValueError:
+            d = ""
     if not d or d < str(start) or d > str(today):
         continue
     tm = re.search(r"<title>(.*?)</title>", raw, re.I | re.S)
-    title = clean(tm.group(1)) if tm else ""
+    title = clean(tm.group(1)) if tm else rss_title
+    if not raw or len(raw) < 2000 or re.search(r"access denied|request blocked|captcha|are you a robot", raw[:3000], re.I):
+        title = rss_title or title
+        raw = ""  # page blocked: keep the headline and the link, the parser reads the kind from the headline
     head = title[:260]
     if not KEEP.search(head) or not NOTES.search(head) or (EQUITY.search(head) and not re.search(r"\bnotes?\b|debentures", head, re.I)):
         continue
-    text = clean(raw)
+    text = clean(raw) if raw else title
     # drop the page chrome before the release body: start at the dateline or the headline
     i = text.find(title[:60]) if title else -1
     if i > 0:
         text = text[i:]
     text = text[:80000]
-    key = "wire_" + re.sub(r"[^A-Za-z0-9]", "_", u.split("/")[-1])[:120]
+    doc = "WIRE" if raw else "WIRE-TITLE"
+    key = "wire_" + re.sub(r"[^A-Za-z0-9]", "_", u.split("//", 1)[-1])[-120:]
     with open(os.path.join(TXT, key + ".txt"), "w", encoding="utf-8") as f:
         f.write(text)
     issuer = dateline_name(text) or re.split(r"\s+(?:Announces|Commences|Extends|Launches|Reports|Prices)\b", title, 1, re.I)[0].strip()
-    meta.append({"key": key, "file_date": d, "issuer": issuer, "doc": "WIRE", "url": u, "adsh": src})
+    meta.append({"key": key, "file_date": d, "issuer": issuer, "doc": doc, "url": u, "adsh": src})
     added += 1
     if added % 25 == 0:
         log("wire releases kept", added)
