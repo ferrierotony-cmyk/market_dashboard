@@ -2,6 +2,7 @@ name: Tender tracker daily
 
 # Scheduled runs only fire from the default branch (public-live), so this file lives there.
 # It checks out the tender-lab branch for the code. Regex pipeline only, no API calls, no cost.
+# Sources: SEC EDGAR full text search (8-K and 6-K) plus PR Newswire, GlobeNewswire and Business Wire search pages.
 
 on:
   schedule:
@@ -29,6 +30,7 @@ jobs:
           OFFSET_DAYS: "0"
         run: |
           python tender/fetch.py
+          python tender/fetch_wires.py || echo "newswire fetch failed, SEC results stand on their own"
           python tender/parse.py
           python tender/build_page.py
       - name: Publish to the tender-results branch
