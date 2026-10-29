@@ -619,9 +619,4 @@ html[data-theme="dark"] .photos a { background: var(--bg2); }
 html[data-theme="dark"] img { filter: brightness(.94); }
 html[data-theme="dark"] .logo-row img, html[data-theme="dark"] .figs li.light a.img, html[data-theme="dark"] .strip li a, html[data-theme="dark"] .hero-img { filter: none; }
 html[data-theme="dark"] .byline .pic { background: var(--surface); }
-.top3 { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 26px 0 0; padding: 0; }
-.top3 li { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; font-size: 15.5px; line-height: 1.5; color: var(--muted); }
-.top3 li b { display: block; font-family: var(--display); font-size: 1.05rem; letter-spacing: -.01em; color: var(--ink); margin: 0 0 4px; }
-.top3 li b::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--amber); margin-right: 8px; vertical-align: 1px; }
-@media (max-width: 860px) { .top3 { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: no-preference) { body, .card, .site-head, .tape, .board, .hero, .chead, .phead, .sband .panel { transition: background-color .25s, color .25s, border-color .25s; } }
