@@ -1,5 +1,11 @@
 <title>Tender Tracker</title>
 <meta name="theme-color" content="#0d0d0d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tenders">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <style>
 /* Same system as the Morning Market Dashboard: near black page, flat panels with hairline borders, 12px type, one accent per job.
    Always dark. Numbers are tabular and right aligned. Status is a dot and a word, not a pill. */
@@ -142,7 +148,26 @@ footer { color: var(--muted); font-size: 10.5px; padding: 2px 2px 10px; max-widt
   .tbl td:first-child, .tbl th:first-child { position: sticky; left: 0; background: var(--surface); z-index: 2; box-shadow: 1px 0 0 var(--grid); }
   .tbl td, .tbl th { padding-left: 6px; padding-right: 6px; }
   .bar { grid-template-columns: 96px 1fr 22px; }
+  /* offers as cards on a phone: issuer and status, securities, then cap and expiry */
+  #otbl thead { display: none; }
+  #otbl, #otbl tbody { display: block; width: 100%; }
+  #otbl tr.main { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; padding: 9px 10px; border-bottom: 1px solid var(--grid); }
+  #otbl tr.main td { display: block; padding: 0; border: 0; position: static; box-shadow: none; background: none; min-width: 0; }
+  #otbl tr.main td.who { grid-column: 1; grid-row: 1; }
+  #otbl tr.main td[class^="s-"] { grid-column: 2; grid-row: 1; text-align: right; white-space: nowrap; }
+  #otbl tr.main td.sec { grid-column: 1 / -1; grid-row: 2; }
+  #otbl tr.main td.sec .cut { max-width: none; white-space: normal; }
+  #otbl tr.main td.ar { grid-column: 1; grid-row: 3; text-align: left; }
+  #otbl tr.main td[data-l="Expires"] { grid-column: 2; grid-row: 3; text-align: right; }
+  #otbl tr.main td[data-l]::before { content: attr(data-l) " "; color: var(--muted); font-family: system-ui, sans-serif; font-size: 10.5px; }
+  #otbl tr.main td.hm, #otbl tr.main td[data-l]:empty { display: none; }
+  #otbl tr.detail, #otbl tr.detail td { display: block; }
 }
+.rf { border: 1px solid var(--border); background: var(--surface2); color: var(--ink); border-radius: 6px; padding: 3px 10px; font-weight: 600; font-size: 11px; }
+.rf:hover { background: var(--hover); }
+.rf:disabled { opacity: .6; cursor: default; }
+.toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--ink); color: var(--surface); padding: 8px 14px; border-radius: 8px; font-weight: 600; z-index: 40; max-width: 92vw; }
+.toast[hidden] { display: none; }
 .flag.hand { background: var(--amber); color: #0b0b0c; padding: 1px 5px; border-radius: 3px; opacity: 1; }
 </style>
 <header class="top">
@@ -152,7 +177,7 @@ footer { color: var(--muted); font-size: 10.5px; padding: 2px 2px 10px; max-widt
     <button role="tab" id="t-events" aria-selected="false" aria-controls="v-events">Releases</button>
     <button role="tab" id="t-rel" aria-selected="false" aria-controls="v-rel">Reliability</button>
   </div>
-  <div class="status"><span id="stamp"></span><span class="chip">No person has checked these rows</span></div>
+  <div class="status"><span id="stamp"></span><span class="chip">No person has checked these rows</span><button class="rf" id="rf" type="button">&#8635; Refresh</button></div>
 </header>
 <main>
   <div class="note" role="note"><b>Read the filing before you rely on it.</b>On filings the rules had never seen, offer type and dates were right about nine times in ten, and securities and caps about three times in four. Every row links to its filing.</div>
@@ -210,14 +235,16 @@ footer { color: var(--muted); font-size: 10.5px; padding: 2px 2px 10px; max-widt
   </section>
   <footer>Source: SEC EDGAR full text search, exhibits to Forms 8-K and 6-K, plus press releases added by hand where marked. Built by a script that runs once a day. Public filings only. A research aid, not advice and not a record of what any holder was paid.</footer>
 </main>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <script>
-const D = __DATA__;
+let D = __DATA__;
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const KIND = { launch: "Launch", early_results: "Early results", final_results: "Final results", extension: "Extension", pricing_terms: "Pricing terms", amendment: "Amendment", terminated: "Terminated" };
 const SHORT = { launch: "Launch", early_results: "Early", final_results: "Final", extension: "Extended", pricing_terms: "Pricing", amendment: "Amended", terminated: "Terminated" };
-const OFFER_KINDS = new Set(D.offerKinds);
-const today = new Date().toISOString().slice(0, 10);
+let OFFER_KINDS = new Set(D.offerKinds);
+let today = new Date().toISOString().slice(0, 10);
+let checkedAt = null, busy = false, offerReleases = [];
 
 function status(o) {
   if (o.kinds.includes("terminated")) return "dead";
@@ -227,11 +254,12 @@ function status(o) {
 }
 const ST = { open: "Open", done: "Finished", stale: "Past expiration", dead: "Terminated" };
 const ORDER = { open: 0, stale: 1, done: 2, dead: 3 };
-D.offers.forEach(o => { o.status = status(o); });
 const count = s => D.offers.filter(o => o.status === s).length;
-const offerReleases = D.events.filter(e => OFFER_KINDS.has(e[2]));
 
-$("stamp").innerHTML = "Filings through <b>" + esc(D.through) + "</b> <i>built " + esc(D.built) + "</i>";
+function ago(t) { const m = Math.max(0, Math.round((Date.now() - t) / 6e4)); return m < 1 ? "just now" : m < 60 ? m + " min ago" : m < 1440 ? Math.round(m / 60) + " h ago" : Math.round(m / 1440) + " d ago"; }
+function paintTop() {
+const builtMs = Date.parse(D.builtAt || (D.built + "T00:00:00Z")), old = Date.now() - builtMs > 36 * 36e5;
+$("stamp").innerHTML = "Filings through <b>" + esc(D.through) + "</b> <i>built " + esc(D.built) + (checkedAt ? " &middot; checked " + ago(checkedAt) : "") + "</i>" + (old ? ' <span class="chip">Data is ' + ago(builtMs).replace(" ago", "") + ' old, the daily job may have stalled</span>' : "");
 $("ribbon").innerHTML = [
   ["Offers tracked", D.offers.length, "", "hero", ""],
   ["Open now", count("open"), "not yet at expiration", "", ""],
@@ -240,6 +268,7 @@ $("ribbon").innerHTML = [
   ["Filings read", D.events.filter(e => e[9] !== "hand").length, "through " + D.through, "", ""],
   ["Added by hand", D.hand || 0, "press releases the search missed", "", ""]
 ].map(t => '<div class="tile ' + t[3] + " " + t[4] + '"><span class="lbl">' + t[0] + '</span><span class="val">' + t[1] + '</span><span class="chg">' + t[2] + "</span></div>").join("");
+}
 
 function secText(list) {
   if (!list.length) return '<span class="dim">none read</span>';
@@ -265,7 +294,7 @@ function renderOffers() {
     const key = o.subject + "|" + o.first + "|" + o.kinds.join();
     const rel = D.events.filter(e => e[1] === o.subject && OFFER_KINDS.has(e[2]) && o.urls.includes(e[7]));
     const lastK = o.kinds[o.kinds.length - 1], trail = "<b>" + (SHORT[lastK] || esc(lastK)) + "</b> <span class=\"dim\">· " + o.kinds.length + "</span>";
-    let h = '<tr class="main" data-k="' + esc(key) + '" tabindex="0" aria-expanded="' + open.has(key) + '"><td class="who">' + esc(o.subject) + (o.hand ? ' <span class="flag hand" title="Added by hand from the press release. Not read by the rules.">HAND</span>' : '') + '</td><td class="s-' + o.status + '"><span class="dot"></span>' + ST[o.status] + '</td><td class="mono sec"><div class="cut">' + secText(o.securities) + '</div></td><td class="ar mono">' + (esc(o.cap) || '<span class="dim">none read</span>') + '</td><td class="mono">' + (esc(o.exp) || "") + '</td><td class="mono hm">' + esc(o.last) + '</td><td class="trail hm">' + trail + "</td></tr>";
+    let h = '<tr class="main" data-k="' + esc(key) + '" tabindex="0" aria-expanded="' + open.has(key) + '"><td class="who">' + esc(o.subject) + (o.hand ? ' <span class="flag hand" title="Added by hand from the press release. Not read by the rules.">HAND</span>' : '') + '</td><td class="s-' + o.status + '"><span class="dot"></span>' + ST[o.status] + '</td><td class="mono sec"><div class="cut">' + secText(o.securities) + '</div></td><td class="ar mono" data-l="Cap">' + (esc(o.cap) || '<span class="dim">none read</span>') + '</td><td class="mono" data-l="Expires">' + (esc(o.exp) || "") + '</td><td class="mono hm">' + esc(o.last) + '</td><td class="trail hm">' + trail + "</td></tr>";
     if (open.has(key)) {
       h += '<tr class="detail"><td colspan="7"><h4>All securities read</h4><ul class="mono">' + (o.securities.map(x => "<li>" + esc(x) + "</li>").join("") || "<li>none</li>") + "</ul><h4>Releases</h4><ul class=\"col1\">" +
         rel.map(e => "<li><span class=\"mono dim\">" + esc(e[0]) + "</span>  " + (KIND[e[2]] || esc(e[2])) + ' <a href="' + esc(e[7]) + '" target="_blank" rel="noopener">' + (e[9] === "hand" ? "press release" : "open filing") + '</a></li>').join("") + "</ul></td></tr>";
@@ -280,11 +309,13 @@ $("q").addEventListener("input", renderOffers); $("st").addEventListener("change
 
 // side panels
 const COLORS = { open: "var(--green)", stale: "var(--amber)", done: "var(--blue)", dead: "var(--red)" };
+function paintBars() {
 const maxN = Math.max(1, ...Object.keys(ST).map(count));
 $("bars").innerHTML = ["open", "stale", "done", "dead"].map(s => '<button class="bar" data-s="' + s + '"><span class="nm">' + ST[s] + '</span><span class="track"><i style="width:' + (count(s) / maxN * 100) + "%;background:" + COLORS[s] + '"></i></span><span class="n">' + count(s) + "</span></button>").join("");
+}
 $("bars").addEventListener("click", e => { const b = e.target.closest(".bar"); if (!b) return; $("st").value = $("st").value === b.dataset.s ? "" : b.dataset.s; renderOffers(); });
 
-(function spark() {
+function spark() {
   const end = new Date(D.through + "T00:00:00Z"), days = 90, per = {};
   D.events.forEach(e => { if (e[9] === "hand") return; const k = e[0]; (per[k] = per[k] || [0, 0])[OFFER_KINDS.has(e[2]) ? 0 : 1]++; });
   const W = 400, H = 96, base = 80, top = 6, bw = W / days;
@@ -301,12 +332,12 @@ $("bars").addEventListener("click", e => { const b = e.target.closest(".bar"); i
   const lab = i => new Date(end - (days - 1 - i) * 864e5).toISOString().slice(5, 10);
   svg += '<text x="0" y="93">' + lab(0) + '</text><text x="' + W / 2 + '" y="93" text-anchor="middle">' + lab(45) + '</text><text x="' + W + '" y="93" text-anchor="end">' + lab(days - 1) + "</text></svg>";
   $("spark").innerHTML = svg;
-})();
+}
 
-(function soon() {
+function soon() {
   const l = D.offers.filter(o => o.status === "open" && o.exp).sort((a, b) => a.exp < b.exp ? -1 : 1).slice(0, 5);
   $("soon").innerHTML = l.length ? l.map(o => "<li><span class=\"who\">" + esc(o.subject) + '</span><span class="d">' + esc(o.exp) + "</span></li>").join("") : '<li class="dim">Nothing open with a known expiration.</li>';
-})();
+}
 
 // releases
 $("kd").insertAdjacentHTML("beforeend", D.offerKinds.map(k => '<option value="' + k + '">' + KIND[k] + "</option>").join(""));
@@ -324,6 +355,41 @@ $("rel").innerHTML = REL.map(r => '<tr><td class="who">' + r[0] + '</td><td clas
 const tabs = ["offers", "events", "rel"];
 function show(t) { tabs.forEach(n => { $("v-" + n).hidden = n !== t; $("t-" + n).setAttribute("aria-selected", n === t); }); try { localStorage.setItem("tt-tab", t); } catch (e) {} }
 tabs.forEach(n => $("t-" + n).addEventListener("click", () => show(n)));
-renderOffers(); renderEvents();
+function paint() {
+  today = new Date().toISOString().slice(0, 10);
+  OFFER_KINDS = new Set(D.offerKinds);
+  D.offers.forEach(o => { o.status = status(o); });
+  offerReleases = D.events.filter(e => OFFER_KINDS.has(e[2]));
+  paintTop(); paintBars(); spark(); soon(); renderOffers(); renderEvents();
+}
+paint();
 try { const t = localStorage.getItem("tt-tab"); if (tabs.includes(t)) show(t); } catch (e) {}
+
+// auto update: the daily job publishes data.json to the tender-results branch. The raw feed is current the minute the job finishes,
+// the copy next to this page is current after the next site deploy. Take whichever is newer, and keep the baked data if both fail.
+const FEEDS = ["https://raw.githubusercontent.com/ferrierotony-cmyk/market_dashboard/tender-results/data.json", "data.json"];
+const stampOf = x => (x && (x.builtAt || x.built)) || "";
+async function getFeed(u) {
+  try { const r = await fetch(u, { cache: "no-store" }); if (!r.ok) return null; const j = await r.json(); return j && Array.isArray(j.offers) && Array.isArray(j.events) && Array.isArray(j.offerKinds) && j.through ? { j, cached: r.headers.get("x-tt-cached") === "1" } : null; } catch (e) { return null; }
+}
+let toastT;
+function flash(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 4000); }
+async function refresh(manual) {
+  if (busy) return; busy = true; $("rf").disabled = true; $("rf").textContent = "Checking\u2026";
+  const all = (await Promise.all(FEEDS.map(getFeed))).filter(Boolean);
+  const got = all.map(x => x.j).sort((a, b) => stampOf(b) < stampOf(a) ? -1 : 1)[0];
+  busy = false; $("rf").disabled = false; $("rf").innerHTML = "&#8635; Refresh";
+  const live = all.some(x => !x.cached);
+  if (live) checkedAt = Date.now();
+  if (!live && manual) flash("No connection. Showing the last saved copy.");
+  if (!got) { if (manual && live) flash("Could not read the feed."); return; }
+  if (stampOf(got) > stampOf(D)) { const before = D.offers.length; D = got; paint(); flash("Updated. Filings through " + D.through + (D.offers.length !== before ? ", " + (D.offers.length - before > 0 ? "+" : "") + (D.offers.length - before) + " offers" : "")); }
+  else { paintTop(); if (manual && live) flash("Already up to date."); }
+}
+$("rf").addEventListener("click", () => refresh(true));
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && (!checkedAt || Date.now() - checkedAt > 10 * 6e4)) refresh(false); });
+window.addEventListener("online", () => refresh(false));
+setInterval(() => { if (document.visibilityState === "visible") refresh(false); }, 30 * 6e4);
+refresh(false);
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 </script>

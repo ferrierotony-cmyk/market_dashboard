@@ -84,16 +84,31 @@ def build():
     off.sort(key=lambda x: x["last"], reverse=True)
     ev.sort(key=lambda e: e[0], reverse=True)
     last_date = max([e[0] for e in ev if e[9] == "sec"] or [""])
-    data = {"offers": off, "events": ev, "through": last_date, "built": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d"),
+    now = dt.datetime.now(dt.timezone.utc)
+    return {"offers": off, "events": ev, "through": last_date, "built": now.strftime("%Y-%m-%d"), "builtAt": now.strftime("%Y-%m-%dT%H:%MZ"),
             "offerKinds": sorted(OFFER_KINDS), "hand": len(hoff)}
-    return json.dumps(data, separators=(",", ":")).replace("</", "<\\/")
 
 
 TEMPLATE = open(os.path.join(os.path.dirname(__file__), "page_template.html"), encoding="utf-8").read()
 
+APP = os.path.join(os.path.dirname(__file__), "app")
+
+
+def write_app(data):
+    """Installable app files: manifest, icons, service worker stamped with this build, and data.json that the page refetches."""
+    import shutil
+    json.dump(data, open(os.path.join(OUT, "data.json"), "w", encoding="utf-8"), separators=(",", ":"))
+    shutil.copy(os.path.join(APP, "manifest.webmanifest"), OUT)
+    shutil.copytree(os.path.join(APP, "icons"), os.path.join(OUT, "icons"), dirs_exist_ok=True)
+    sw = open(os.path.join(APP, "sw.js"), encoding="utf-8").read().replace("__VERSION__", data["builtAt"])
+    open(os.path.join(OUT, "sw.js"), "w", encoding="utf-8").write(sw)
+
+
 if __name__ == "__main__":
-    frag = TEMPLATE.replace("__DATA__", build())
+    data = build()
+    frag = TEMPLATE.replace("__DATA__", json.dumps(data, separators=(",", ":")).replace("</", "<\\/"))
     os.makedirs(OUT, exist_ok=True)
+    write_app(data)
     open(os.path.join(OUT, "page_fragment.html"), "w", encoding="utf-8").write(frag)
     full = '<!doctype html>\n<html lang="en">\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n' + frag
     open(os.path.join(OUT, "index.html"), "w", encoding="utf-8").write(full)
