@@ -1,0 +1,67 @@
+query "cash tender offer" "notes" -> unique hits so far 90
+query "cash tender offers" "notes" -> unique hits so far 120
+query "tender offer" "senior notes" -> unique hits so far 438
+query "tender offers" "senior notes" -> unique hits so far 444
+query "tender offer" "notes due" -> unique hits so far 527
+query "tender offers" "notes due" -> unique hits so far 533
+query "early tender" "expiration" "notes" -> unique hits so far 559
+query "early tender date" -> unique hits so far 561
+query "early tender deadline" -> unique hits so far 561
+query "early tender premium" -> unique hits so far 562
+query "early tender payment" -> unique hits so far 562
+query "early participation payment" -> unique hits so far 565
+query "early participation date" -> unique hits so far 570
+query "announces" "exchange offer" "notes" -> unique hits so far 645
+query "announces" "exchange offers" "notes" -> unique hits so far 645
+query "offer to exchange" "notes" -> unique hits so far 680
+query "offers to exchange" "notes" -> unique hits so far 693
+query "exchange offer" "consent solicitation" -> unique hits so far 733
+query "exchange offers" "consent solicitations" -> unique hits so far 741
+query "announces" "tender offer" "any and all" -> unique hits so far 797
+query "any and all" "tender offer" -> unique hits so far 1146
+query "any and all" "tender offers" -> unique hits so far 1194
+query "announces" "tender offers" "notes" -> unique hits so far 1194
+query "announces" "tender offer" "notes" -> unique hits so far 1197
+query "announces" "offer to purchase" "notes" -> unique hits so far 1253
+query "offer to purchase for cash" -> unique hits so far 1260
+query "offers to purchase for cash" -> unique hits so far 1260
+query "tender offer consideration" -> unique hits so far 1261
+query "total consideration" "tender offer" -> unique hits so far 1293
+query "total consideration" "tender offers" -> unique hits so far 1294
+query "tender cap" -> unique hits so far 1294
+query "maximum tender amount" -> unique hits so far 1294
+query "aggregate maximum tender" -> unique hits so far 1294
+query "maximum aggregate purchase price" -> unique hits so far 1304
+query "results of" "tender offer" -> unique hits so far 1487
+query "results of" "tender offers" -> unique hits so far 1499
+query "expiration" "tender offer" "notes" -> unique hits so far 1552
+query "expiration" "tender offers" "notes" -> unique hits so far 1552
+query "final results" "tender" -> unique hits so far 1562
+query "extends" "tender offer" -> unique hits so far 1601
+HTTP 500 https://efts.sec.gov/LATEST/search-index?q=%22extends%22%20%22tender%20offers%22&forms=8-K,6-K&dateRange=custom&startdt=
+query "extends" "tender offers" -> unique hits so far 1601
+query "extends" "exchange offer" -> unique hits so far 1639
+HTTP 500 https://efts.sec.gov/LATEST/search-index?q=%22commencement%20of%22%20%22tender%20offer%22&forms=8-K,6-K&dateRange=custom
+HTTP 500 https://efts.sec.gov/LATEST/search-index?q=%22commencement%20of%22%20%22tender%20offer%22&forms=8-K,6-K&dateRange=custom
+query "commencement of" "tender offer" -> unique hits so far 1714
+query "commencement of" "tender offers" -> unique hits so far 1717
+query "commenced" "tender offer" "notes" -> unique hits so far 1781
+query "debentures" "tender offer" -> unique hits so far 1818
+query "acceptance priority level" -> unique hits so far 1818
+query "waterfall" "tender" -> unique hits so far 1890
+query "dealer manager" "tender offer" -> unique hits so far 1890
+query "dealer managers" "tender offers" -> unique hits so far 1890
+query "dealer manager" "exchange offer" -> unique hits so far 1894
+query "information agent" "tender" -> unique hits so far 1912
+query "consent solicitation" "consent payment" "notes" -> unique hits so far 1912
+query "consent solicitation statement" -> unique hits so far 1953
+total unique documents 1953
+press release style documents 672 of 1953
+fetched 1 of 672
+fetched 101 of 672
+fetched 201 of 672
+fetched 301 of 672
+fetched 401 of 672
+fetched 501 of 672
+fetched 601 of 672
+cached 672 documents
