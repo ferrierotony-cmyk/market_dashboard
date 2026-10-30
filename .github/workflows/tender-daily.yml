@@ -6,11 +6,15 @@ name: Tender tracker daily
 
 on:
   schedule:
+    # GitHub runs scheduled jobs late, often by several hours, and the first run lands mid afternoon Eastern.
+    # The second one picks up filings made later in the day and covers a skipped first run.
     - cron: "17 12 * * *"
+    - cron: "47 1 * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   run:
@@ -42,3 +46,8 @@ jobs:
           git add .
           git -c user.name=github-actions -c user.email=actions@users.noreply.github.com commit -qm "Daily tender results ${GITHUB_RUN_ID}"
           git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" tender-results
+      - name: Redeploy the site so the page next to the dashboard is current
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run refresh.yml --repo "${{ github.repository }}" --ref public-live || echo "deploy trigger failed, the app still reads the feed directly"

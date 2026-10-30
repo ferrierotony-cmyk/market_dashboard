@@ -74,6 +74,8 @@ jobs:
           if git fetch --depth=1 origin tender-results; then
             mkdir -p site/tender
             git show FETCH_HEAD:index.html > site/tender/index.html || rm -rf site/tender
+            # App files (manifest, service worker, icons, data feed). Best effort: an older tender-results branch does not have them yet.
+            if [ -d site/tender ]; then git archive FETCH_HEAD data.json manifest.webmanifest sw.js icons 2>/dev/null | tar -x -C site/tender || true; fi
           fi
 
       - uses: actions/upload-pages-artifact@v3
