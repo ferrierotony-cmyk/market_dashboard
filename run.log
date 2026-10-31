@@ -1,0 +1,15 @@
+[2026-10-31 17:28:13] ==== dashboard build (morning) started in /home/runner/work/market_dashboard/market_dashboard ==== 
+[2026-10-31 17:28:13] FRED: 49 series 
+[2026-10-31 17:28:57] Treasury.gov: fetched, curve through 2026-10-30 
+[2026-10-31 17:28:57] Yahoo daily: 527 symbols (parallel) 
+[2026-10-31 17:29:03] Yahoo daily: 527 fetched, 0 from cache, 0 failed 
+[2026-10-31 17:29:03] Yahoo candles: 24 detail symbols (intraday + weekly bars) 
+[2026-10-31 17:29:36] Market universe: Nasdaq screener 
+[2026-10-31 17:29:39]   5589 common stocks from Nasdaq screener 
+[2026-10-31 17:29:39] Market universe: Yahoo quotes for 5589 symbols in batches of 200 
+[2026-10-31 17:29:56]   5589 of 5589 quoted 
+[2026-10-31 17:30:01] FRED calendar: 1222 release dates 
+[2026-10-31 17:30:01] FRED calendar: no release named 'Employment Cost Index' in the next 45 days. Closest FRED names: ADP National Employment Report | Unemployment Insurance Weekly Claims Report | Employment Situation | State Unemployment Insurance Weekly Claims Report | State and Metro Area Employment, Hours, and Earnings 
+[2026-10-31 17:30:04] Alert rules: 21 enabled, 60 fired 
+[2026-10-31 17:30:10] Built /home/runner/work/market_dashboard/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 69 CAUTION, alerts: 82) 
+[2026-10-31 17:30:10] ==== finished OK ==== 
