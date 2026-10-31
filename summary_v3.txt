@@ -1,0 +1,11 @@
+cached documents 671, unique releases 602
+kinds {'other': 319, 'consent_only': 7, 'filing_body': 150, 'launch': 32, 'early_results': 9, 'final_results': 32, 'amendment': 6, 'pricing_terms': 10, 'unverified_offer': 3, 'registered_exchange': 5, 'equity_offer': 10, 'extension': 6, 'financing_linked': 8, 'redemption': 4, 'terminated': 1}
+offer lifecycle events 96, grouped into 47 offers, 32 with a launch release seen
+financing linked to a tender 8
+launch n=32 securities 29/32 cusips 28/32 early_date 8/32 expiration 29/32 cap 15/32 tendered_total 0/32 table_only 0/32
+early_results n=9 securities 8/9 cusips 7/9 early_date 7/9 expiration 7/9 cap 3/9 tendered_total 1/9 table_only 5/9
+final_results n=32 securities 27/32 cusips 23/32 early_date 2/32 expiration 28/32 cap 14/32 tendered_total 6/32 table_only 13/32
+extension n=6 securities 6/6 cusips 5/6 early_date 2/6 expiration 6/6 cap 1/6 tendered_total 0/6 table_only 3/6
+pricing_terms n=10 securities 9/10 cusips 10/10 early_date 3/10 expiration 10/10 cap 7/10 tendered_total 0/10 table_only 1/10
+amendment n=6 securities 5/6 cusips 4/6 early_date 2/6 expiration 6/6 cap 4/6 tendered_total 1/6 table_only 1/6
+terminated n=1 securities 1/1 cusips 1/1 early_date 0/1 expiration 0/1 cap 0/1 tendered_total 0/1 table_only 0/1

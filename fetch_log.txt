@@ -1,0 +1,63 @@
+query "cash tender offer" "notes" -> unique hits so far 46
+query "cash tender offers" "notes" -> unique hits so far 77
+query "tender offer" "senior notes" -> unique hits so far 307
+query "tender offers" "senior notes" -> unique hits so far 316
+query "tender offer" "notes due" -> unique hits so far 406
+query "tender offers" "notes due" -> unique hits so far 415
+query "early tender" "expiration" "notes" -> unique hits so far 421
+query "early tender date" -> unique hits so far 421
+query "early tender deadline" -> unique hits so far 423
+query "early tender premium" -> unique hits so far 423
+query "early tender payment" -> unique hits so far 423
+query "early participation payment" -> unique hits so far 423
+query "early participation date" -> unique hits so far 428
+query "announces" "exchange offer" "notes" -> unique hits so far 481
+query "announces" "exchange offers" "notes" -> unique hits so far 483
+query "offer to exchange" "notes" -> unique hits so far 532
+query "offers to exchange" "notes" -> unique hits so far 547
+query "exchange offer" "consent solicitation" -> unique hits so far 589
+query "exchange offers" "consent solicitations" -> unique hits so far 593
+query "announces" "tender offer" "any and all" -> unique hits so far 665
+query "any and all" "tender offer" -> unique hits so far 1044
+query "any and all" "tender offers" -> unique hits so far 1084
+query "announces" "tender offers" "notes" -> unique hits so far 1086
+query "announces" "tender offer" "notes" -> unique hits so far 1089
+query "announces" "offer to purchase" "notes" -> unique hits so far 1144
+query "offer to purchase for cash" -> unique hits so far 1147
+query "offers to purchase for cash" -> unique hits so far 1149
+query "tender offer consideration" -> unique hits so far 1150
+query "total consideration" "tender offer" -> unique hits so far 1180
+query "total consideration" "tender offers" -> unique hits so far 1181
+query "tender cap" -> unique hits so far 1181
+query "maximum tender amount" -> unique hits so far 1181
+query "aggregate maximum tender" -> unique hits so far 1181
+query "maximum aggregate purchase price" -> unique hits so far 1187
+query "results of" "tender offer" -> unique hits so far 1400
+query "results of" "tender offers" -> unique hits so far 1415
+query "expiration" "tender offer" "notes" -> unique hits so far 1468
+query "expiration" "tender offers" "notes" -> unique hits so far 1468
+query "final results" "tender" -> unique hits so far 1489
+query "extends" "tender offer" -> unique hits so far 1520
+query "extends" "tender offers" -> unique hits so far 1521
+query "extends" "exchange offer" -> unique hits so far 1547
+query "commencement of" "tender offer" -> unique hits so far 1602
+query "commencement of" "tender offers" -> unique hits so far 1605
+query "commenced" "tender offer" "notes" -> unique hits so far 1617
+query "debentures" "tender offer" -> unique hits so far 1622
+query "acceptance priority level" -> unique hits so far 1622
+query "waterfall" "tender" -> unique hits so far 1677
+query "dealer manager" "tender offer" -> unique hits so far 1677
+query "dealer managers" "tender offers" -> unique hits so far 1677
+query "dealer manager" "exchange offer" -> unique hits so far 1678
+query "information agent" "tender" -> unique hits so far 1699
+query "consent solicitation" "consent payment" "notes" -> unique hits so far 1699
+query "consent solicitation statement" -> unique hits so far 1715
+total unique documents 1715
+press release style documents 574 of 1715
+fetched 1 of 574
+fetched 101 of 574
+fetched 201 of 574
+fetched 301 of 574
+fetched 401 of 574
+fetched 501 of 574
+cached 574 documents
