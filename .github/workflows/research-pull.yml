@@ -1,0 +1,25 @@
+name: Research pull (one off)
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research-pull
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - env:
+          SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
+        run: python research/pull.py
+      - run: |
+          cd research/out
+          git init -q && git checkout -q -b research-data && git add . 
+          git -c user.name=github-actions -c user.email=actions@users.noreply.github.com commit -qm "Research pull ${GITHUB_RUN_ID}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research-data
