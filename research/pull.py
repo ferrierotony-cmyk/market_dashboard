@@ -17,14 +17,28 @@ def get(url, headers, tries=2, **kw):
             print("err", e, url[:120]); time.sleep(2 + 3 * i)
     return None
 
-# 1. FRED, ten years
+# 1. FRED, ten years. FRED hangs on a browser style User-Agent over HTTP/2, so use a plain one, and fall back to the API with the key.
+PLAIN = {"User-Agent": "python-requests market_dashboard research"}
+KEY = os.environ.get("FRED_API_KEY", "")
 for sid in ["BAMLC0A0CM", "BAMLH0A0HYM2", "DGS10", "VIXCLS", "BAMLC0A4CBBB", "BAMLH0A1HYBB"]:
-    r = get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=%s&cosd=2016-01-01" % sid, BROWSER)
-    if r: open(os.path.join(OUT, "fred_%s.csv" % sid), "w").write(r.text); print("fred", sid, len(r.text.splitlines()))
+    r = get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=%s&cosd=2016-01-01" % sid, PLAIN)
+    if r and r.text.startswith("observation_date"):
+        open(os.path.join(OUT, "fred_%s.csv" % sid), "w").write(r.text); print("fred", sid, len(r.text.splitlines())); continue
+    if KEY:
+        r = get("https://api.stlouisfed.org/fred/series/observations?series_id=%s&observation_start=2016-01-01&api_key=%s&file_type=json" % (sid, KEY), PLAIN)
+        if r:
+            obs = r.json().get("observations", [])
+            with open(os.path.join(OUT, "fred_%s.csv" % sid), "w", newline="") as f:
+                w = csv.writer(f); w.writerow(["observation_date", sid])
+                for o in obs: w.writerow([o["date"], o["value"] if o["value"] != "." else ""])
+            print("fred api", sid, len(obs))
+    time.sleep(1)
 
 # 2. Yahoo daily bars, ten years
 for sym in ["^MOVE", "^GSPC", "^VIX", "ES=F", "LQD", "HYG"]:
+    time.sleep(6)
     r = get("https://query1.finance.yahoo.com/v8/finance/chart/%s?range=10y&interval=1d" % requests.utils.quote(sym), BROWSER)
+    if not r: r = get("https://query2.finance.yahoo.com/v8/finance/chart/%s?range=10y&interval=1d" % requests.utils.quote(sym), PLAIN)
     if not r: continue
     try:
         res = r.json()["chart"]["result"][0]; ts = res["timestamp"]; q = res["indicators"]["quote"][0]
@@ -38,8 +52,8 @@ for sym in ["^MOVE", "^GSPC", "^VIX", "ES=F", "LQD", "HYG"]:
 
 # 3. EDGAR full text search: daily counts of pricing term sheets on Form FWP, and of 424B5 prospectus supplements.
 #    Used as a public proxy for investment grade new issue activity by day.
-if not CONTACT:
-    print("no SEC contact, skipping EDGAR"); sys.exit(0)
+if not CONTACT or os.environ.get("SKIP_EDGAR"):
+    print("skipping EDGAR"); sys.exit(0)
 def count(q, forms, d):
     url = "https://efts.sec.gov/LATEST/search-index?q=%s&forms=%s&dateRange=custom&startdt=%s&enddt=%s" % (requests.utils.quote(q), forms, d, d)
     r = get(url, UA); time.sleep(0.12)
