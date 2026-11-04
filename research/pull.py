@@ -7,10 +7,10 @@ CONTACT = os.environ.get("SEC_CONTACT_EMAIL", "")
 UA = {"User-Agent": "market_dashboard research student project " + CONTACT, "Accept-Encoding": "gzip, deflate"}
 BROWSER = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"}
 
-def get(url, headers, tries=3, **kw):
+def get(url, headers, tries=2, **kw):
     for i in range(tries):
         try:
-            r = requests.get(url, headers=headers, timeout=60, **kw)
+            r = requests.get(url, headers=headers, timeout=25, **kw)
             if r.status_code == 200: return r
             print("http", r.status_code, url[:120]); time.sleep(2 + 3 * i)
         except Exception as e:
@@ -46,15 +46,17 @@ def count(q, forms, d):
     if not r: return ""
     try: return r.json().get("hits", {}).get("total", {}).get("value", "")
     except Exception: return ""
-start = dt.date(2023, 1, 1); today = dt.date.today()
+start = dt.date(2023, 1, 1); today = dt.date.today(); t0 = time.time(); BUDGET = float(os.environ.get("EDGAR_BUDGET_SEC", "2100"))
 with open(os.path.join(OUT, "edgar_daily.csv"), "w", newline="") as f:
     w = csv.writer(f); w.writerow(["date", "fwp_pricing_term_sheet", "fwp_all", "b5_all", "b2_all"])
     d = start; n = 0
-    while d <= today:
-        if d.weekday() < 5:
+    # newest first, so a time budget cuts the oldest history, not the recent months
+    days = [d for d in (start + dt.timedelta(i) for i in range((today - start).days + 1)) if d.weekday() < 5][::-1]
+    for d in days:
+        if time.time() - t0 > BUDGET: print("budget reached at", d); break
+        if True:
             ds = d.isoformat()
-            w.writerow([ds, count('"pricing term sheet"', "FWP", ds), count('*', "FWP", ds), count('*', "424B5", ds), count('*', "424B2", ds)])
+            w.writerow([ds, count('"pricing term sheet"', "FWP", ds), count('*', "FWP", ds), count('*', "424B5", ds), ""])
             n += 1
             if n % 50 == 0: print("edgar days", n, ds); f.flush()
-        d += dt.timedelta(days=1)
 print("done")
