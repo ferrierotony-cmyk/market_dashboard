@@ -172,6 +172,13 @@ h3.group:first-of-type { margin-top: 10px; border-top: 0; padding-top: 0; }
 .crumb a:hover { color: var(--amber); }
 .meta { font-family: var(--mono); font-size: 13.5px; color: var(--muted); margin: 16px 0 0; }
 .lede { font-size: 1.2rem; line-height: 1.55; max-width: 36em; margin: 22px 0 0; }
+.story { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 6px 0 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.story > div { padding: 18px 20px; border-top: 1px solid var(--line); }
+.story > div:nth-child(-n+2) { border-top: 0; }
+.story > div:nth-child(odd) { border-right: 1px solid var(--line); }
+.story dt { font-family: var(--mono); font-size: 13px; color: var(--amber); margin: 0 0 6px; }
+.story dd { margin: 0; font-size: 16px; line-height: 1.55; }
+@media (max-width: 720px) { .story { grid-template-columns: 1fr; } .story > div { border-right: 0 !important; } .story > div:nth-child(2) { border-top: 1px solid var(--line); } }
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin: 18px 0 10px; }
 .stat { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px 16px 22px; overflow: hidden; transition: border-color .2s, transform .2s; }
 .stat::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--amber); }

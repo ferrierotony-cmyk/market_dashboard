@@ -189,6 +189,13 @@ h3.group:first-of-type { margin-top: 10px; border-top: 0; padding-top: 0; }
 .crumb a:hover { color: var(--amber); }
 .meta { font-family: var(--mono); font-size: 13.5px; color: var(--muted); margin: 16px 0 0; }
 .lede { font-size: 1.2rem; line-height: 1.55; max-width: 36em; margin: 22px 0 0; }
+.story { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 6px 0 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.story > div { padding: 18px 20px; border-top: 1px solid var(--line); }
+.story > div:nth-child(-n+2) { border-top: 0; }
+.story > div:nth-child(odd) { border-right: 1px solid var(--line); }
+.story dt { font-family: var(--mono); font-size: 13px; color: var(--amber); margin: 0 0 6px; }
+.story dd { margin: 0; font-size: 16px; line-height: 1.55; }
+@media (max-width: 720px) { .story { grid-template-columns: 1fr; } .story > div { border-right: 0 !important; } .story > div:nth-child(2) { border-top: 1px solid var(--line); } }
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin: 18px 0 10px; }
 .stat { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px 16px 22px; overflow: hidden; transition: border-color .2s, transform .2s; }
 .stat::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--amber); }
@@ -583,6 +590,14 @@ def bul(items):
     return '<ul class="bul">' + "".join("<li>%s</li>" % i for i in items) + "</ul>"
 
 
+STORY_KEYS = ("The question", "Data and method", "What I found", "What it means")
+
+
+def story(q, m, f, w):
+    """The four lines a recruiter reads first: question, data and method, finding, and what it means for the market."""
+    return '<dl class="story">' + "".join('<div><dt>%s</dt><dd>%s</dd></div>' % (k, e(v)) for k, v in zip(STORY_KEYS, (q, m, f, w))) + "</dl>"
+
+
 CASES = [
     ("research.html", "Project", "Green bond pricing", "Do green bonds price tighter at new issue than the same issuer's conventional bonds? 153 matched pairs.", ("2.4 bps", "average new issue gap, not significant")),
     ("tender.html", "Project", "Tender Tracker", "A daily tracker of bond tender and exchange offers, read from SEC filings and newswires, with the terms and caps.", ("9 in 10", "offer types and dates right on unseen filings")),
@@ -726,7 +741,7 @@ index_main = f"""<section class="cine portrait" id="top">
     <div class="byline"><span class="badge">Debt capital markets &middot; syndicate<span class="hide-s"> &middot; fixed income</span></span></div>
     <h1>{split("Anthony Ferriero")}</h1>
     <p class="kick">Looking for a 2027 analyst seat in debt capital markets.</p>
-    <p class="tag">I spent nine months on a primary bond desk at Finsight, collecting order books on 15 to 20 deals a day. Since then I have built a new issue window score, a tender offer tracker and a green bond pricing study. Each one shows where it can be wrong.</p>
+    <p class="tag">I spent nine months on a primary bond desk at Finsight, collecting order books on 15 to 20 deals a day. Since then I have built a new issue window score, a tender offer tracker and a green bond pricing study. Each one states its assumptions and its limits.</p>
     <div class="hero-cta">
       <a class="btn primary" href="#case-files">See the case files <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       <a class="btn outline" href="contact.html">Get in touch</a>
@@ -810,7 +825,12 @@ stat_html = '<div class="stats">' + "".join('<div class="stat"><div class="n">%s
 case_page("research.html", "Green bond pricing research", "Preliminary results on whether green bonds price tighter than matched conventional bonds from the same issuer.",
           "Project, preliminary results", "Green bond pricing research", "Fixed Income Research Analyst, UMass Lowell. May 2026 to now.",
           "Do investors accept a lower yield on a green bond than on a conventional bond from the same issuer?",
-          [("Method", "Matched pairs, adjusted for rates, credit and maturity",
+          [("In short", "The question, the method, the finding, and what it means",
+            story("Is the greenium real, and is it big enough to change what an issuer should do?",
+                  "663 green bonds from Bloomberg and the Climate Bonds Initiative, cut to 153 same issuer pairs under four pair rules. Each pair is adjusted for Treasury rates, credit spreads and maturity with FRED data.",
+                  "Green bonds priced 2.4 bps tighter on average. The result is not significant at p 0.30, and the sample cannot tell 2 bps from zero. The two sovereigns that issue true twin bonds see the same thing: Germany's March 2026 green Bund priced 1 bp through its twin.",
+                  "On a $500 million 10 year deal, 2.4 bps is about $120,000 a year of coupon, less than the cost of the second party opinion and the reporting. Issue green because investors want it, not because it is cheaper.")),
+           ("Method", "Matched pairs, adjusted for rates, credit and maturity",
             P("663 green bonds, of which 153 have a conventional bond from the same issuer that passes four pair rules: a US dollar twin, the same payment rank, both bonds at least $250 million, and no call before 90 percent of the life. Each pair is dated at its Bloomberg pricing date and adjusted for rates, credit spreads and maturity with Treasury and Moody's data from FRED. Matches were first screened with help from Claude. Every number here is preliminary.")),
            ("Results", "A small gap that the data cannot pin down", stat_html +
             P("On a $500 million, 10 year deal one basis point of coupon is worth about $50,000 a year, so 2.4 bps would be about $120,000 a year if it were real. The data do not show that it is.",
@@ -818,6 +838,9 @@ case_page("research.html", "Green bond pricing research", "Preliminary results o
            ("Try it", "How many pairs would it take", POWER_HTML),
            ("Figures", "The research in thirteen charts",
             P("One script builds every chart from the results files, so the page and the charts always agree. Click any chart to open it.") + figs_html),
+           ("Against the market", "What the issuers with real twins see",
+            P("The cleanest greenium measurements in the world come from sovereigns that sell a green bond and a conventional bond with the same coupon and maturity, so the gap is the label and nothing else. Germany's March 2026 green Bund, 4 billion euros at a 3.14 percent yield, priced 1 bp through its twin, and the Finanzagentur puts the year's greenium at about half a basis point. Denmark's central bank says its recent twins trade 0 to 1 bp apart, down from 2 to 4 a few years ago, with its newest 10 year coming 1.5 to 2 bp inside.",
+              "That is the same answer my corporate pairs give, with more noise: a gap in the low single digits that is shrinking and that no one can tell from zero on a single deal. Bankers at Crédit Agricole claim 5 bp or more on bank paper. My financials subsample shows 5.1 bps tighter on 36 pairs, which sounds like agreement until you see the p value of 0.20.")),
            ("What I got wrong first", "Two results that did not hold up",
             P("A 25 bps result that was an artifact. An early version showed the gap shrinking by 25 bps. It came from measuring credit spreads over the 10 year Treasury, which picks up the slope of the curve. Over the 30 year the credit index tracks the ICE BofA investment grade index at 0.95 correlation, against 0.40 before. I withdrew the claim.",
               "A dating error in my own file. In October 2026 I checked the largest residuals on the terminal and found the file used settlement dates where the pricing dates belong. I pulled the Bloomberg pricing dates and applied four pair rules my supervisor adopted: a US dollar twin, the same payment rank, both bonds at least $250 million, and no early call. The average moved from 4.7 to 2.4 bps and the p value from 0.11 to 0.30. The rules were set after I had seen the earlier results, and the paper says so.")),
@@ -849,7 +872,12 @@ dfigs_html = '<ul class="figs">' + "".join(
 case_page("dcf.html", "Skydance DCF model", "A pro forma discounted cash flow model of Skydance Corporation, formerly Paramount Skydance, after its purchase of Warner Bros. Discovery. Public filings only.",
           "Project", "Skydance DCF model", "Built October 24, 2026. Excel, 344 formulas, 18 sources. Market data as of October 23, 2026.",
           "The anchor of the media set. What is the company that just bought Warner Bros. Discovery worth, and what has to be true for the shares to be worth more than $7.77 under $89 billion of debt?",
-          [("Why this company", "I covered its tender at Finsight",
+          [("In short", "The question, the method, the finding, and what it means",
+            story("What is the combined Skydance worth under $89 billion of debt, and how much of that value is the merger itself?",
+                  "A pro forma base year from both companies' filings and the October 2026 8-Ks, three revenue lines, a separate synergy line, and a 9.2 percent WACC built from a 2.4 levered beta and an 8 percent cost of debt.",
+                  "$8.80 a share on the perpetuity method and $4.97 on the exit multiple, against a $7.77 price. Almost all of the EBITDA growth is synergies, and the bear case takes the equity below zero.",
+                  "The discount rate, not the forecast, is the hard part. One point of WACC is worth $3 to $4 a share, which is why the bonds yield 10 to 13 percent and the equity trades like an option on the synergies.")),
+           ("Why this company", "I covered its tender at Finsight",
             P("I covered the Paramount Skydance tender at Finsight and wanted to value a company whose bonds I had watched trade. By the time I built it, Paramount Skydance had closed its $110 billion purchase of Warner Bros. Discovery and become Skydance Corporation, SKYD on the NYSE. So the model values the combined company: about $70 billion of revenue, $89 billion of gross debt, 5.04 billion shares.",
               "The deal was paid for with $47 billion of new equity at $12 a share and about $52 billion of new debt. The stock closed at $7.77 on October 23. S&P cut the company to BB and the old Paramount bonds yield 10 to 13 percent. The discount rate, not the forecast, is the hard part.")),
            ("The result", "A small premium on one method and a discount on the other", dstat_html +
@@ -871,6 +899,9 @@ case_page("dcf.html", "Skydance DCF model", "A pro forma discounted cash flow mo
                  "<b>Linear decline.</b> Three points a year faster, which is what Warner Bros. Discovery's linear networks did in the second quarter of 2026, takes the base case most of the way to the bear case.",
                  "<b>The discount rate.</b> Market weights give 9.2 percent. If management reaches its 3.0 times leverage target by 2029, the equity weight rises and so does the WACC, which lowers the value even as the business gets safer.",
                  "<b>Content cash spend.</b> It sits inside the working capital line at about 1 percent of revenue and I could not source it. The first combined quarterly report, due in November 2026, will say whether that is right."])),
+           ("Since the model", "What has moved since October 23",
+            P("On October 22, the day before the model's market data, Elon Musk invested about $1 billion in Skydance equity, per Semafor and CNBC. JPMorgan upgraded the stock on October 23 and Citi put a buy on it on October 26, a day it fell 6 percent. It closed at $8.07 on November 2. The perpetuity method says $8.80 and the exit multiple says $4.97, so the price is still where the model put it: between two answers that disagree.",
+              "The model's deleveraging path needs about $47 billion of net debt to go away to hit 3.0 times. A billion dollars of equity is 2 percent of that. It is the path I said the company would need, and it has started. The first combined quarterly report comes November 9 and will say whether the content cash spend assumption is right.")),
            ("Download", "The model and its sources",
             '<p class="links"><a href="assets/Skydance_DCF_Model.xlsx">Download the Excel model</a></p>' +
             P("Blue cells are inputs. Scenario switch in Inputs C5. 18 numbered sources, mostly SEC filings. Analyst judgments are labelled where they sit. Nothing from a Bloomberg Terminal or any employer."))], banner=("assets/banners/skypath.jpg", "Skydance net leverage on the base case, with every free dollar going to debt. The target is 3.0 times by 2029."))
@@ -911,7 +942,12 @@ credit_table = '<div class="tablewrap"><table class="cmp"><thead><tr><th>Company
 case_page("media.html", "Media DCF models and credit comps", "Five discounted cash flow models of Skydance, Netflix, Disney, Comcast and Fox on one template, then a credit comparison built the way a debt capital markets or syndicate desk would build it.",
           "Project", "Media DCF models and credit comps", "Built October 24 and 25, 2026. Five Excel models plus a credit comps workbook. 1,860 formulas, 71 sources. Market data as of October 22 and 23, 2026.",
           "Five media companies valued the same way, then lined up the way a desk lines them up: leverage, coverage, cash flow against debt, the equity cushion under the bonds, and where the paper prices.",
-          [("Why I built this", "The primary market, and why a bond prices where it does",
+          [("In short", "The question, the method, the finding, and what it means",
+            story("Valued the same way, which of five media capital structures can carry its debt, and what does each share price already assume?",
+                  "Five DCF models from SEC filings on one template, with the same risk free rate, equity premium and cash flow definition, then a credit comparison on leverage, coverage and the equity cushion under the bonds.",
+                  "Four prices reconcile with their filings within a point of growth. Comcast is priced as if cash flow shrinks 5 percent a year forever. Skydance is the only one past 3 times leverage and under 2 times coverage, and a 31 percent EBITDA miss wipes out its equity.",
+                  "That cushion is why Skydance's first liens trade 170 bp wide of the BBB index while Netflix printed a 10 year at 5.346 percent in July. The 3.0 times target cannot be reached on cash flow, so the path is asset sales or equity, and that is what the next deal will be about.")),
+           ("Why I built this", "The primary market, and why a bond prices where it does",
             P("I want a debt capital markets or syndicate seat, or a fixed income research job. What I like most is the moment a new bond gets priced. Where the talk starts, how the book builds, where it prints and what it does the next day. The market checks your numbers within hours.",
               "At Finsight I spent nine months as close to that as an intern can get. I collected order books from 30 or more syndicate desks on 15 to 20 deals a day, and followed price talk to print and volume against Street estimates. I also wrote headlines on more than 25 liability management deals.",
               "This page is five companies I covered or watched, valued the same way and then read as credits. Skydance is the anchor because I covered the Paramount tender and then watched the market reprice the whole capital structure when the Warner Bros. Discovery debt came.")),
@@ -942,15 +978,22 @@ case_page("media.html", "Media DCF models and credit comps", "Five discounted ca
             P("Quoted betas as unlevered betas. Netflix came out at an 11.6 percent WACC and $42 a share, and Comcast's unlevered below a utility's. I set them by hand, 0.6 for Fox, 0.7 for Comcast, 0.9 for Skydance, 1.05 for Disney, 1.2 for Netflix, and wrote down why on each WACC sheet.",
               "Then the one a desk would catch first: the four investment grade names borrowing at 5 to 5.5 percent with the 10 year at 4.95, which is 5 to 55 bp of spread. Nobody prints there. I moved them to 75 to 125 bp over. It barely touches three of them and takes $3 off Comcast, because half its capital is debt.",
               "On October 26 I checked those inputs against where each name's long paper actually trades, on a terminal. Disney, Netflix and Fox hold within the noise. Comcast is the miss: after three agencies put it on negative watch for the spin, the market has it wider than my 95 bp by a margin that would not surprise a desk. Moving Comcast's cost of debt to where the market is lifts its WACC to 7.8 percent and takes about $2 more off the perpetuity value. It changes no conclusion, because the model still lands far above the price. The levels themselves stay off this site.")),
+           ("Since the models", "What has moved since October 23",
+            bul(["<b>Skydance.</b> On October 22 Elon Musk put about $1 billion of equity into the company, per Semafor and CNBC, and the stock was upgraded at JPMorgan on October 23 and at Citi on October 26. It closed at $8.07 on November 2 against the $7.77 in the model, inside the range on both methods. Third quarter results come November 9, the first combined print.",
+                 "<b>What $1 billion does.</b> The deleveraging page above says reaching 3.0 times means cutting about $47 billion of net debt. One billion of new equity is 2 percent of that. It is the equity path the model said the company would need, started, and nowhere near finished.",
+                 "<b>Fox and Roku.</b> Both sets of shareholders approved the $22 billion deal in October. The Justice Department issued a second request, so closing is now first half of 2027 at the earliest. The Fox model stays standalone and that call looks right.",
+                 "<b>Rates.</b> The 10 year Treasury was at 5.00 percent on October 26 after 5.31 on October 5. The five models use 4.95. A move of that size inside a month is a reminder that the WACC sensitivity grids are not decoration.",
+                 "<b>Supply.</b> Investment grade issuance passed the 2020 record on October 26 at $1.76 trillion, with cloud and data center borrowers selling almost $368 billion of debt this year. That is the backdrop the credit comps sit in: a market that will fund almost anyone, at a spread."])),
            ("Download", "Five models and the credit comps",
             '<p class="links"><a href="assets/Media_Credit_Comps.xlsx">Credit comps workbook</a> &nbsp;&middot;&nbsp; <a href="assets/Skydance_DCF_Model.xlsx">Skydance</a> &nbsp;&middot;&nbsp; <a href="assets/NFLX_DCF_Model.xlsx">Netflix</a> &nbsp;&middot;&nbsp; <a href="assets/DIS_DCF_Model.xlsx">Disney</a> &nbsp;&middot;&nbsp; <a href="assets/CMCSA_DCF_Model.xlsx">Comcast</a> &nbsp;&middot;&nbsp; <a href="assets/FOXA_DCF_Model.xlsx">Fox</a></p>' +
             P("Blue cells are inputs. Scenario switch in Inputs C5 of any model. The comps workbook names the model every figure came from. No input in these files comes from a Bloomberg Terminal or any employer. The October 26 check above was a comparison only."))], banner=("assets/banners/media.jpg", "Leverage first, value second."))
 
 
-def company_dcf_page(fname, name, h1, meta, lede, why, stats, build, charts, wrong, change, xlsx, extra_note):
+def company_dcf_page(fname, name, h1, meta, lede, why, stats, build, charts, wrong, change, xlsx, extra_note, short=None):
     stat_html = '<div class="stats">' + "".join('<div class="stat"><div class="n">%s</div><p>%s</p></div>' % (n, e(t)) for n, t in stats) + "</div>"
     case_page(fname, "%s DCF model" % name, "A discounted cash flow model of %s on the same template as my Skydance model. Public filings only." % name,
               "Project", h1, meta, lede,
+              ([("In short", "The question, the method, the finding, and what it means", story(*short))] if short else []) +
               [("Why this company", why[0], P(*why[1])),
                ("The result", "The numbers", stat_html + P("Model outputs under stated assumptions. Nothing on this page is a recommendation to buy or sell anything.")),
                ("How it is built", "Inputs that differ from the template", bul(build)),
@@ -987,7 +1030,11 @@ company_dcf_page("dcf-nflx.html", "Netflix", "Netflix DCF model", "Built October
      "<b>Margin ceiling.</b> The base case stops at 36 percent. Every point of terminal margin is worth about $1.50 a share.",
      "<b>Advertising.</b> The October 20 letter cut 2026 ad guidance from about $3 billion to $2.7 billion. Ads are 5 percent of revenue, so this is a small line that the market treats as a big one.",
      "<b>The share count.</b> If the real count is 4,195 million, the diluted figure, every value on this page is about 0.7 percent lower."],
-    "NFLX_DCF_Model.xlsx", "Blue cells are inputs. Pick a scenario in Inputs cell C5. Sources are numbered and cited next to each figure. Nothing in the model comes from a Bloomberg Terminal or from any employer.")
+    "NFLX_DCF_Model.xlsx", "Blue cells are inputs. Pick a scenario in Inputs cell C5. Sources are numbered and cited next to each figure. Nothing in the model comes from a Bloomberg Terminal or from any employer.",
+    short=("At 17 times EBITDA, what growth and margin does the Netflix price already assume, and is that a fair benchmark for Skydance's streaming line?",
+           '2026 guidance of $51 billion of revenue and a 31.5 percent operating margin, split into subscription and advertising, discounted at a 10.3 percent WACC with content amortization kept inside costs.',
+           '$49.79 a share on the perpetuity method and $68.16 on the exit multiple, against a $65.85 price. The price needs 5.1 percent growth forever or a multiple of 14 times or more in 2031.',
+           "Netflix borrows at 85 bp over Treasuries with almost no leverage, so the market prices it as the safest credit of the five and the richest equity. Skydance's streaming case rests on reaching margins Netflix took a decade to earn."))
 
 company_dcf_page("dcf-dis.html", "Disney", "Disney DCF model", "Built October 24, 2026. Excel, 323 formulas, 12 sources. Fiscal year ends in late September. Market data as of October 16, 2026.",
     "The closest thing to Skydance that already works. Studios, linear networks and streaming under one roof, plus the parks.",
@@ -1014,7 +1061,11 @@ company_dcf_page("dcf-dis.html", "Disney", "Disney DCF model", "Built October 24
      "<b>Capex.</b> Each point of revenue in terminal capex is worth about $8 a share. The ships are the reason this matters.",
      "<b>Experiences growth.</b> The segment is 57 percent of operating income. Two points of growth there is worth more than five points in Sports.",
      "<b>The November 17 results.</b> They replace my estimated base year with a real one."],
-    "DIS_DCF_Model.xlsx", "Blue cells are inputs. Pick a scenario in Inputs cell C5. The base year is labelled as an estimate until the FY2026 10-K is out. Nothing in the model comes from a Bloomberg Terminal or from any employer.")
+    "DIS_DCF_Model.xlsx", "Blue cells are inputs. Pick a scenario in Inputs cell C5. The base year is labelled as an estimate until the FY2026 10-K is out. Nothing in the model comes from a Bloomberg Terminal or from any employer.",
+    short=("What is Disney worth with linear networks shrinking inside Entertainment, and where could Skydance's margins settle if it finished integrating?",
+           'FY2026 revenue of about $101 billion from nine months of actuals plus guidance, three segments with separate growth paths, capex fading from a $9 billion cruise ship peak, and a 9.4 percent WACC.',
+           '$79.11 a share on the perpetuity method and $114.42 on the exit multiple, against a $110.16 price. The price implies 4.1 percent growth forever for a company whose linear networks are shrinking.',
+           'Experiences is 57 percent of operating income and the piece Skydance does not have. Disney shows what an integrated media company earns, and it still only reaches its price on the exit multiple.'))
 
 company_dcf_page("dcf-cmcsa.html", "Comcast", "Comcast DCF model", "Built October 24, 2026. Excel, 311 formulas, 14 sources. Market data as of October 23, 2026.",
     "The one the model cannot reconcile. At $22 the market is pricing Comcast as a business that shrinks forever, and the filings do not show that.",
@@ -1041,7 +1092,11 @@ company_dcf_page("dcf-cmcsa.html", "Comcast", "Comcast DCF model", "Built Octobe
      "<b>Broadband losses.</b> Comcast is losing subscribers to fixed wireless and fiber. The bear case runs connectivity down 3 percent a year. The price implies worse.",
      "<b>The spin itself.</b> A sum of the parts after mid 2027 is a different model with two balance sheets, and the S-4 or Form 10 is the document to build it from.",
      "<b>Theme parks.</b> Segment EBITDA fell 17 percent in the third quarter of 2026 on a tough Epic Universe comparison. I grow the segment 2 percent, which may be generous."],
-    "CMCSA_DCF_Model.xlsx", "Blue cells are inputs. Pick a scenario in Inputs cell C5. The 2026 base year is annualized from nine months and labelled as such. Nothing in the model comes from a Bloomberg Terminal or from any employer.")
+    "CMCSA_DCF_Model.xlsx", "Blue cells are inputs. Pick a scenario in Inputs cell C5. The 2026 base year is annualized from nine months and labelled as such. Nothing in the model comes from a Bloomberg Terminal or from any employer.",
+    short=('Why does the market price Comcast at 4.5 times EBITDA, and do the filings support a business that shrinks forever?',
+           '2026 annualized from nine months, with Versant out and Sky Deutschland out from the second quarter. Two revenue lines, a 7.5 percent WACC with half the capital in debt, and a bear case run harder than usual.',
+           '$44.48 a share on the perpetuity method and $34.81 on the exit multiple, against a $22.04 price. The price implies cash flow falling 5.3 percent a year forever and a 3.6 times exit multiple.',
+           "Half of Comcast's capital is debt at 4.5 percent after tax, so each point of WACC is worth $8 to $15 a share. Three agencies have it on negative watch for the spin, and that is the gap between my cost of debt and the market's."))
 
 company_dcf_page("dcf-foxa.html", "Fox", "Fox DCF model", "Built October 24, 2026. Excel, 323 formulas, 9 sources. Fiscal year ends June 30. Market data as of October 22, 2026.",
     "A pure linear network company with no debt problem, so it isolates the one assumption that drives the Skydance bear case: how fast cable networks decline.",
@@ -1065,15 +1120,24 @@ company_dcf_page("dcf-foxa.html", "Fox", "Fox DCF model", "Built October 24, 202
         "Roku adds $14.2 billion of cash consideration, a bridge loan, 143 million new shares and $400 million of synergies. Modelling that from a press release would be guessing at the capital structure. Fox is standalone, and the Roku model waits for the S-4."]),
     ["<b>Cable decline.</b> Each point of annual cable revenue decline is worth about $2 a share. This is the same lever as the Skydance bear case, without the debt.",
      "<b>Sports rights.</b> The margin path assumes rights costs grow faster than revenue. If Fox lets a package go, margins hold and the bull case is in play.",
-     "<b>Roku.</b> Closes in the first half of 2027 and changes the share count, the debt and the growth rate at once.",
+     "<b>Roku.</b> Shareholders of both companies approved the deal in October 2026 and the Justice Department issued a second request, so closing is the first half of 2027 at the earliest. When it closes it changes the share count, the debt and the growth rate at once.",
      "<b>The missing FCF.</b> The base case assumes about $2.4 billion of unlevered free cash flow a year. If fiscal 2026 was the new normal rather than timing, the base case is high by about $30 a share."],
-    "FOXA_DCF_Model.xlsx", "Blue cells are inputs. Pick a scenario in Inputs cell C5. Roku is excluded on purpose. Nothing in the model comes from a Bloomberg Terminal or from any employer.")
+    "FOXA_DCF_Model.xlsx", "Blue cells are inputs. Pick a scenario in Inputs cell C5. Roku is excluded on purpose. Nothing in the model comes from a Bloomberg Terminal or from any employer.",
+    short=('What is a linear network company worth on its own, with no debt to cloud the answer, and how fast does cable decline?',
+           'Fiscal 2026 actuals of $17.1 billion of revenue and $3.9 billion of EBITDA, three revenue lines with an even year political cycle, margins drifting down as sports rights grow, and a 7.6 percent WACC.',
+           '$72.52 a share on the perpetuity method and $58.88 on the exit multiple, against a $68.27 price. The price implies 0.5 percent growth, and the market and I agree within a point.',
+           'Each point of annual cable decline is worth about $2 a share. That is the same lever as the Skydance bear case, without the $89 billion of debt, which is why Fox is the cleanest read of the five.'))
 
 # ---------- tender ----------
 case_page("tender.html", "Tender Tracker", "A daily tracker of bond tender and exchange offers built from SEC filings and newswires, with its error rates published.",
           "Project, live", "Tender Tracker", "Personal project. October 2026 to now.",
           "A daily tracker of cash tender offers and exchange offers for corporate bonds, read from SEC filings and newswire press releases.",
-          [("What it does", "One row per offer, with a link to the filing",
+          [("In short", "The question, the method, the finding, and what it means",
+            story("What does a bond tender look like in the busiest issuance year on record, and can a free script keep the list current?",
+                  "SEC EDGAR full text search over Forms 8-K and 6-K plus three newswires, read by a set of rules that extracts offer type, securities, cap and dates. Accuracy was graded on filings the rules had never seen, then the offers were measured on size, speed and what changed after launch.",
+                  "Two shapes of tender. Two thirds of launches expire within four to seven business days with no early deadline and a cash cap, median $500 million. The rest run about 20 business days and carry almost every early deadline, exchange and consent solicitation. About one in five offers was extended or amended after launch.",
+                  "The fast tender is a refinancing tool that runs alongside a new issue, which is why there are so many of them in a record year. The slow tender is a negotiation with holders. A desk should price the two differently, and a tracker that cannot tell them apart is not much use.")),
+           ("What it does", "One row per offer, with a link to the filing",
             P("Each offer shows its securities, cap, expiration and the steps seen so far, with a link to the filing or press release behind every row. It reads public SEC filings and public newswire pages and rebuilds every day.") +
             P("I built the page to look like my market dashboard: a table of offers you can sort and search, a panel of offers by status that you can click to filter, filings read by day and the offers expiring next.") +
             '<p class="links"><a href="https://ferrierotony-cmyk.github.io/market_dashboard/tender/">Open the tracker</a> &nbsp;&middot;&nbsp; <a href="%s" rel="noopener">Code</a></p>' % TENDER_CODE +
@@ -1082,6 +1146,11 @@ case_page("tender.html", "Tender Tracker", "A daily tracker of bond tender and e
             P("AI reviewers graded it against the filings on releases the rules had never seen. Offer type and dates were right about nine times in ten. Securities and caps were right about three times in four. A person has not checked these rows.") +
             P("The most common mistake is counting new notes being issued, or notes being redeemed, as the notes targeted. On the period the rules were built on, it found 32 of 33 offer releases, which is a best case. On October 26 I fixed the redeemed notes case and a few grouping errors. Those fixes have not been tested on new filings yet, so I do not claim a new number for them.") +
             P("The weak spot was recall. Through October 26 the search only read Form 8-K exhibits with six phrasings, and it found 17 offers in 90 days. Many issuers never file an 8-K for a tender, they only put out a press release. On October 27 I widened the SEC search to 54 phrasings and Form 6-K, added PR Newswire and Bing News as sources, and the same window went to 44 offers. Fourteen more came from issuer sites and wires the script cannot reach, typed in by hand with the source linked and tagged HAND on the page. The accuracy numbers above are for the rules, not the hand rows.")),
+           ("What the data say so far", "Two kinds of tender, and which one a record year produces",
+            '<div class="stats">' + "".join('<div class="stat"><div class="n">%s</div><p>%s</p></div>' % (n, e(t)) for n, t in [('35', 'Launches read from SEC filings between August 5 and November 3, 2026. 28 cash tenders and 7 exchange offers, on top of 14 more offers added by hand.'), ('4 to 7 days', 'Business days from launch to expiration for 21 of the 31 launches with a date. None of the 21 had an early tender deadline. 13 carried a cash cap and 6 were any and all.'), ('20 to 22 days', 'The other 9 launches. Seven of them had an early deadline, five were exchange offers and five carried a consent solicitation. Corteva, Tyson, Oneok and Kimberly Clark were in this group.'), ('$500m', "Median cap across the 18 offers with a dollar cap. HSBC's $5 billion was the largest, then Oneok and Cloud Software Group at $2 billion. The 18 caps add up to $16.4 billion."), ('9 of 50', 'Offers that were extended or amended after launch, 5 extensions and 6 amendments, with two offers doing both. Where the results were read, Baxter drew $757 million against a $600 million cap and Brandywine $350 million against $120 million.'), ('$1.76tn', "US investment grade issuance for 2026 through October 26, the day it passed the 2020 record, running 29 percent ahead of last year's pace. Bloomberg's count. Tenders are the other side of that supply.")]) + '</div>' +
+            P("The split is the finding. A tender that expires in five business days with no early deadline is a refinancing: the issuer prices a new bond the same week, uses the proceeds to take out the old one, and does not need holders to deliberate. Eight of the releases say so outright by tying the tender to new notes. A tender that runs four weeks with an early premium, a consent fee or an exchange ratio is asking holders to decide something, and the issuer pays for the time.",
+              "In a year when investment grade supply passed $1.76 trillion in October, most of the tenders the tracker reads are the fast kind, and most of the caps are under a billion dollars. That is issuers cleaning up near maturities with cheap new money, not distressed exchanges. The nine slow offers are where the credit work is.",
+              "Everything above is the rules' reading of the filings as of November 3, with the error rates stated in the section before this one. The 14 hand rows are not in these counts. I would want a human check on the caps before anyone traded on them.")),
            ("How it is built", "Two stages, no paid services",
             bul(["A fetch step searches EDGAR full text search for tender and exchange offer press releases, then PR Newswire and Bing News for releases that never reached EDGAR, and caches the text.",
                  "An offline rules step extracts offer type, securities, cap and dates, then groups releases into offers.",
@@ -1091,10 +1160,22 @@ case_page("tender.html", "Tender Tracker", "A daily tracker of bond tender and e
 case_page("dashboard.html", "Morning Market Dashboard", "A market dashboard that scores whether the new issue window is open, built in R from free data.",
           "Project, live", "Morning Market Dashboard", "Personal project. June 2026 to now.",
           "One screen that answers one question every morning: is the new issue window open?",
-          [("What it does", "A score built from the inputs a syndicate desk watches",
+          [("In short", "The question, the method, the finding, and what it means",
+            story("When the score says the window is shut, is the next week actually worse, and do fewer deals price?",
+                  "The seven rules rebuilt from FRED and Yahoo closes for every morning from October 2024 to November 2026, 538 mornings, then matched against the next five days of spread moves and a public count of pricing term sheets filed on Form FWP.",
+                  "The score read challenging on 14 mornings, 10 of them in the April 2025 tariff week. Term sheets ran at about half the normal rate on those days. But spreads were tighter a week later on 13 of the 14. The score fires at the top, after the move.",
+                  "It is a thermometer, not a forecast. It confirms the window is shut on the days anyone can see that on a screen, and it never warned the week before. The useful signal is the opposite one: the morning after a challenging print has been followed by tighter spreads 13 times out of 14.")),
+           ("What it does", "A score built from the inputs a syndicate desk watches",
             P("It reads Treasury yields, credit spreads, volatility and macro data from free sources and scores the window from VIX, MOVE, the one week move in IG and HY spreads, stock futures and where spreads sit in their one year range. Built in R. It rebuilds several times a day on weekdays.") +
             '<p class="links"><a href="https://ferrierotony-cmyk.github.io/market_dashboard/">Open the dashboard</a> &nbsp;&middot;&nbsp; <a href="%s" rel="noopener">Code</a></p>' % REPO +
             '<a class="shot" href="https://ferrierotony-cmyk.github.io/market_dashboard/"><img src="https://ferrierotony-cmyk.github.io/market_dashboard/market_dashboard.png" alt="Dashboard snapshot: Treasury curve, 2, 10 and 30 year history, curve slope and credit spreads" loading="lazy" onerror="this.parentNode.style.display=\'none\'"></a><p class="note">The snapshot is rebuilt with the dashboard on weekdays.</p>'),
+           ("Does the score mean anything", "I tested it, and it is a thermometer",
+            '<div class="stats">' + "".join('<div class="stat"><div class="n">%s</div><p>%s</p></div>' % (n, e(t)) for n, t in [('538', 'Mornings scored, October 10, 2024 to November 2, 2026, the span where every input has public history. Open on 76 percent of them, selective on 21, challenging on 3. Two mornings in five scored a perfect seven.'), ('14', 'Mornings the score read challenging. Ten were April 4 to 22, 2025, the tariff week, when investment grade spreads went from 94 to 121 bp. The others were two in March 2025, August 4, 2025 and March 13, 2026.'), ('13 of 14', 'Challenging mornings that were followed by tighter investment grade spreads over the next five trading days, by 4 bp on average and 22 bp in high yield. The one miss was April 4, the first day of the shock.'), ('1.3 a day', 'Pricing term sheets filed on Form FWP on challenging mornings, against 3.0 on open ones. On April 4, 7 and 9, 2025 there were none. Across all 538 mornings the score has no rank correlation with the count, rho 0.04.'), ('19 of 409', 'Open mornings followed by a 5 bp or wider move in investment grade spreads within a week. The score did not warn before any of them. It has never flagged a widening in advance, only after.'), ('Friday', 'The day of the week moves the term sheet count more than the score does: 1.4 filings on a Friday against 3.5 midweek. Any issuance model that skips the calendar is reading noise.')]) + '</div>' +
+            dfig([("dash_backtest.png", "The score against the spread it reads", "Orange marks the 14 challenging mornings. They sit at the top of the April 2025 spike, not in front of it. The lower panel is the daily count of pricing term sheets on Form FWP, a public proxy for investment grade supply.", True)]) +
+            P("I built the score to answer a question every morning, and for a year I never checked whether the answer meant anything. So I rebuilt the seven rules from public history for every morning since October 2024 and asked two things: when it says challenging, do spreads get worse over the next week, and do fewer deals print?",
+              "The second answer is yes, weakly. On the 14 challenging mornings the market filed about half as many pricing term sheets as usual, and on the three worst days of April 2025 it filed none. The first answer is no, and it is the more interesting one. Spreads were tighter a week after 13 of the 14 challenging mornings. The score is built from the one week change in spreads, so it cannot fire until the damage is done, and by then the next week is the recovery. In April 2025 investment grade peaked at 121 bp on April 9, the morning the score hit zero, and was 8 bp tighter five trading days later.",
+              "That makes it a thermometer. It tells you the window is shut on the mornings a desk already knows it is shut, and it has never once said shut before a widening. The useful signal turns out to be the opposite one. The morning after a challenging print has been followed by tighter spreads 13 times out of 14. If I were adding a fourth state to the scorecard it would be reopening, and it would be the one I would want to see.",
+              "Limits, stated plainly. Fourteen events is a small sample and ten of them are one week. The term sheet count catches about three filings a day against ten or so deals the market prints, so it is a proxy, not a tally. The MOVE index and the stock futures only have two years of public history, which is why the test starts in October 2024 and not earlier. The scoring uses the prior day's closes, which is what the dashboard sees at 7am. The backtest code is in the repo.")),
            ("What to know", "Free data only, and a sample portfolio",
             P("The public build uses free data feeds only. The portfolio panel on the public build is a sample book and is labeled as one. A private version on my laptop pulls Bloomberg data through the API, with ten panels on the Treasury curve, DV01, P&amp;L and credit spreads, and refreshes every morning. That version is not published."))],
           banner=("assets/banners/rates.jpg", "The 10 year Treasury and the Baa spread since 2015, two of the inputs behind the window score. FRED data."))
@@ -1176,7 +1257,12 @@ wacc_html = '<div class="stats">' + "".join('<div class="stat"><div class="n">%s
 case_page("valuation.html", "2026 Valuation Challenge", "Valuation Analyst on the UMass Lowell team in the 2026 Business Valuation Challenge: discount rate, DCF, LBO and public comparables.",
           "Competition", "2026 Valuation Challenge", "Valuation Analyst. UMass Lowell team led by Professor Sangphil Kim. September to October 2026.",
           "We valued 100 percent of a $132MM revenue Gulf Coast engineering contractor, an owner operated S corporation, for an ESOP acquisition at fair market value. I owned the discount rate, the DCF, the LBO and the public comparables.",
-          [("The competition", "A 25 minute recorded valuation, no questions allowed",
+          [("In short", "The question, the method, the finding, and what it means",
+            story("What is a $132MM revenue, owner operated contractor worth to an ESOP buying 100 percent of it at fair market value?",
+                  "A discount rate built in layers to 16.8 percent, a five year DCF tested by perpetuity and exit multiple, an LBO as a buyer's check, and public peers used for beta only.",
+                  "The two DCF methods landed within half a million dollars of each other, and the LBO ceiling landed close to the DCF. The 7.06 percent size premium is worth about five turns of EBITDA and is the whole gap between public and private multiples.",
+                  "Public multiples said nothing about a control sale of a private contractor with two owners, so they got zero weight. The value sits where a surety and a lender would let it sit, not where a listed peer trades.")),
+           ("The competition", "A 25 minute recorded valuation, no questions allowed",
             P("Run out of Georgia State University. Round 1 is a recorded presentation of up to 25 minutes with no live questions; the top five teams go to the in person final. We submitted on October 19, 2026.",
               "With no question period, every judgment has to defend itself inside the video. Each of my four slides answers the question a judge would ask if they could.")),
            ("My four slides", "Risk, value, a buyer's check, and what public peers can and cannot tell you",
@@ -1261,7 +1347,12 @@ case_page("ccr.html", "Commonwealth Capital Research", "Research Analyst at Comm
 case_page("consulting.html", "Mill City Consulting", "Research and due diligence for a UMass Lowell student consulting client.",
           "Project", "Mill City Consulting", "Research and due diligence lead. UMass Lowell student consulting group.",
           "A six lane duckpin bowling alley that has been open since 1931, with new owners and no financial system.",
-          [("The client", "Leagues, parties, and 1960s pinsetters",
+          [("In short", "The question, the method, the finding, and what it means",
+            story("Can two new owners run a 1931 duckpin alley as a business when it has no books, no website and machines older than they are?",
+                  "Interviews with the owners, a revenue breakdown by line, and a five section question bank I wrote for the research and due diligence work: the business, operations, customers and market, pain points and goals.",
+                  "Leagues were about 87 percent of revenue, parties 9 and food and drink 4. The owners had never seen that split. The pinsetters, not the market, were the risk.",
+                  "This is a subscription business with one point of failure. The profit and loss tracker gave the owners their first look at it, and the engineering intro went after the thing that could close it.")),
+           ("The client", "Leagues, parties, and 1960s pinsetters",
             P("Two owners had just bought the place. Leagues were about 87 percent of revenue, parties 9, food and drink 4. Strengths: one of the last duckpin houses in the region, owners who do their own repairs, a real Facebook following. Weaknesses: fragile sixty year old machines, no website, no formal books.")),
            ("What we built", "Visibility first",
             bul(["An Excel financial tracker with a live profit and loss, so the owners could see the business for the first time.",
