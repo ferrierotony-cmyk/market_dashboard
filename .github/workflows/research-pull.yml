@@ -15,8 +15,14 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install requests
+      - name: Keep the EDGAR counts from the last run
+        run: |
+          mkdir -p research/out
+          git fetch --depth=1 origin research-data && git show FETCH_HEAD:edgar_daily.csv > research/out/edgar_daily.csv || true
       - env:
           SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          SKIP_EDGAR: "1"
         run: python research/pull.py
       - if: always()
         run: |
