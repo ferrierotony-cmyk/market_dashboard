@@ -599,16 +599,16 @@ def story(q, m, f, w):
 
 
 CASES = [
+    ("media.html", "Project", "Media DCF models and credit comps", "Five media credits valued on one template, then ranked on leverage, coverage, equity cushion and spread.", ("6.9x", "Skydance net leverage, against a 3.0x target it cannot reach on cash flow")),
     ("research.html", "Project", "Green bond pricing", "Do green bonds price tighter at new issue than the same issuer's conventional bonds? 153 matched pairs.", ("2.4 bps", "average new issue gap, not significant")),
     ("tender.html", "Project", "Tender Tracker", "A daily tracker of bond tender and exchange offers, read from SEC filings and newswires, with the terms and caps.", ("9 in 10", "offer types and dates right on unseen filings")),
     ("dashboard.html", "Project", "Morning Market Dashboard", "Is the new issue window open? One score built from the inputs a syndicate desk checks before launch.", ("6 inputs", "VIX, MOVE, IG and HY spreads, futures, spread range")),
-    ("media.html", "Project", "Media DCF models and credit comps", "DCF models for Skydance, Netflix, Disney, Comcast and Fox on one template, then compared as credits on leverage, coverage, equity cushion and spread.", ("6.9x", "Skydance net leverage, against a 3.0x target it cannot reach on cash flow")),
     ("finsight.html", "Role", "Finsight", "Order books, price talk to print, volume against estimates and liability management on 15 to 20 new deals a day. December 2025 to September 2026.", ("25+", "liability management deals I wrote headlines for")),
+    ("ccr.html", "Role", "Commonwealth Capital Research", "Rates and credit newsletter for 200 subscribers, since February 2024.", None),
     ("bloomberg.html", "Role", "Bloomberg at UMass Lowell", "Terminal Assistant across 10 classes, and captain of the UML team in the Bloomberg Global Trading Challenge.", ("$1M", "virtual book, long only, scored against the WLS index")),
     ("valuation.html", "Competition", "2026 Valuation Challenge", "Discount rate, DCF and LBO for a $132MM revenue contractor being sold to an ESOP. I owned the cost of capital.", ("16.8%", "cost of capital I built and defended")),
     ("finance-society.html", "Leadership", "UML Finance Society", "President of a 500 member student club.", None),
     ("sales-team.html", "Leadership", "Intercollegiate Sales Team", "Captain, top four at a national competition.", None),
-    ("ccr.html", "Role", "Commonwealth Capital Research", "Rates and credit newsletter for 200 subscribers, since February 2024.", None),
     ("consulting.html", "Project", "Mill City Consulting", "Research and due diligence for a 1931 duckpin bowling alley.", None),
     ("education.html", "Education", "UMass Lowell", "Business Administration, finance and marketing, May 2027.", None),
     ("skills.html", "Skills", "Tools and certifications", "Bloomberg, R, Stata, Excel and the AI tools I use.", None),
@@ -652,12 +652,12 @@ def case_page(fname, title, desc, kind, h1, meta, lede, sections, banner=None):
 
 # ---------- index ----------
 board_rows = [
+    ("6.9x", "Skydance net leverage in my DCF", "the thinnest equity cushion of the five credits I modeled"),
+    ("2.4 bps", "New issue discount I measured on green bonds", "153 matched pairs, p 0.30, so not significant"),
+    ("663", "Green bonds in my dataset", "cleaned from 1,226 tracker rows, 40 countries"),
     ("15 to 20", "New bond deals a day I collected order books on", "from 30+ IG and HY syndicate desks at Finsight"),
     ("25+", "Liability management deals I wrote headlines for", "tenders, exchanges and consents"),
-    ("2.4 bps", "New issue discount I measured on green bonds", "153 matched pairs, p 0.30, so not significant"),
     ("9 in 10", "Tender Tracker offer types and dates right", "on filings the rules had never seen"),
-    ("663", "Green bonds in my dataset", "cleaned from 1,226 tracker rows, 40 countries"),
-    ("6.9x", "Skydance net leverage in my DCF", "the thinnest equity cushion of the five companies I modeled"),
 ]
 board = '<div class="board"><div class="board-head"><span>Anthony Ferriero &middot; key numbers</span><b>updated Oct 2026</b></div><ul>' + \
     "".join('<li><div><span>%s</span><small>%s</small></div><b>%s</b></li>' % (e(l), e(s), e(n)) for n, l, s in board_rows) + "</ul></div>"
@@ -732,16 +732,16 @@ HOME_PHOTOS = mosaic([
     ("fs-lunch", "At a Finance Society event.", "", "finance-society.html"),
     ("resume-recharge-1", "Resume Recharge.", "", "finance-society.html"),
 ])
-MARQ = marquee([("15 to 20", "new bond deals a day, order books from 30+ desks"), ("25+", "liability management deals, headline to terms"), ("153", "matched green bond pairs, 2.4 bps tighter"),
-                ("9 in 10", "tender offers read right on unseen filings"), ("6.9x", "Skydance net leverage, five DCFs on one template"), ("$1M", "virtual book, Bloomberg Global Trading Challenge"), ("500+", "Finance Society members, up 200 this year")])
+MARQ = marquee([("6.9x", "Skydance net leverage, five credits on one template"), ("153", "matched green bond pairs, 2.4 bps tighter"), ("15 to 20", "new bond deals a day, order books from 30+ desks"),
+                ("25+", "liability management deals, headline to terms"), ("9 in 10", "tender offers read right on unseen filings"), ("$1M", "virtual book, Bloomberg Global Trading Challenge"), ("500+", "Finance Society members, up 200 this year")])
 index_main = f"""<section class="cine portrait" id="top">
   <div class="cine-bg"></div>
   <div class="wrap cine-in cine-grid">
   <div class="cine-text">
-    <div class="byline"><span class="badge">Debt capital markets &middot; syndicate<span class="hide-s"> &middot; fixed income</span></span></div>
+    <div class="byline"><span class="badge">Fixed income &middot; credit research<span class="hide-s"> &middot; syndicate &middot; debt capital markets</span></span></div>
     <h1>{split("Anthony Ferriero")}</h1>
-    <p class="kick">Looking for a 2027 analyst seat in debt capital markets.</p>
-    <p class="tag">I spent nine months on a primary bond desk at Finsight, collecting order books on 15 to 20 deals a day. Since then I have built a new issue window score, a tender offer tracker and a green bond pricing study. Each one states its assumptions and its limits.</p>
+    <p class="kick">Looking for a 2027 analyst seat in fixed income: credit research, syndicate or debt capital markets.</p>
+    <p class="tag">I spent nine months on a primary bond desk at Finsight, collecting order books on 15 to 20 deals a day. Since then I have built five DCF models with a credit comparison, a green bond pricing study, a tender offer tracker and a new issue window score. Each one states its assumptions and its limits.</p>
     <div class="hero-cta">
       <a class="btn primary" href="#case-files">See the case files <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       <a class="btn outline" href="contact.html">Get in touch</a>
@@ -762,18 +762,28 @@ index_main = f"""<section class="cine portrait" id="top">
     <p class="label">About</p>
     <h2>Manning School of Business, class of 2027</h2>
     <p>I am a senior at UMass Lowell studying finance and marketing, with a minor in quantitative economics. My GPA is 3.6.</p>
-    <p>From December 2025 to September 2026 I was a debt capital markets analyst intern at Finsight, where I chased order books on 15 to 20 new bond deals a day. Now I train students on the Bloomberg Terminal, run the Finance Society and do green bond research.</p>
+    <p>From December 2025 to September 2026 I was a debt capital markets analyst intern at Finsight, where I chased order books on 15 to 20 new bond deals a day. Now I train students on the Bloomberg Terminal, run the Finance Society and do green bond research. I also write the rates and credit section of a student research newsletter.</p>
   </div>
   <div>
     <p class="label">What I have done</p>
     <h2>At Finsight, and on my own</h2>
     <p>At Finsight I covered order books and allocations, price talk to print, volume against Street estimates, attrition and new issue concession. I also wrote headlines on 25 or more liability management deals.</p>
-    <p>On my own I built a score for whether the new issue window is open, a daily tracker of tender and exchange offers from SEC filings and newswires, and a study of whether green bonds price tighter at issue.</p>
+    <p>On my own I built five DCF models and a credit comparison of the media companies, a study of whether green bonds price tighter at issue, a daily tracker of tender and exchange offers from SEC filings and newswires, and a score for whether the new issue window is open.</p>
   </div>
 </div></section>
 <div class="wrap">{board}
 <div class="tape" id="tape"><div class="tape-head"><span>Live from my dashboard &middot; free data, can be 15 minutes late</span><b id="tape-when"></b></div><ul id="tape-ul"></ul><div class="tape-foot">The window score and the levels come from the <a href="dashboard.html">Morning Market Dashboard</a>, rebuilt on weekdays. Not a trading tool.</div></div></div>
-{split_band("assets/ai/home-price.jpg", "I like the moment a new bond gets priced.", "Why I want to work in the primary market", "center", "Price talk, the book, the print. That is the part of the day I want to be close to.", "#FFF1C9")}
+{split_band("assets/ai/home-price.jpg", "I like working out why a bond prices where it does.", "Why I want to work in credit", "center", "Leverage, coverage, the equity under the bonds and where the paper prints. Then the market checks the answer.", "#FFF1C9")}
+<section class="section" id="desks"><div class="wrap">
+  <p class="label">Where my work fits</p>
+  <h2>One set of work, four desks</h2>
+  <dl class="story">
+    <div><dt>Fixed income</dt><dd>A study of whether green bonds price tighter than the same issuer's conventional bonds, and the rates section of a newsletter. <a href="research.html">Green bond pricing</a> &middot; <a href="ccr.html">Commonwealth Capital Research</a></dd></div>
+    <div><dt>Credit research</dt><dd>Five media credits on one template, ranked on leverage, coverage and the equity cushion under the bonds. <a href="media.html">Media DCF models and credit comps</a> &middot; <a href="dcf.html">Skydance</a></dd></div>
+    <div><dt>Syndicate</dt><dd>Nine months collecting order books from 30 or more desks on 15 to 20 deals a day, and a daily score for whether the new issue window is open. <a href="finsight.html">Finsight</a> &middot; <a href="dashboard.html">Morning Market Dashboard</a></dd></div>
+    <div><dt>Debt capital markets</dt><dd>New issues from talk to print, headlines on 25 or more liability management deals, and a tracker of bond tenders and exchange offers. <a href="finsight.html">Finsight</a> &middot; <a href="tender.html">Tender Tracker</a></dd></div>
+  </dl>
+</div></section>
 <section class="section" id="case-files"><div class="wrap">
   <p class="label">Case files</p>
   <h2>Projects, roles and results</h2>
@@ -791,7 +801,7 @@ index_main = f"""<section class="cine portrait" id="top">
   {tl}
 </div></section>"""
 open(os.path.join(OUT, "index.html"), "w", encoding="utf-8").write(shell("index.html", "Anthony Ferriero",
-    "Finance student at UMass Lowell headed for debt capital markets, syndicate or fixed income research. Primary market experience at Finsight, a new issue window dashboard, a bond tender tracker, green bond pricing research and five DCF models.", index_main))
+    "Finance student at UMass Lowell looking for a 2027 analyst seat in fixed income: credit research, syndicate or debt capital markets. Primary market experience at Finsight, five DCF models with a credit comparison, green bond pricing research, a bond tender tracker and a new issue window dashboard.", index_main))
 
 # ---------- research ----------
 FIGS = [
@@ -939,16 +949,16 @@ CREDIT = [
 ]
 credit_table = '<div class="tablewrap"><table class="cmp"><thead><tr><th>Company</th><th>Net debt to EBITDA</th><th>EBITDA to interest</th><th>Free cash flow after interest to net debt</th><th>Net debt share of enterprise value</th><th>DCF equity over net debt</th><th>EBITDA miss that wipes out the equity</th><th>Spread to Treasury on the cost of debt</th><th>S&amp;P rating, where sourced</th></tr></thead><tbody>' + \
     "".join('<tr><td><a href="%s">%s</a></td>' % (f, e(n)) + "".join("<td>%s</td>" % e(v) for v in vals) + "</tr>" for n, f, *vals in CREDIT) + "</tbody></table></div>"
-case_page("media.html", "Media DCF models and credit comps", "Five discounted cash flow models of Skydance, Netflix, Disney, Comcast and Fox on one template, then a credit comparison built the way a debt capital markets or syndicate desk would build it.",
+case_page("media.html", "Media DCF models and credit comps", "Five discounted cash flow models of Skydance, Netflix, Disney, Comcast and Fox on one template, then a credit comparison built the way a credit analyst or a debt capital markets desk would build it.",
           "Project", "Media DCF models and credit comps", "Built October 24 and 25, 2026. Five Excel models plus a credit comps workbook. 1,860 formulas, 71 sources. Market data as of October 22 and 23, 2026.",
-          "Five media companies valued the same way, then lined up the way a desk lines them up: leverage, coverage, cash flow against debt, the equity cushion under the bonds, and where the paper prices.",
+          "Five media companies valued the same way, then lined up the way a credit analyst lines them up: leverage, coverage, cash flow against debt, the equity cushion under the bonds, and where the paper prices.",
           [("In short", "The question, the method, the finding, and what it means",
             story("Valued the same way, which of five media capital structures can carry its debt, and what does each share price already assume?",
                   "Five DCF models from SEC filings on one template, with the same risk free rate, equity premium and cash flow definition, then a credit comparison on leverage, coverage and the equity cushion under the bonds.",
                   "Four prices reconcile with their filings within a point of growth. Comcast is priced as if cash flow shrinks 5 percent a year forever. Skydance is the only one past 3 times leverage and under 2 times coverage, and a 31 percent EBITDA miss wipes out its equity.",
                   "That cushion is why Skydance's first liens trade 170 bp wide of the BBB index while Netflix printed a 10 year at 5.346 percent in July. The 3.0 times target cannot be reached on cash flow, so the path is asset sales or equity, and that is what the next deal will be about.")),
            ("Why I built this", "The primary market, and why a bond prices where it does",
-            P("I want a debt capital markets or syndicate seat, or a fixed income research job. What I like most is the moment a new bond gets priced. Where the talk starts, how the book builds, where it prints and what it does the next day. The market checks your numbers within hours.",
+            P("I want a fixed income seat, in credit research, syndicate or debt capital markets. What I like most is working out why a bond prices where it does. Where the talk starts, where it prints and what it does the next day. The market checks your numbers within hours.",
               "At Finsight I spent nine months as close to that as an intern can get. I collected order books from 30 or more syndicate desks on 15 to 20 deals a day, and followed price talk to print and volume against Street estimates. I also wrote headlines on more than 25 liability management deals.",
               "This page is five companies I covered or watched, valued the same way and then read as credits. Skydance is the anchor because I covered the Paramount tender and then watched the market reprice the whole capital structure when the Warner Bros. Discovery debt came.")),
            ("The five models", "One template, five companies, and what each price already assumes", m5_stat_html + m5_table +
@@ -961,6 +971,11 @@ case_page("media.html", "Media DCF models and credit comps", "Five discounted ca
            ("The deleveraging question", "Can Skydance get to 3.0 times on cash flow alone",
             P("Management's target is 3.0 times by 2029. On my base case, with every free dollar going to debt, net leverage is 6.3 times at the end of 2027, 5.0 at the end of 2029 and 4.5 at the end of 2031. Getting to 3.0 means cutting about $47 billion of net debt on under a billion of first year free cash flow after interest. That is asset sales or equity, which is what the second lien equity clawback is for.") +
             dfig([("m5_skypath.png", "Net debt and net leverage, year by year", "Base case, no asset sales, no equity. The line never reaches the target.", True)])),
+           ("What I would watch", "If I covered Skydance's debt",
+            bul(["<b>Free cash flow after interest.</b> It is about zero in year one of my base case. The first combined quarterly report on November 9 is the first real read on it.",
+                 "<b>Asset sales or equity.</b> Getting to 3.0 times means cutting about $47 billion of net debt. The $1 billion of equity in October is 2 percent of that.",
+                 "<b>The first liens.</b> They trade at 272 bp, 170 bp wide of the BBB index. With this little equity under them, I expect them to react to the stock more than a BBB bond would.",
+                 "<b>The other four.</b> Netflix, Fox and Disney carry less than 2 times leverage and have the cushion to take a miss. Comcast sits in the middle at 2.3 times, and half of its capital is debt."])),
            ("Charts", "Five charts, one per question",
             dfig([("m5_credit.png", "Leverage and coverage", "Skydance is the only one past 3 times leverage and the only one under 2 times coverage.", True),
                   ("m5_cushion.png", "The equity cushion", "Equity value for each EBITDA miss at today's multiple. Skydance hits zero at 31 percent, Comcast at 50, the other three past 80.", True),
@@ -1136,7 +1151,7 @@ case_page("tender.html", "Tender Tracker", "A daily tracker of bond tender and e
             story("What does a bond tender look like in the busiest issuance year on record, and can a free script keep the list current?",
                   "SEC EDGAR full text search over Forms 8-K and 6-K plus three newswires, read by a set of rules that extracts offer type, securities, cap and dates. Accuracy was graded on filings the rules had never seen, then the offers were measured on size, speed and what changed after launch.",
                   "Two shapes of tender. Two thirds of launches expire within four to seven business days with no early deadline and a cash cap, median $500 million. The rest run about 20 business days and carry almost every early deadline, exchange and consent solicitation. About one in five offers was extended or amended after launch.",
-                  "The fast tender is a refinancing tool that runs alongside a new issue, which is why there are so many of them in a record year. The slow tender is a negotiation with holders. A desk should price the two differently, and a tracker that cannot tell them apart is not much use.")),
+                  "The fast tender is a refinancing tool that runs alongside a new issue, which is why there are so many of them in a record year. The slow tender is a negotiation with holders. A desk should price the two differently, and a tracker that cannot tell them apart is not much use. For a credit analyst, the cap and the price show how much debt the issuer wants gone and what it will pay to remove it.")),
            ("What it does", "One row per offer, with a link to the filing",
             P("Each offer shows its securities, cap, expiration and the steps seen so far, with a link to the filing or press release behind every row. It reads public SEC filings and public newswire pages and rebuilds every day.") +
             P("I built the page to look like my market dashboard: a table of offers you can sort and search, a panel of offers by status that you can click to filter, filings read by day and the offers expiring next.") +
@@ -1375,17 +1390,17 @@ case_page("skills.html", "Skills", "Tools, models and data skills.",
            ("AI tools", "How I use them", pills(["Claude", "ChatGPT", "Microsoft Copilot", "Google Gemini"]) +
             P("I use Claude to help write and debug code and to screen first pass matches in the research. I test the results."))], banner=("assets/banners/skills.jpg", "The screens and tools behind the work on this site."))
 case_page("contact.html", "Contact", "Contact Anthony Ferriero.", "Contact", "Get in touch", "Lowell, Massachusetts.",
-          "The fastest way to reach me is email. I reply to every message about debt capital markets, syndicate, fixed income research or the tools on this site.",
+          "The fastest way to reach me is email. I reply to every message about fixed income, credit research, syndicate, debt capital markets or the tools on this site.",
           [("Where to find me", "Email first",
             '<div class="two"><div>' +
             '<div class="hero-cta" style="margin:0 0 18px"><a class="btn primary" href="mailto:%s">Email me <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn outline" href="%s" rel="noopener">LinkedIn</a><a class="btn outline" href="%s" rel="noopener">GitHub</a></div>' % (EMAIL, LINKEDIN, GITHUB) +
             '<p class="note"><a href="mailto:%s">%s</a><br>Lowell, Massachusetts. Boston and New York on short notice.</p>' % (EMAIL, EMAIL) +
-            P("I am looking for a 2027 analyst seat in debt capital markets, syndicate or fixed income research, or an internship that leads there. I graduate in May 2027.",
+            P("I am looking for a 2027 analyst seat in fixed income, in credit research, syndicate or debt capital markets, or an internship that leads there. I graduate in May 2027.",
               "If you run a desk and want to see the tender tracker or the dashboard on a real screen, I will bring a laptop.") + '</div>' +
             '<div><figure class="banner" style="aspect-ratio:4/3;margin:0"><img src="assets/photos/careers-stairs.jpg" alt="Anthony Ferriero on campus"><figcaption>On campus.</figcaption></figure></div></div>')], banner=("assets/banners/d-contact.jpg", "Lowell, with Boston and New York as rings. Schematic, not to scale."))
 # projects hub page
 case_page("projects.html", "Projects", "Research, tools and models, each with its error rates published.", "Projects", "Projects", "Five case files. Public data only.",
-          "These are the parts of a syndicate desk's work that I can do with public data: a score for the new issue window, a tender offer tracker, a study of green bond pricing and five DCF models with a credit comparison.",
+          "These are the parts of a credit analyst's, a syndicate desk's and a debt capital markets team's work that I can do with public data: five DCF models with a credit comparison, a study of green bond pricing, a tender offer tracker and a score for the new issue window.",
           [("Case files", "Research, tools and models", card_group(("Project",))),
            ("Competitions", "Where the models got tested", card_group(("Competition",)))], banner=("assets/banners/projects.jpg", "Investment grade spreads since October 2023, the backdrop every one of these tools reads. FRED data."))
 # experience and leadership hub pages
