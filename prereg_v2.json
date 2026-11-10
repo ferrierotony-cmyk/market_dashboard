@@ -1,0 +1,60 @@
+{
+  "name": "v2-fast-nodes",
+  "purpose": "Replace the 18-node rule set with a small set of fast, price-and-liquidity nodes, adaptive thresholds, count-based sizing and one inflation overlay.",
+  "why_v1_failed": "v1 stacked many correlated nodes, several of them slow (Sahm, CFNAI, WEI) or level-based (credit spread, curve, inflation), so it stayed defensive through rebounds and held a permanent cash drag. v2 uses fewer, faster nodes, requires two to agree before acting, and sets thresholds from trailing data only.",
+  "neutral": {"Stocks": 0.50, "Treasuries": 0.30, "Credit": 0.10, "Cash": 0.10},
+  "max_dev": 0.20,
+  "cost_bps": 5.0,
+  "timing": "Decide at Friday close using only data published by then (conservative lags). Weights earn the following week. Weekly rebalance to target, turnover measured against drifted weights.",
+  "adaptive_thresholds": {
+    "window_weeks": 156,
+    "min_weeks": 104,
+    "note": "Percentiles use the trailing window of weekly observations strictly BEFORE the decision date. No threshold is estimated from any evaluation window.",
+    "high_side_trigger_pct": 90,
+    "high_side_clear_pct": 70,
+    "low_side_trigger_pct": 10,
+    "low_side_clear_pct": 25
+  },
+  "fast_nodes": [
+    {"id": "liq_drain", "metric": "net_liq_4w_pct", "side": "low", "meaning": "net liquidity falling unusually fast"},
+    {"id": "vix_high", "metric": "vix", "side": "high", "meaning": "implied volatility unusually high"},
+    {"id": "credit_widening", "metric": "baa_4w_chg", "side": "high", "meaning": "Baa minus 10y spread widening unusually fast (4-week change)"},
+    {"id": "conditions_tight", "metric": "nfci", "side": "high", "meaning": "financial conditions unusually tight"}
+  ],
+  "sizing": {
+    "rule": "Count how many fast nodes are on. 0 or 1: neutral. Exactly 2: tier_2. 3 or 4: tier_3.",
+    "tier_2": {"Stocks": -0.10, "Treasuries": 0.05, "Credit": -0.03, "Cash": 0.08},
+    "tier_3": {"Stocks": -0.20, "Treasuries": 0.10, "Credit": -0.05, "Cash": 0.15}
+  },
+  "overlay": {
+    "id": "inflation_hot",
+    "metric": "core_pce_3m_ann",
+    "op": ">",
+    "value": 3.5,
+    "clear": 3.0,
+    "tilt": {"Stocks": 0.0, "Treasuries": -0.05, "Credit": 0.0, "Cash": 0.05},
+    "note": "Fixed levels, not fitted. Added to whatever tier is active. One node only, so inflation cannot stack."
+  },
+  "windows": {
+    "development": {"start": "2006-01-06", "end": "2019-12-31", "equity_series": "NASDAQCOM",
+                    "equity_note": "FRED carries the S&P 500 only from 2016-11, so the Nasdaq Composite price index stands in as the equity sleeve. Every strategy and benchmark in this window uses it."},
+    "confirmation": {"start": "2020-01-03", "end": "latest", "equity_series": "SP500",
+                     "equity_note": "NOT a clean out-of-sample test: the designer had already seen v1's results in this window."}
+  },
+  "benchmarks": ["buy_and_hold_neutral", "neutral_rebalanced_weekly", "equity_index", "static_mix_same_average_weights"],
+  "criteria": {
+    "C1": "Development window: 90% block-bootstrap interval (block 8 weeks, 2000 draws, seed 0) for annualized excess return versus static_mix_same_average_weights has a lower bound above 0.",
+    "C2": "Development window: maximum drawdown is shallower than buy_and_hold_neutral by at least 2 percentage points.",
+    "C3": "Development window: Sharpe ratio versus cash is at least that of buy_and_hold_neutral.",
+    "C4": "Confirmation window: annualized excess versus static_mix_same_average_weights is greater than -0.5%.",
+    "verdict": "PASS only if C1, C2, C3 and C4 all hold. Otherwise FAIL."
+  },
+  "on_failure": "If the verdict is FAIL, no parameter is changed and re-run under this name. A new design needs a new name, a new file and a new lock. A PASS is a reason to paper-trade forward from the lock date, not to trade.",
+  "disclosures": [
+    "Designed after seeing v1's 2020-2026 results, so the confirmation window cannot validate it.",
+    "No strategy returns for 2006-2019 had been computed by the designer before this registration; only data availability for that window was checked.",
+    "Stocks are price-only (no dividends); Treasuries and credit are duration-based proxies without defaults.",
+    "Revised series (core PCE, NFCI, financial stress) are used as last revised, so some revision look-ahead remains.",
+    "One specification, one run per window. Four criteria were fixed in advance."
+  ]
+}

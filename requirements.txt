@@ -1,0 +1,6 @@
+pandas>=2.2
+numpy>=1.26
+matplotlib>=3.8
+fredapi>=0.5.2
+gspread>=6.0        # only for syncing the allocation log to a Google Sheet
+pytest>=8.0
