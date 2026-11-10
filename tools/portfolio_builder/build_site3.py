@@ -7,6 +7,7 @@ LINKEDIN = "https://www.linkedin.com/in/anthony-ferriero"
 GITHUB = "https://github.com/ferrierotony-cmyk"
 REPO = "https://github.com/ferrierotony-cmyk/market_dashboard"
 TENDER_CODE = "https://github.com/ferrierotony-cmyk/market_dashboard/tree/tender-lab/tender"
+LAB_CODE = "https://github.com/ferrierotony-cmyk/market_dashboard/tree/fed-liquidity-lab"
 
 import sys as _sys
 _sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "psky"))
@@ -603,6 +604,7 @@ CASES = [
     ("research.html", "Project", "Green bond pricing", "Do green bonds price tighter at new issue than the same issuer's conventional bonds? 153 matched pairs.", ("2.4 bps", "average new issue gap, not significant")),
     ("tender.html", "Project", "Tender Tracker", "A daily tracker of bond tender and exchange offers, read from SEC filings and newswires, with the terms and caps.", ("9 in 10", "offer types and dates right on unseen filings")),
     ("dashboard.html", "Project", "Morning Market Dashboard", "Is the new issue window open? One score built from the inputs a syndicate desk checks before launch.", ("6 inputs", "VIX, MOVE, IG and HY spreads, futures, spread range")),
+    ("lab.html", "Project", "Fed Liquidity Lab", "Does the Fed's net liquidity tell you when to own less? Tested on public data against buy and hold.", ("6.0%", "a year for the rules, against 8.1% for buy and hold")),
     ("finsight.html", "Role", "Finsight", "Order books, price talk to print, volume against estimates and liability management on 15 to 20 new deals a day. December 2025 to September 2026.", ("25+", "liability management deals I wrote headlines for")),
     ("ccr.html", "Role", "Commonwealth Capital Research", "Rates and credit newsletter for 200 subscribers, since February 2024.", None),
     ("bloomberg.html", "Role", "Bloomberg at UMass Lowell", "Terminal Assistant across 10 classes, and captain of the UML team in the Bloomberg Global Trading Challenge.", ("$1M", "virtual book, long only, scored against the WLS index")),
@@ -663,7 +665,7 @@ board = '<div class="board"><div class="board-head"><span>Anthony Ferriero &midd
     "".join('<li><div><span>%s</span><small>%s</small></div><b>%s</b></li>' % (e(l), e(s), e(n)) for n, l, s in board_rows) + "</ul></div>"
 
 THUMBS = {
-    "research.html": "assets/thumbs/research.jpg", "tender.html": "assets/thumbs/tender.jpg", "dashboard.html": "assets/thumbs/dashboard.jpg",
+    "research.html": "assets/thumbs/research.jpg", "tender.html": "assets/thumbs/tender.jpg", "dashboard.html": "assets/thumbs/dashboard.jpg", "lab.html": "assets/thumbs/lab.jpg",
     "media.html": "assets/thumbs/media.jpg", 
     "valuation.html": "assets/thumbs/valuation.jpg",
     
@@ -698,6 +700,7 @@ for label, kinds in [("Roles", ("Role",)), ("Projects", ("Project",)), ("Competi
     cards += '<h3 class="group">%s</h3>' % label + card_group(kinds)
 
 timeline = [
+    ("Nov 2026", "Fed Liquidity Lab", "A weekly tracker of the Fed's balance sheet, inflation and output, with rules tested against buy and hold. The rules did not win, and I published that.", "lab.html"),
     ("Oct 2026", "Media DCF models and credit comps", "Skydance, Netflix, Disney, Comcast and Fox on one DCF template from SEC filings, then a credit comparison: leverage, coverage, equity cushion, spreads and Skydance's path to its 3.0 times target.", "media.html"),
     ("Oct 2026 to now", "Tender Tracker", "Daily bond tender and exchange offer tracker from SEC filings and newswires, with published error rates.", "tender.html"),
     ("Oct 2026 to now", "Captain, Bloomberg Global Trading Challenge", "UML team, fall 2026 round. A million virtual dollars, long only, scored against the WLS index. Book opened October 12.", "bloomberg.html"),
@@ -1195,6 +1198,45 @@ case_page("dashboard.html", "Morning Market Dashboard", "A market dashboard that
             P("The public build uses free data feeds only. The portfolio panel on the public build is a sample book and is labeled as one. A private version on my laptop pulls Bloomberg data through the API, with ten panels on the Treasury curve, DV01, P&amp;L and credit spreads, and refreshes every morning. That version is not published."))],
           banner=("assets/banners/rates.jpg", "The 10 year Treasury and the Baa spread since 2015, two of the inputs behind the window score. FRED data."))
 
+# ---------- fed liquidity lab ----------
+case_page("lab.html", "Fed Liquidity Lab", "A weekly tracker of the Fed's balance sheet, inflation and output, with rules tested against buy and hold on public data.",
+          "Project", "Fed Liquidity Lab", "Personal project. November 2026. Public data only.",
+          "Net liquidity is the Fed's balance sheet less the Treasury's cash account and the overnight reverse repo facility. Many people watch it as a guide to risk assets. I built a tracker for it, then tested whether it works.",
+          [("In short", "The question, the method, the finding, and what it means",
+            story("Does net liquidity, with inflation and output, tell you when to hold less stock and more cash?",
+                  "FRED data only. Eighteen rules, then a second design that I wrote down and locked before I ran it. Every week is tested with only the data that had been published by then, net of trading costs, against buy and hold.",
+                  "No. From 2020 the 18 rules returned 6.0 percent a year against 8.1 percent for buy and hold. The second design lost less in 2008 but failed its own test, because its edge over a plain mix of the same weights could not be told from zero.",
+                  "Net liquidity is a fair gauge of conditions and a poor timing signal. I would watch it. I would not trade on it. The part worth keeping is the test.")),
+           ("What it does", "A weekly tracker with alerts",
+            P("It pulls the Fed's balance sheet from FRED every week and works out net liquidity. It tracks seven measures of consumer inflation and the main gauges of output. Every series is checked for gaps, stale data and odd prints before anything uses it.",
+              "A rules engine sends me a desktop alert when a trigger is crossed. A calendar tells me the day before CPI, the jobs report and a Fed decision.",
+              "The scenarios replay what the balance sheet did in March 2020 and in mid 2022 and apply those dollar flows to today's levels. In the 2020 replay the Fed adds $2.8 trillion of assets and the Treasury takes $1.3 trillion into its cash account, so net liquidity rises $1.5 trillion, or 26 percent. They are analogues, not forecasts.") +
+            '<p class="links"><a href="%s" rel="noopener">Code</a></p>' % LAB_CODE +
+            dfig([("lab_liquidity.png", "Net liquidity, and what two past episodes would do to it", "Left, net liquidity and Fed assets since 2021. Right, the next 26 weeks if the balance sheet moved as it did in March 2020 and in mid 2022. Source: FRED.", True),
+                  ("lab_inflation.png", "Inflation, seven ways", "Left, year over year. Right, 3 month annualized, the pace that matters for the next decision. The dotted line is the 2 percent target. A break in a line is a month the BLS never published. Source: FRED, Cleveland Fed.", True)])),
+           ("What the tests say", "Two designs against buy and hold",
+            '<div class="stats">' + "".join('<div class="stat"><div class="n">%s</div><p>%s</p></div>' % (n, e(t)) for n, t in [
+                ('6.0%', 'A year for the 18 rules since 2020, against 8.1 percent for buy and hold. They held less stock, and the timing cost about another point on top of that.'),
+                ('4.3 pts', 'What the Sahm recession rule cost, the most of any rule. It turned on after the 2020 crash and stayed on through the rebound.'),
+                ('3 of 4', 'Pre-registered criteria the second design passed. It cut the worst drawdown from 24.2 to 17.9 percent over 2006 to 2019. It failed the one that mattered, which asks whether its edge over a matched static mix is above zero. The interval ran from minus 0.3 to plus 1.5 percent a year.'),
+                ('6.6 pts', 'How far the second design beat the same mix rebalanced in 2008. In the other 13 years it was about a third of a point a year behind.'),
+                ('1.2', 'The best t-stat the allocator reached out of sample, on stocks. It only tilts at 2 or more, so it holds the neutral mix.')]) + '</div>' +
+            dfig([("lab_backtest_v1.png", "The 18 rules against buy and hold", "Orange is the rules. White is buy and hold of a 50 / 30 / 10 / 10 mix of stocks, Treasuries, credit and cash. Net of 5 bps costs. Source: FRED.", True),
+                  ("lab_backtest_v2.png", "The locked design on a clean window", "Written down and hashed before it was tested, on 2006 to 2019, with the Nasdaq Composite standing in for stocks. It cut the 2008 loss and ended slightly ahead of buy and hold, but the gap is inside the noise. Source: FRED.", True)]) +
+            P("The first set of rules was my guess at what the data should say. Eighteen nodes, several of them slow. My read is that they stayed defensive through rebounds, which fits what the Sahm rule did after 2020.",
+              "The second design used four fast nodes with thresholds taken only from the trailing three years, and I fixed the pass and fail criteria before running it. Locking it matters. With a few years of data and many ways to cut it, almost anything can be made to look good after the fact.",
+              "It failed, and I did not change it. A pass would have meant paper trading it forward, not trading it.")),
+           ("How it is built", "Public data, tests and a lock",
+            bul(["Every series is declared once with its frequency, publication lag and plausible range. The pipeline caches it, records where it came from, and holds back anything that was not public yet on the date being tested.",
+                 "Growth rates count calendar months. The October 2025 CPI was never published, and counting rows instead of months made headline CPI look 0.3 points too high.",
+                 "The second design was hashed before it was tested, and the script refuses to run if the file has changed.",
+                 "More than 140 tests cover the point in time logic, the alerts and the backtest, including checks that changing the future cannot change the past."])),
+           ("What it does not show", "Limits, stated plainly",
+            P("Stocks are price only. Treasuries and credit are duration proxies with no defaults. The clean window uses the Nasdaq Composite as its equity sleeve, because FRED carries the S&amp;P 500 only from late 2016. The 2020 to 2026 window is one bull market and one drawdown, so it cannot prove much either way, and I designed the second test after seeing it.",
+              "CPI, GDP and a few other series are used as last revised, not as first published, so some revision look ahead remains. Real vintages need an API key I have not used yet.",
+              "Nothing here is investment advice. Data from FRED at the Federal Reserve Bank of St. Louis, the Cleveland Fed, the Atlanta Fed and the NY Fed. No Bloomberg data and nothing from an employer."))],
+          banner=("assets/banners/lab.jpg", "Net liquidity, orange, and the Treasury General Account, grey, 2021 to 2026. FRED data."))
+
 # ---------- roles ----------
 case_page("finsight.html", "Finsight", "Debt Capital Markets Analyst Intern at Finsight, December 2025 to September 2026.",
           "Role", "Finsight", "Debt Capital Markets Analyst Intern. New York. December 2025 to September 2026.",
@@ -1399,8 +1441,8 @@ case_page("contact.html", "Contact", "Contact Anthony Ferriero.", "Contact", "Ge
               "If you run a desk and want to see the tender tracker or the dashboard on a real screen, I will bring a laptop.") + '</div>' +
             '<div><figure class="banner" style="aspect-ratio:4/3;margin:0"><img src="assets/photos/careers-stairs.jpg" alt="Anthony Ferriero on campus"><figcaption>On campus.</figcaption></figure></div></div>')], banner=("assets/banners/d-contact.jpg", "Lowell, with Boston and New York as rings. Schematic, not to scale."))
 # projects hub page
-case_page("projects.html", "Projects", "Research, tools and models, each with its error rates published.", "Projects", "Projects", "Five case files. Public data only.",
-          "These are the parts of a credit analyst's, a syndicate desk's and a debt capital markets team's work that I can do with public data: five DCF models with a credit comparison, a study of green bond pricing, a tender offer tracker and a score for the new issue window.",
+case_page("projects.html", "Projects", "Research, tools and models, each with its error rates published.", "Projects", "Projects", "Six case files. Public data only.",
+          "These are the parts of a credit analyst's, a syndicate desk's and a debt capital markets team's work that I can do with public data: five DCF models with a credit comparison, a study of green bond pricing, a tender offer tracker, a score for the new issue window and a test of whether Fed liquidity helps time the market.",
           [("Case files", "Research, tools and models", card_group(("Project",))),
            ("Competitions", "Where the models got tested", card_group(("Competition",)))], banner=("assets/banners/projects.jpg", "Investment grade spreads since October 2023, the backdrop every one of these tools reads. FRED data."))
 # experience and leadership hub pages

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#FFFBF5">
+<script>(function(){var t=null;try{t=localStorage.getItem('af-theme');}catch(e){}if(t!=='dark'&&t!=='light'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='dark'?'#12151C':'#FFFBF5');})();</script>
+<title>Fed Liquidity Lab | Anthony Ferriero</title>
+<meta name="description" content="A weekly tracker of the Fed&#x27;s balance sheet, inflation and output, with rules tested against buy and hold on public data.">
+<meta property="og:title" content="Fed Liquidity Lab | Anthony Ferriero">
+<meta property="og:description" content="A weekly tracker of the Fed&#x27;s balance sheet, inflation and output, with rules tested against buy and hold on public data.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://anthonyferriero.vercel.app/lab.html">
+<meta property="og:image" content="https://anthonyferriero.vercel.app/assets/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Fed Liquidity Lab | Anthony Ferriero">
+<meta name="twitter:description" content="A weekly tracker of the Fed&#x27;s balance sheet, inflation and output, with rules tested against buy and hold on public data.">
+<meta name="twitter:image" content="https://anthonyferriero.vercel.app/assets/og-card.png">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="canonical" href="https://anthonyferriero.vercel.app/lab.html">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body class="inner hashead">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head"><div class="wrap bar">
+  <a class="brand" href="index.html">AF<i>.</i></a>
+  <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="nav">Menu</button>
+  <ul class="nav" id="nav"><li><a href="index.html">Home</a></li><li><a href="projects.html">Projects</a></li><li><a href="experience.html">Experience</a></li><li><a href="leadership.html">Leadership</a></li><li><a href="education.html">Education</a></li><li><a href="contact.html">Contact</a></li></ul>
+  <button class="theme-btn" id="theme-btn" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Light or dark">
+    <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  </button>
+</div></header>
+<main id="main">
+<div class="chead" style="--tint:#FFE8D6"><div class="wrap chead-in"><p class="crumb"><a href="index.html#case-files">&larr; All case files</a></p><p class="eyebrow">Project</p><h1><span class="w"><span style="animation-delay:120ms">Fed</span></span> <span class="w"><span style="animation-delay:210ms">Liquidity</span></span> <span class="w"><span style="animation-delay:300ms">Lab<i>.</i></span></span></h1><p class="meta">Personal project. November 2026. Public data only.</p></div><figure class="chead-fig wrap"><img src="assets/banners/lab.jpg" alt="" fetchpriority="high" style="object-position:center center"><figcaption>Net liquidity, orange, and the Treasury General Account, grey, 2021 to 2026. FRED data.</figcaption></figure></div><div class="wrap lede-wrap"><p class="lede">Net liquidity is the Fed&#x27;s balance sheet less the Treasury&#x27;s cash account and the overnight reverse repo facility. Many people watch it as a guide to risk assets. I built a tracker for it, then tested whether it works.</p></div>
+<section class="section"><div class="wrap"><p class="label">In short</p><h2>The question, the method, the finding, and what it means</h2><dl class="story"><div><dt>The question</dt><dd>Does net liquidity, with inflation and output, tell you when to hold less stock and more cash?</dd></div><div><dt>Data and method</dt><dd>FRED data only. Eighteen rules, then a second design that I wrote down and locked before I ran it. Every week is tested with only the data that had been published by then, net of trading costs, against buy and hold.</dd></div><div><dt>What I found</dt><dd>No. From 2020 the 18 rules returned 6.0 percent a year against 8.1 percent for buy and hold. The second design lost less in 2008 but failed its own test, because its edge over a plain mix of the same weights could not be told from zero.</dd></div><div><dt>What it means</dt><dd>Net liquidity is a fair gauge of conditions and a poor timing signal. I would watch it. I would not trade on it. The part worth keeping is the test.</dd></div></dl></div></section>
+<section class="section"><div class="wrap"><p class="label">What it does</p><h2>A weekly tracker with alerts</h2><p>It pulls the Fed's balance sheet from FRED every week and works out net liquidity. It tracks seven measures of consumer inflation and the main gauges of output. Every series is checked for gaps, stale data and odd prints before anything uses it.</p><p>A rules engine sends me a desktop alert when a trigger is crossed. A calendar tells me the day before CPI, the jobs report and a Fed decision.</p><p>The scenarios replay what the balance sheet did in March 2020 and in mid 2022 and apply those dollar flows to today's levels. In the 2020 replay the Fed adds $2.8 trillion of assets and the Treasury takes $1.3 trillion into its cash account, so net liquidity rises $1.5 trillion, or 26 percent. They are analogues, not forecasts.</p><p class="links"><a href="https://github.com/ferrierotony-cmyk/market_dashboard/tree/fed-liquidity-lab" rel="noopener">Code</a></p><ul class="figs"><li class="dark full"><figure><a class="img" href="assets/figures/lab_liquidity.png"><img src="assets/figures/lab_liquidity.png" alt="Net liquidity, and what two past episodes would do to it" loading="lazy"></a><figcaption><b>Net liquidity, and what two past episodes would do to it</b>Left, net liquidity and Fed assets since 2021. Right, the next 26 weeks if the balance sheet moved as it did in March 2020 and in mid 2022. Source: FRED.</figcaption></figure></li><li class="dark full"><figure><a class="img" href="assets/figures/lab_inflation.png"><img src="assets/figures/lab_inflation.png" alt="Inflation, seven ways" loading="lazy"></a><figcaption><b>Inflation, seven ways</b>Left, year over year. Right, 3 month annualized, the pace that matters for the next decision. The dotted line is the 2 percent target. A break in a line is a month the BLS never published. Source: FRED, Cleveland Fed.</figcaption></figure></li></ul></div></section>
+<section class="section"><div class="wrap"><p class="label">What the tests say</p><h2>Two designs against buy and hold</h2><div class="stats"><div class="stat"><div class="n">6.0%</div><p>A year for the 18 rules since 2020, against 8.1 percent for buy and hold. They held less stock, and the timing cost about another point on top of that.</p></div><div class="stat"><div class="n">4.3 pts</div><p>What the Sahm recession rule cost, the most of any rule. It turned on after the 2020 crash and stayed on through the rebound.</p></div><div class="stat"><div class="n">3 of 4</div><p>Pre-registered criteria the second design passed. It cut the worst drawdown from 24.2 to 17.9 percent over 2006 to 2019. It failed the one that mattered, which asks whether its edge over a matched static mix is above zero. The interval ran from minus 0.3 to plus 1.5 percent a year.</p></div><div class="stat"><div class="n">6.6 pts</div><p>How far the second design beat the same mix rebalanced in 2008. In the other 13 years it was about a third of a point a year behind.</p></div><div class="stat"><div class="n">1.2</div><p>The best t-stat the allocator reached out of sample, on stocks. It only tilts at 2 or more, so it holds the neutral mix.</p></div></div><ul class="figs"><li class="dark full"><figure><a class="img" href="assets/figures/lab_backtest_v1.png"><img src="assets/figures/lab_backtest_v1.png" alt="The 18 rules against buy and hold" loading="lazy"></a><figcaption><b>The 18 rules against buy and hold</b>Orange is the rules. White is buy and hold of a 50 / 30 / 10 / 10 mix of stocks, Treasuries, credit and cash. Net of 5 bps costs. Source: FRED.</figcaption></figure></li><li class="dark full"><figure><a class="img" href="assets/figures/lab_backtest_v2.png"><img src="assets/figures/lab_backtest_v2.png" alt="The locked design on a clean window" loading="lazy"></a><figcaption><b>The locked design on a clean window</b>Written down and hashed before it was tested, on 2006 to 2019, with the Nasdaq Composite standing in for stocks. It cut the 2008 loss and ended slightly ahead of buy and hold, but the gap is inside the noise. Source: FRED.</figcaption></figure></li></ul><p>The first set of rules was my guess at what the data should say. Eighteen nodes, several of them slow. My read is that they stayed defensive through rebounds, which fits what the Sahm rule did after 2020.</p><p>The second design used four fast nodes with thresholds taken only from the trailing three years, and I fixed the pass and fail criteria before running it. Locking it matters. With a few years of data and many ways to cut it, almost anything can be made to look good after the fact.</p><p>It failed, and I did not change it. A pass would have meant paper trading it forward, not trading it.</p></div></section>
+<section class="section"><div class="wrap"><p class="label">How it is built</p><h2>Public data, tests and a lock</h2><ul class="bul"><li>Every series is declared once with its frequency, publication lag and plausible range. The pipeline caches it, records where it came from, and holds back anything that was not public yet on the date being tested.</li><li>Growth rates count calendar months. The October 2025 CPI was never published, and counting rows instead of months made headline CPI look 0.3 points too high.</li><li>The second design was hashed before it was tested, and the script refuses to run if the file has changed.</li><li>More than 140 tests cover the point in time logic, the alerts and the backtest, including checks that changing the future cannot change the past.</li></ul></div></section>
+<section class="section"><div class="wrap"><p class="label">What it does not show</p><h2>Limits, stated plainly</h2><p>Stocks are price only. Treasuries and credit are duration proxies with no defaults. The clean window uses the Nasdaq Composite as its equity sleeve, because FRED carries the S&amp;P 500 only from late 2016. The 2020 to 2026 window is one bull market and one drawdown, so it cannot prove much either way, and I designed the second test after seeing it.</p><p>CPI, GDP and a few other series are used as last revised, not as first published, so some revision look ahead remains. Real vintages need an API key I have not used yet.</p><p>Nothing here is investment advice. Data from FRED at the Federal Reserve Bank of St. Louis, the Cleveland Fed, the Atlanta Fed and the NY Fed. No Bloomberg data and nothing from an employer.</p></div></section>
+<section class="section"><div class="wrap next"><a href="index.html#case-files">&larr; All case files</a><a href="finsight.html">Next: Finsight &rarr;</a></div></section>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <div class="row"><span>&copy; 2026 Anthony Ferriero &middot; Lowell, MA</span><span><a href="contact.html">Contact</a> &nbsp;&middot;&nbsp; <a href="https://www.linkedin.com/in/anthony-ferriero" rel="noopener">LinkedIn</a> &nbsp;&middot;&nbsp; <a href="https://github.com/ferrierotony-cmyk" rel="noopener">GitHub</a></span></div>
+  <p>Personal portfolio. The research figures are preliminary. Nothing here is investment advice, and nothing here comes from an employer.</p>
+</div></footer>
+<script>(function(){var tb=document.getElementById('theme-btn');if(tb){var root=document.documentElement;function sync(){var d=root.getAttribute('data-theme')==='dark';tb.setAttribute('aria-pressed',d?'true':'false');tb.setAttribute('aria-label',d?'Switch to light mode':'Switch to dark mode');var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',d?'#12151C':'#FFFBF5');}
+sync();tb.addEventListener('click',function(){var n=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('af-theme',n);}catch(e){}sync();});}})();
+(function(){var b=document.getElementById('menu-btn'),n=document.getElementById('nav');if(b&&n){b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});}
+var els=document.querySelectorAll('.section .wrap > *, .cards li, .stat, .figs li, .tl li, .photos li, .mosaic li, .band .big, .sband .big');
+if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){return;}
+els.forEach(function(el,i){el.classList.add('rv');el.style.transitionDelay=((i%6)*60)+'ms';});
+var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.05});
+els.forEach(function(el){io.observe(el);});setTimeout(function(){els.forEach(function(el){el.classList.add('in');});},1400);})();
+(function(){var t=document.getElementById('tape');if(!t)return;
+fetch('https://ferrierotony-cmyk.github.io/market_dashboard/market_snapshot.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(s){
+function find(o,keys){if(!o)return null;var ks=Object.keys(o);for(var i=0;i<keys.length;i++){for(var j=0;j<ks.length;j++){if(ks[j].toUpperCase().indexOf(keys[i].toUpperCase())>=0)return o[ks[j]];}}return null;}
+function num(x,d,suf){return (x==null||isNaN(x))?null:(Number(x).toFixed(d)+(suf||''));}
+var items=[];
+if(s.window){var w=String(s.window);var cls=/open/i.test(w)?'good':(/closed|shut/i.test(w)?'bad':'warn');items.push(['New issue window',w,cls,'my score']);}
+if(s.health&&s.health.score!=null){items.push(['Market health',s.health.score,'',s.health.label||'']);}
+var f=s.fred||{},y=s.yahoo||{};
+var r10=find(f,['DGS10','10Y']);if(r10&&r10.last!=null)items.push(['UST 10Y',num(r10.last,2,'%'),'',r10.d1!=null?('1d '+(r10.d1>=0?'+':'')+num(r10.d1*100,0,' bp')):'']);
+var ig=find(f,['BAMLC0A0CM','IG OAS','US IG']);if(ig&&ig.last!=null)items.push(['IG OAS',num(ig.last,0,' bp'),'',ig.w1!=null?('1w '+(ig.w1>=0?'+':'')+num(ig.w1,0,' bp')):'']);
+var hy=find(f,['BAMLH0A0HYM2','HY OAS','US HY']);if(hy&&hy.last!=null)items.push(['HY OAS',num(hy.last,0,' bp'),'',hy.w1!=null?('1w '+(hy.w1>=0?'+':'')+num(hy.w1,0,' bp')):'']);
+var vix=find(y,['^VIX','VIX']);if(vix&&vix.last!=null)items.push(['VIX',num(vix.last,1),'',vix.d1_pct!=null?('1d '+(vix.d1_pct>=0?'+':'')+num(vix.d1_pct,1,'%')):'']);
+var mv=find(y,['MOVE']);if(mv&&mv.last!=null)items.push(['MOVE',num(mv.last,0),'',mv.d1_pct!=null?('1d '+(mv.d1_pct>=0?'+':'')+num(mv.d1_pct,1,'%')):'']);
+if(items.length<3)return;
+document.getElementById('tape-ul').innerHTML=items.map(function(i){return '<li>'+i[0]+'<b class="'+i[2]+'">'+i[1]+'</b><small>'+i[3]+'</small></li>';}).join('');
+document.getElementById('tape-when').textContent=s.built_at?('built '+String(s.built_at).slice(0,16)):'';t.classList.add('on');}).catch(function(){});})();
+
+(function(){var p=document.createElement('div');p.className='prog';document.body.appendChild(p);
+function u(){var h=document.documentElement;var s=h.scrollTop||document.body.scrollTop;var m=h.scrollHeight-h.clientHeight;p.style.width=(m>0?(s/m*100):0)+'%';}
+window.addEventListener('scroll',u,{passive:true});u();})();
+(function(){if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+var els=document.querySelectorAll('.board li b, .stat .n, .card .num');
+els.forEach(function(el){var t=el.firstChild;if(!t||t.nodeType!==3)return;var s=t.nodeValue;var m=s.match(/^([^0-9\-]*)(-?[0-9][0-9,]*\.?[0-9]*)(.*)$/);if(!m)return;
+var v=parseFloat(m[2].replace(/,/g,''));if(isNaN(v))return;var dec=(m[2].split('.')[1]||'').length;var comma=m[2].indexOf(',')>=0;
+function fmt(x){var r=x.toFixed(dec);if(comma)r=r.replace(/\B(?=(\d{3})+(?!\d))/g,',');return m[1]+r+m[3];}
+var done=false;var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting&&!done){done=true;var t0=null;function step(ts){if(!t0)t0=ts;var k=Math.min(1,(ts-t0)/900);k=1-Math.pow(1-k,3);t.nodeValue=fmt(v*k);if(k<1)requestAnimationFrame(step);else t.nodeValue=s;}requestAnimationFrame(step);io.disconnect();}});},{threshold:0.3});
+t.nodeValue=fmt(0);io.observe(el);setTimeout(function(){if(!done){done=true;t.nodeValue=s;io.disconnect();}},1600);});})();
+
+(function(){var H=document.documentElement;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+var g=document.createElement('div');g.className='grain';g.setAttribute('aria-hidden','true');document.body.appendChild(g);
+if(window.matchMedia('(hover: hover) and (pointer: fine)').matches){var gl=document.createElement('div');gl.className='glow';gl.setAttribute('aria-hidden','true');document.body.appendChild(gl);var gx=0,gy=0,gr=false;
+window.addEventListener('pointermove',function(ev){gx=ev.clientX;gy=ev.clientY;gl.classList.add('on');if(!gr){gr=true;requestAnimationFrame(function(){gl.style.transform='translate('+gx+'px,'+gy+'px)';gr=false;});}},{passive:true});
+document.addEventListener('pointerleave',function(){gl.classList.remove('on');});
+document.querySelectorAll('.card, .stat').forEach(function(c){c.addEventListener('pointermove',function(ev){var r=c.getBoundingClientRect();var dx=(ev.clientX-r.left)/r.width-.5,dy=(ev.clientY-r.top)/r.height-.5;c.style.transform='perspective(900px) rotateX('+(-dy*7).toFixed(2)+'deg) rotateY('+(dx*7).toFixed(2)+'deg) translateY(-3px)';});
+c.addEventListener('pointerleave',function(){c.style.transform='';});});}
+var px=[].slice.call(document.querySelectorAll('[data-px]')),tl=document.querySelector('.tl'),tick=false;
+function run(){tick=false;var y=window.scrollY||window.pageYOffset,vh=window.innerHeight;if(y>40)H.classList.add('scrolled');else H.classList.remove('scrolled');
+px.forEach(function(el){var p=el.parentNode,r=p.getBoundingClientRect();if(r.bottom<0||r.top>vh)return;var k=(r.top+r.height/2-vh/2)/vh;el.style.transform='translateY('+(k*-9).toFixed(2)+'%)';});
+if(tl){var r=tl.getBoundingClientRect();var f=Math.max(0,Math.min(100,(vh*0.75-r.top)/r.height*100));tl.style.setProperty('--fill',f+'%');}}
+window.addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(run);}},{passive:true});window.addEventListener('resize',run);run();
+document.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('a[href]');if(!a||ev.defaultPrevented||ev.metaKey||ev.ctrlKey||ev.shiftKey||ev.altKey||ev.button!==0)return;
+var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(https?:|mailto:|tel:)/i.test(h)||a.target||a.hasAttribute('download')||!/\.html(#.*)?$/.test(h)||h.indexOf('#')>=0)return;
+ev.preventDefault();document.body.classList.add('leaving');setTimeout(function(){location.href=h;},200);});
+window.addEventListener('pageshow',function(ev){if(ev.persisted)document.body.classList.remove('leaving');});})();
+</script>
+</body>
+</html>
