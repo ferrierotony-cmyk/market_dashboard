@@ -168,6 +168,14 @@ data/  logs/                download cache and run logs (not in git; rebuilt by 
 
 ## Troubleshooting
 
+* Run lock (added Oct 17, 2026). A folder named `market_dashboard_run.lock` in the Windows temp folder exists only while a build is running. After a sleep
+  the morning and intraday tasks can fire together. The intraday run then logs "Skipped" and the
+  morning build waits up to 10 minutes. A lock left by a killed run is ignored after 22 minutes.
+* A log that jumps by hours between two lines usually means the laptop slept mid-run, not a hang.
+* A failed toast now logs the PowerShell error text, and `logs/notify_error.txt` holds the last one.
+* To make the 07:00 build wake the PC, re-run `schedule_daily_refresh.ps1` once. The PC needs mains
+  power and "Allow wake timers" turned on in Windows power options.
+
 * Check `logs/run_YYYYMMDD.log` and the feeds chip in the header (or `output/data_status.csv`).
 * A FRED "Stream error in the HTTP/2 framing layer" is transient. The fetcher retries and then uses the cache.
 * "Yahoo quotes: no crumb" in the log means Yahoo answered with a consent page or blocked the

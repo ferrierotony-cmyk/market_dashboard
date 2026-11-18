@@ -341,15 +341,26 @@ cboe_options <- function(symbol, cache_dir, cache_only = FALSE) {
 # ----------------------------------------------------------------------------
 fred_release_calendar <- function(api_key, from = Sys.Date(), to = Sys.Date() + 45) {
   if (!nzchar(api_key)) return(NULL)
-  url <- sprintf(paste0("https://api.stlouisfed.org/fred/releases/dates?realtime_start=%s&realtime_end=%s",
-                        "&include_release_dates_with_no_data=true&api_key=%s&file_type=json&limit=1000"),
-                 format(from), format(to), api_key)
-  tmp <- tempfile(fileext = ".json")
-  if (!http_get_file(url, tmp)) return(NULL)
-  j <- tryCatch(jsonlite::fromJSON(tmp), error = function(e) NULL)
-  if (is.null(j) || is.null(j$release_dates)) return(NULL)
-  d <- j$release_dates
-  data.frame(date = as.Date(d$date), event = d$release_name, stringsAsFactors = FALSE)
+  # FRED returns at most 1000 rows a call and lists every release, including daily ones, so the
+  # first 1000 rows only reached about 10 days out (Oct 17, 2026: nothing past Nov 1). Page through
+  # the whole window, oldest first.
+  out <- list(); offset <- 0
+  repeat {
+    url <- sprintf(paste0("https://api.stlouisfed.org/fred/releases/dates?realtime_start=%s&realtime_end=%s",
+                          "&include_release_dates_with_no_data=true&order_by=release_date&sort_order=asc",
+                          "&limit=1000&offset=%d&api_key=%s&file_type=json"),
+                   format(from), format(to), offset, api_key)
+    tmp <- tempfile(fileext = ".json")
+    if (!http_get_file(url, tmp)) break
+    j <- tryCatch(jsonlite::fromJSON(tmp), error = function(e) NULL)
+    if (is.null(j) || is.null(j$release_dates) || !NROW(j$release_dates)) break
+    d <- j$release_dates
+    out[[length(out) + 1]] <- data.frame(date = as.Date(d$date), event = d$release_name, stringsAsFactors = FALSE)
+    offset <- offset + 1000
+    if (offset >= (suppressWarnings(as.numeric(j$count)) %||% 0) || length(out) >= 10) break
+  }
+  if (!length(out)) return(NULL)
+  do.call(rbind, out)
 }
 
 # ----------------------------------------------------------------------------
@@ -499,6 +510,18 @@ fetch_all <- function(cfg, inputs, cache_dir, run_mode = "morning") {
   if (nzchar(cfg$FRED_API_KEY) && !intraday) {
     cal <- fred_release_calendar(cfg$FRED_API_KEY)
     logmsg("FRED calendar: ", if (is.null(cal)) "unavailable" else paste(nrow(cal), "release dates"))
+    # A name in CALENDAR_RELEASES that matches no FRED release name drops off the card silently,
+    # so say so in the log and suggest the closest FRED names.
+    if (!is.null(cal)) {
+      for (nm in cfg$CALENDAR_RELEASES) {
+        if (!(nm %in% cal$event)) {
+          key <- strsplit(nm, " ")[[1]][1]
+          near <- unique(cal$event[grepl(key, cal$event, ignore.case = TRUE)])
+          logmsg("FRED calendar: no release named '", nm, "' in the next 45 days.",
+                 if (length(near)) paste0(" Closest FRED names: ", paste(head(near, 5), collapse = " | ")) else " No similar name found.")
+        }
+      }
+    }
   }
 
   # Bloomberg comps (optional) ----------------------------------------------

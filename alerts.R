@@ -168,8 +168,17 @@ notify_new_alerts <- function(cfg, alerts, dash_dir, html_path) {
       ps1 <- file.path(dash_dir, "notify.ps1")
       args <- c("-NoProfile", "-NonInteractive", "-WindowStyle", "Hidden", "-ExecutionPolicy", "Bypass", "-File", shQuote(ps1),
                 "-Title", shQuote(title), "-Message", shQuote(gsub("\"", "'", body)), "-Open", shQuote(html_path))
-      rc <- tryCatch(system2("powershell.exe", args, stdout = FALSE, stderr = FALSE, timeout = 30), error = function(e) 1)
-      logmsg("Toast: ", title, if (identical(rc, 0L)) "" else " (powershell returned an error)")
+      # stderr goes to a file so a failed toast says why. One retry, since the first call right
+      # after the PC wakes can fail while the notification service is still starting.
+      err_file <- file.path(dash_dir, "logs", "notify_error.txt")
+      run_toast <- function() tryCatch(system2("powershell.exe", args, stdout = FALSE, stderr = err_file, timeout = 30), error = function(e) 1L)
+      rc <- run_toast()
+      if (!identical(rc, 0L)) { Sys.sleep(5); rc <- run_toast() }
+      detail <- if (!identical(rc, 0L)) {
+        msg <- if (file.exists(err_file)) substr(paste(readLines(err_file, warn = FALSE), collapse = " "), 1, 200) else ""
+        paste0(" (powershell returned an error, code ", rc, if (nzchar(msg)) paste0(": ", msg) else "", ")")
+      } else ""
+      logmsg("Toast: ", title, detail)
     } else logmsg("Toast skipped (not Windows): ", title, " - ", gsub("\n", " / ", body))
     for (k in keys[fresh]) seen[[k]] <- now
   }

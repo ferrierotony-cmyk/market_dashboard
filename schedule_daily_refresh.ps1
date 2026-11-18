@@ -43,6 +43,11 @@ $Days = "Monday","Tuesday","Wednesday","Thursday","Friday"
 $Settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 20) `
             -MultipleInstances IgnoreNew -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
 
+# The morning build also wakes the PC from sleep (needs the PC on mains power and "Allow wake
+# timers" on in Windows power options). Without it the build waits until you open the lid.
+$MorningSettings = New-ScheduledTaskSettingsSet -StartWhenAvailable -WakeToRun -ExecutionTimeLimit (New-TimeSpan -Minutes 20) `
+            -MultipleInstances IgnoreNew -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+
 # conhost --headless runs Rscript without opening a console window
 function New-HiddenAction([string]$mode) {
     $argLine = "--headless `"$Rscript`" `"$Script`" $mode".Trim()
@@ -50,7 +55,7 @@ function New-HiddenAction([string]$mode) {
 }
 
 $Trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek $Days -At $At
-Register-ScheduledTask -TaskName $TaskName -Action (New-HiddenAction "") -Trigger $Trigger -Settings $Settings `
+Register-ScheduledTask -TaskName $TaskName -Action (New-HiddenAction "") -Trigger $Trigger -Settings $MorningSettings `
     -Description "Full morning build of the market dashboard (FRED, Treasury.gov, Yahoo, Cboe)" -Force | Out-Null
 Write-Host "Registered '$TaskName': weekdays at $At"
 
@@ -66,4 +71,4 @@ if ($NoIntraday) {
         -Description "Intraday refresh of quotes, candles, news and options for the market dashboard" -Force | Out-Null
     Write-Host "Registered '$IntradayName': weekdays every $EveryMinutes min from $IntradayStart for $IntradayHours h"
 }
-Write-Host "If the PC is asleep at a scheduled time, the run starts as soon as it wakes."
+Write-Host "The morning build wakes the PC if wake timers are allowed. If the PC is still asleep or off, the run starts as soon as it wakes."

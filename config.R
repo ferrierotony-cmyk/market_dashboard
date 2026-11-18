@@ -221,8 +221,8 @@ STALE_DAYS <- list(comps = 30, pipeline = 21, holdings_mark = 10)
 ALERT_MAX_AGE_HOURS <- 36
 
 OPTIONS_RULES <- list(
-  min_contract_volume = 2000,  # a contract needs at least this volume to count as unusual
-  vol_oi_ratio        = 1.5,   # ...and volume at least this multiple of open interest
+  min_contract_volume = 5000,  # a contract needs at least this volume to count as unusual
+  vol_oi_ratio        = 3,     # ...and volume at least this multiple of open interest
   pc_high             = 1.5,   # put/call volume ratio above this is flagged
   pc_low              = 0.35   # ...or below this
 )
@@ -309,5 +309,5 @@ TOAST_REPEAT_HOURS <- 12            # the same alert is not toasted again within
 CALENDAR_RELEASES <- c("Consumer Price Index", "Employment Situation",
                        "Personal Income and Outlays", "Gross Domestic Product",
                        "Advance Monthly Sales for Retail and Food Services",
-                       "Producer Price Index", "FOMC Press Release",
-                       "Employment Cost Index", "Consumer Confidence")
+                       "Producer Price Index",
+                       "Employment Cost Index", "Surveys of Consumers")

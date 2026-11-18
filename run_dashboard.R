@@ -24,6 +24,38 @@ source("market.R")      # market_fetch() is called from fetch_all()
 LOG_FILE <- file.path("logs", paste0("run_", format(Sys.Date(), "%Y%m%d"), ".log"))
 logmsg("==== dashboard build (", RUN_MODE, ") started in ", DASH_DIR, " ====")
 
+# ---- one run at a time ---------------------------------------------------------------
+# After a sleep the morning and intraday tasks can both fire in the same second (seen on
+# Oct 16, 2026), and two runs then write the same cache, HTML and alert state together.
+# dir.create() is atomic: it returns TRUE only for the process that made the lock folder.
+# The morning build waits for a running refresh to finish. An intraday refresh just skips.
+# The lock lives in the Windows temp folder, not in this OneDrive folder. OneDrive can hold a
+# new folder open and block its deletion, which left a stale lock on the first test run.
+LOCK_DIR <- file.path(Sys.getenv("TEMP", unset = ""), "market_dashboard_run.lock")
+if (!nzchar(Sys.getenv("TEMP", unset = ""))) LOCK_DIR <- file.path("logs", "run.lock")
+.release_lock <- function() {
+  for (i in 1:5) { unlink(LOCK_DIR, recursive = TRUE, force = TRUE); if (!dir.exists(LOCK_DIR)) return(invisible(TRUE)); Sys.sleep(1) }
+  logmsg("Could not remove the run lock ", LOCK_DIR, ". It clears by itself after 22 minutes.")
+  invisible(FALSE)
+}
+.acquire_lock <- function() {
+  if (dir.exists(LOCK_DIR) && difftime(Sys.time(), file.mtime(LOCK_DIR), units = "mins") > 22) {
+    unlink(LOCK_DIR, recursive = TRUE)   # older than the 20 minute task limit, so a dead run left it
+    logmsg("Removed a stale run lock")
+  }
+  isTRUE(dir.create(LOCK_DIR, showWarnings = FALSE))
+}
+got_lock <- .acquire_lock()
+if (!got_lock && RUN_MODE == "morning") {
+  logmsg("Another run is in progress, the morning build is waiting for it")
+  waited <- 0
+  while (!got_lock && waited < 600) { Sys.sleep(15); waited <- waited + 15; got_lock <- .acquire_lock() }
+}
+if (!got_lock) {
+  logmsg("Skipped: another dashboard run is in progress")
+  if (!interactive()) quit(status = 0) else stop("another dashboard run is in progress")
+}
+
 ok <- tryCatch({
   for (p in c("ggplot2", "gridExtra", "jsonlite", "xml2", "svglite")) {
     if (!requireNamespace(p, quietly = TRUE)) stop("missing package: ", p, "  -> install.packages('", p, "')")
@@ -49,5 +81,6 @@ ok <- tryCatch({
   FALSE
 })
 
+.release_lock()
 logmsg("==== finished ", if (ok) "OK" else "WITH ERRORS", " ====")
 if (!ok && !interactive()) quit(status = 1)
