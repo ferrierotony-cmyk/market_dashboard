@@ -1,0 +1,262 @@
+/* Design tokens for the portfolio.
+   The colour ramp, spacing steps, radii, type scale, grid and theme roles follow the
+   slate, ivory and clay system read from anthropic.com in November 2026.
+   The two typefaces are open stand-ins, because the originals are proprietary.
+   Nothing outside this file may hold a raw colour, size or spacing value. */
+
+:root {
+  /* ---------- primitives: slate to ivory ramp ---------- */
+  --color-slate-000: #fff;
+  --color-slate-050: #faf9f5;
+  --color-slate-100: #f5f4ed;
+  --color-slate-150: #f0eee6;
+  --color-slate-200: #e8e6dc;
+  --color-slate-250: #dedcd1;
+  --color-slate-300: #d1cfc5;
+  --color-slate-350: #c2c0b6;
+  --color-slate-400: #b0aea5;
+  --color-slate-450: #9c9a92;
+  --color-slate-500: #87867f;
+  --color-slate-550: #73726c;
+  --color-slate-600: #5e5d59;
+  --color-slate-650: #4d4c48;
+  --color-slate-700: #3d3d3a;
+  --color-slate-750: #30302e;
+  --color-slate-800: #262624;
+  --color-slate-850: #1f1e1d;
+  --color-slate-900: #1a1918;
+  --color-slate-950: #141413;
+  --color-slate-1000: #0f0f0e;
+
+  /* ---------- primitives: accents ---------- */
+  --color-clay: #d97757;
+  --color-clay-interactive: #c6613f;
+  --color-oat: #e3dacc;
+  --color-olive: #788c5d;
+  --color-cactus: #bcd1ca;
+  --color-sky: #6a9bcc;
+  --color-sky-interactive: #90c3f6;
+  --color-heather: #cbcadb;
+  --color-fig: #c46686;
+  --color-coral: #ebcece;
+  --color-focus: #2c84db;
+  --color-error: #bf4d43;
+  --color-tint-10: #1919191a;
+  --color-tint-20: #19191933;
+  /* derived here, not part of the source system: olive and error tuned for small text */
+  --color-olive-deep: #55653f;
+  --color-error-soft: #e08a80;
+
+  /* ---------- spacing ---------- */
+  --sp-2: 2px;
+  --sp-4: 4px;
+  --sp-6: 6px;
+  --sp-8: 8px;
+  --sp-12: 12px;
+  --sp-16: 16px;
+  --sp-20: 20px;
+  --sp-24: 24px;
+  --sp-32: 32px;
+  --sp-40: 40px;
+  --sp-48: 48px;
+  --sp-56: 56px;
+  --sp-64: 64px;
+  --sp-80: 80px;
+  --sp-96: 96px;
+  --sp-128: 128px;
+
+  /* ---------- radii and borders ---------- */
+  --br-4: 4px;
+  --br-8: 8px;
+  --br-12: 12px;
+  --br-16: 16px;
+  --br-24: 24px;
+  --radius-sm: var(--br-8);
+  --radius-md: var(--br-12);
+  --radius-lg: var(--br-16);
+  --radius-xl: var(--br-24);
+  --radius-max: 1000px;
+  --border-sm: 1px;
+  --border-md: 1.5px;
+  --border-lg: 2px;
+
+  /* ---------- typography ---------- */
+  --font-serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --leading-100: 1;
+  --leading-108: 1.08;
+  --leading-116: 1.16;
+  --leading-125: 1.25;
+  --leading-140: 1.4;
+  --leading-155: 1.55;
+  --tracking-display: -0.015em;
+  --tracking-normal: 0;
+
+  /* type scale, small screens first */
+  --display-1: 42px;
+  --display-2: 36px;
+  --headline-1: 32px;
+  --headline-2: 30px;
+  --headline-3: 28px;
+  --headline-4: 23px;
+  --headline-5: 20px;
+  --headline-6: 17px;
+  --body-large-1: 22px;
+  --body-large-2: 20px;
+  --body-1: 19px;
+  --body-2: 17px;
+  --body-3: 15px;
+  --body-4: 12px;
+  --caption: 14px;
+
+  /* ---------- grid and layout ---------- */
+  --grid-columns: 4;
+  --grid-margin: 32px;
+  --grid-gutter: 16px;
+  --container-max-width: 1200px;
+  --grid-reading-max-width: 720px;
+  --text-column-max-width: 640px;
+  --section-space-sm: 24px;
+  --section-space-md: 32px;
+  --section-space-lg: 48px;
+  --header-nav-height: 72px;
+  --card-padding-sm: 16px;
+  --card-padding-md: 24px;
+  --card-padding-lg: 48px;
+  --gap-xs: 12px;
+  --gap-sm: 16px;
+  --gap-md: 24px;
+  --gap-lg: 32px;
+  --gap-xl: 48px;
+  --control-size: 40px;
+  --icon-size: 18px;
+  --marker-size: 11px;
+  --logo-size: 96px;
+  --logo-max-width: 360px;
+  --figure-max-width: 900px;
+  --table-min-width: 860px;
+  --rail-width: 200px;
+  --mosaic-row: 150px;
+  --z-index-nav: 100;
+
+  /* ---------- motion ---------- */
+  --ease-out-quart: cubic-bezier(.165, .84, .44, 1);
+  --duration-fast: .15s;
+  --duration-base: .25s;
+  --duration-slow: .6s;
+
+  /* ---------- theme roles, light ---------- */
+  color-scheme: light;
+  --theme-background-primary: var(--color-slate-050);
+  --theme-background-secondary: var(--color-slate-000);
+  --theme-background-tertiary: var(--color-slate-150);
+  --theme-background-quaternary: var(--color-slate-250);
+  --theme-background-inverse: var(--color-slate-950);
+  --theme-background-figure-dark: var(--color-slate-1000);
+  --theme-background-figure-light: var(--color-slate-000);
+  --theme-background-header: var(--color-slate-050);
+  --theme-background-footer: var(--color-slate-950);
+  --theme-foreground-primary: var(--color-slate-950);
+  --theme-foreground-secondary: var(--color-slate-750);
+  --theme-foreground-tertiary: var(--color-slate-600);
+  --theme-foreground-quaternary: var(--color-slate-500);
+  --theme-foreground-inverse: var(--color-slate-050);
+  --theme-foreground-inverse-secondary: var(--color-slate-400);
+  --theme-border-primary: var(--color-slate-200);
+  --theme-border-secondary: var(--color-slate-300);
+  --theme-border-inverse: var(--color-slate-700);
+  --theme-button-primary-background: var(--color-slate-950);
+  --theme-button-primary-foreground: var(--color-slate-050);
+  --theme-button-primary-hover: var(--color-slate-750);
+  --theme-button-secondary-background: var(--color-slate-150);
+  --theme-button-secondary-foreground: var(--color-slate-700);
+  --theme-button-secondary-border: var(--color-slate-250);
+  --theme-button-secondary-hover: var(--color-slate-200);
+  --theme-accent: var(--color-clay);
+  --theme-accent-strong: var(--color-clay-interactive);
+  --theme-positive: var(--color-olive-deep);
+  --theme-negative: var(--color-error);
+  --theme-focus-ring: var(--color-focus);
+  --theme-overlay: var(--color-tint-10);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --grid-columns: 12;
+    --grid-margin: 48px;
+    --mosaic-row: 190px;
+    --section-space-sm: 32px;
+    --section-space-md: 48px;
+    --section-space-lg: 64px;
+    --display-1: 58px;
+    --display-2: 48px;
+    --headline-1: 44px;
+    --headline-2: 36px;
+    --headline-3: 30px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --display-1: 72px;
+    --display-2: 64px;
+    --headline-1: 52px;
+    --headline-2: 44px;
+    --headline-3: 36px;
+    --headline-4: 32px;
+    --headline-5: 25px;
+    --headline-6: 19px;
+    --body-large-1: 25px;
+    --body-large-2: 23px;
+    --body-1: 20px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --grid-margin: 80px;
+    --section-space-sm: 48px;
+    --section-space-md: 64px;
+    --section-space-lg: 96px;
+  }
+}
+
+/* ---------- theme roles, dark ---------- */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --theme-background-primary: var(--color-slate-950);
+  --theme-background-secondary: var(--color-slate-850);
+  --theme-background-tertiary: var(--color-slate-800);
+  --theme-background-quaternary: var(--color-slate-750);
+  --theme-background-inverse: var(--color-slate-850);
+  --theme-background-figure-dark: var(--color-slate-1000);
+  --theme-background-figure-light: var(--color-slate-000);
+  --theme-background-header: var(--color-slate-950);
+  --theme-background-footer: var(--color-slate-1000);
+  --theme-foreground-primary: var(--color-slate-050);
+  --theme-foreground-secondary: var(--color-slate-200);
+  --theme-foreground-tertiary: var(--color-slate-400);
+  --theme-foreground-quaternary: var(--color-slate-500);
+  --theme-foreground-inverse: var(--color-slate-050);
+  --theme-foreground-inverse-secondary: var(--color-slate-400);
+  --theme-border-primary: var(--color-slate-750);
+  --theme-border-secondary: var(--color-slate-650);
+  --theme-border-inverse: var(--color-slate-700);
+  --theme-button-primary-background: var(--color-slate-050);
+  --theme-button-primary-foreground: var(--color-slate-950);
+  --theme-button-primary-hover: var(--color-slate-250);
+  --theme-button-secondary-background: var(--color-slate-800);
+  --theme-button-secondary-foreground: var(--color-slate-050);
+  --theme-button-secondary-border: var(--color-slate-700);
+  --theme-button-secondary-hover: var(--color-slate-750);
+  --theme-accent: var(--color-clay);
+  --theme-accent-strong: var(--color-clay);
+  --theme-positive: var(--color-olive);
+  --theme-negative: var(--color-error-soft);
+  --theme-focus-ring: var(--color-sky-interactive);
+  --theme-overlay: var(--color-tint-20);
+}
