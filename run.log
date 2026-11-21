@@ -1,0 +1,34 @@
+[2026-11-21 09:05:06] ==== dashboard build (morning) started in /home/runner/work/market_dashboard/market_dashboard ==== 
+[2026-11-21 09:05:07] FRED: 49 series 
+[2026-11-21 09:05:48]   FRED ICSA: failed 
+[2026-11-21 09:06:24] Treasury.gov: fetched, curve through 2026-11-20 
+[2026-11-21 09:06:24] Yahoo daily: 527 symbols (parallel) 
+[2026-11-21 09:06:30] Yahoo daily: 527 fetched, 0 from cache, 0 failed 
+[2026-11-21 09:06:30] Yahoo candles: 24 detail symbols (intraday + weekly bars) 
+[2026-11-21 09:07:00]   Cboe TLT: failed 
+[2026-11-21 09:07:06]   Cboe LQD: failed 
+[2026-11-21 09:07:12]   Cboe HYG: failed 
+[2026-11-21 09:07:18]   Cboe T: failed 
+[2026-11-21 09:07:25]   Cboe VZ: failed 
+[2026-11-21 09:07:31]   Cboe DIS: failed 
+[2026-11-21 09:07:37]   Cboe AMZN: failed 
+[2026-11-21 09:07:43]   Cboe CCL: failed 
+[2026-11-21 09:07:49]   Cboe F: failed 
+[2026-11-21 09:07:56]   Cboe XOM: failed 
+[2026-11-21 09:08:02]   Cboe BAC: failed 
+[2026-11-21 09:08:08]   Cboe JPM: failed 
+[2026-11-21 09:08:14]   Cboe JNJ: failed 
+[2026-11-21 09:08:20]   Cboe PFE: failed 
+[2026-11-21 09:08:27]   Cboe BA: failed 
+[2026-11-21 09:08:33]   Cboe AAPL: failed 
+[2026-11-21 09:08:39]   Cboe MSFT: failed 
+[2026-11-21 09:08:45]   Cboe NVDA: failed 
+[2026-11-21 09:08:45] Market universe: Nasdaq screener 
+[2026-11-21 09:08:48]   5586 common stocks from Nasdaq screener 
+[2026-11-21 09:08:48] Market universe: Yahoo quotes for 5586 symbols in batches of 200 
+[2026-11-21 09:09:05]   5586 of 5586 quoted 
+[2026-11-21 09:09:22] FRED calendar: 1109 release dates 
+[2026-11-21 09:09:22] FRED calendar: no release named 'Employment Cost Index' in the next 45 days. Closest FRED names: Unemployment Insurance Weekly Claims Report | State Unemployment Insurance Weekly Claims Report | ADP National Employment Report | Metropolitan Area Employment and Unemployment | Quarterly Census of Employment and Wages 
+[2026-11-21 09:09:25] Alert rules: 21 enabled, 73 fired 
+[2026-11-21 09:09:31] Built /home/runner/work/market_dashboard/market_dashboard/output/market_dashboard.html  (window: CHALLENGING, health: 42 STRESS, alerts: 92) 
+[2026-11-21 09:09:31] ==== finished OK ==== 
