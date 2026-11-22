@@ -41,6 +41,10 @@ jobs:
         if: success()
         run: |
           cd tender/out
+          # Vercel builds every branch from site_extra/portfolio. This branch only holds tender data,
+          # so drop a vercel.json there that turns deployments off and stops the failed-build emails.
+          mkdir -p site_extra/portfolio
+          echo '{"git":{"deploymentEnabled":false}}' > site_extra/portfolio/vercel.json
           git init -q
           git checkout -q -b tender-results
           git add .
