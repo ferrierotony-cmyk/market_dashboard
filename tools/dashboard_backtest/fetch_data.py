@@ -43,6 +43,8 @@ def main(d):
         j = json.loads(get("https://query1.finance.yahoo.com/v8/finance/chart/%s?period1=0&period2=%d&interval=1d" % (urllib.parse.quote(sym), time.time())))["chart"]["result"][0]
         off = j["meta"].get("gmtoffset", 0); q = j["indicators"]["quote"][0]["close"]
         rows = [(time.strftime("%Y-%m-%d", time.gmtime(t + off)), c) for t, c in zip(j["timestamp"], q) if c is not None]
+        # today's row is a price in the middle of the day, not a close
+        rows = [r for r in rows if r[0] < time.strftime("%Y-%m-%d", time.gmtime())]
         if len(rows) < MIN_ROWS[name]: raise SystemExit("%s has only %d rows" % (name, len(rows)))
         with open(os.path.join(d, "yahoo_%s.csv" % name), "w", encoding="utf-8", newline="") as fh:
             w = csv.writer(fh); w.writerow(["date", "close"]); w.writerows(rows)

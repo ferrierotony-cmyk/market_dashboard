@@ -822,7 +822,7 @@ case_page("creditkit.html", "Credit Research Toolkit", "Two Python scripts that 
                  "<b>US GAAP only.</b> Some companies use their own debt tags. Ford does, so its leverage is blank.",
                  "<b>Finance arms.</b> They are consolidated. An analyst would split them out.",
                  "<b>Spreads and ratings.</b> There is no free feed, so spreads are typed in and rating actions are not read.",
-                 "<b>The schedule.</b> It runs on weekdays. It failed for a week after I moved the folder, and nothing told me. A job that fails quietly is worse than no job, so it now keeps a log with an exit code."]))],
+                 "<b>The schedule.</b> It failed for a week on my laptop after I moved the folder, and nothing told me. A job that fails quietly is worse than no job. It now runs on GitHub every weekday, and a failed check sends me an email."]))],
           banner=("assets/banners/creditkit.jpg", "Gross debt to reported EBITDA, straight from the filings. The 10.1x is AT&T's 2022 impairments. The dashed line is my limit."))
 
 # ---------- roles ----------
