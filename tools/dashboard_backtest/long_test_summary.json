@@ -1,0 +1,86 @@
+{
+ "two_year": {
+  "mornings": 538,
+  "challenging": 15,
+  "episodes": 5,
+  "tighter_from_same_close": 13,
+  "tighter_from_known_close": 11,
+  "week_over_8bp": 11,
+  "week_over_8bp_tighter": 10
+ },
+ "long": {
+  "start": "2003-12-01",
+  "end": "2026-11-23",
+  "mornings": 5744,
+  "challenging": 533,
+  "episodes": 50,
+  "n_outcomes": [
+   532,
+   5207
+  ],
+  "tighter": [
+   231,
+   0.4342,
+   0.4991
+  ],
+  "tighter_interval": [
+   0.372,
+   0.502
+  ],
+  "mean_bp": [
+   3.78,
+   -0.46
+  ],
+  "mean_interval": [
+   0.291,
+   6.872
+  ],
+  "abs_bp": [
+   11.9,
+   4.54
+  ],
+  "wider_10": [
+   0.2444,
+   0.039
+  ],
+  "wider_10_interval": [
+   0.131,
+   0.301
+  ],
+  "before_20bp": [
+   84,
+   52
+  ],
+  "share_challenging": 0.0928,
+  "first_of_episode": [
+   49,
+   19
+  ]
+ },
+ "proxy_corr": {
+  "levels": 0.26,
+  "five_day_changes": 0.79
+ },
+ "bins": {
+  "tighter by more than 10": [
+   13.9,
+   4.8
+  ],
+  "tighter by 10 or less": [
+   29.5,
+   45.1
+  ],
+  "unchanged": [
+   3.6,
+   8.6
+  ],
+  "wider by 10 or less": [
+   28.6,
+   37.5
+  ],
+  "wider by more than 10": [
+   24.4,
+   3.9
+  ]
+ }
+}

@@ -37,9 +37,10 @@ f["ratio"] = ratio
 f["label"] = np.where(valid < 5, "na", np.where(ratio >= 0.8, "open", np.where(ratio >= 0.5, "selective", "challenging")))
 # the morning reading uses yesterday's closes, so shift the label one day forward before matching outcomes
 f["label"] = f["label"].shift(1); f["ratio"] = f["ratio"].shift(1)
-f["ig_next5"] = f["ig"].shift(-5) - f["ig"]
-f["hy_next5"] = f["hy"].shift(-5) - f["hy"]
-f["ig_next1"] = f["ig"].shift(-1) - f["ig"]
+# outcomes run five closes from the last close the morning knew, so the first move is counted
+f["ig_next5"] = f["ig"].shift(-4) - f["ig"].shift(1)
+f["hy_next5"] = f["hy"].shift(-4) - f["hy"].shift(1)
+f["ig_next1"] = f["ig"] - f["ig"].shift(1)
 f = f[f["label"].isin(["open", "selective", "challenging"])]
 
 out = {"start": str(f.index.min().date()), "end": str(f.index.max().date()), "days": int(len(f))}
@@ -59,7 +60,7 @@ if os.path.exists(ep):
     j = f.join(e, how="inner")
     j = j[j.index >= "2023-01-01"]
     out["fwp"] = {"days": int(len(j)), "share_labels": {k: round(v, 3) for k, v in j["label"].value_counts(normalize=True).items()}}
-    for col in ["fwp_pricing_term_sheet", "b5_all"]:
+    for col in ["fwp_pricing_term_sheet"]:
         d = {}
         for lab, g in j.groupby("label"):
             s = g[col].dropna(); d[lab] = {"n": int(len(s)), "mean_per_day": round(float(s.mean()), 2), "median": float(s.median()), "share_zero": round(float((s == 0).mean()), 3)}

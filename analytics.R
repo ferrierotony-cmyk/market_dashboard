@@ -96,6 +96,14 @@ grade_rule <- function(v, rule) {
 }
 POINTS <- c(good = 2, warn = 1, bad = 0, na = NA)
 
+# Window state from the points of each rule. Missing readings are NA. Too few readings is "na", never a label.
+window_state <- function(pts, min_inputs = 5) {
+  valid <- !is.na(pts)
+  if (sum(valid) < max(1, min_inputs)) return("na")
+  ratio <- sum(pts[valid]) / (2 * sum(valid))
+  if (ratio >= 0.8) "good" else if (ratio >= 0.5) "warn" else "bad"
+}
+
 # =============================================================================
 #  Macro ribbon
 # =============================================================================
@@ -179,7 +187,7 @@ health_compute <- function(cfg, S, Y, yahoo, fred) {
   })
   pts <- vapply(items, function(i) POINTS[[i$status]], 0)
   ok <- !is.na(pts)
-  score <- if (any(ok)) round(100 * sum(pts[ok]) / (2 * sum(ok))) else NA
+  score <- if (sum(ok) >= max(1, cfg$HEALTH_MIN_INPUTS %||% 7)) round(100 * sum(pts[ok]) / (2 * sum(ok))) else NA
   status <- if (is.na(score)) "na" else if (score >= 70) "good" else if (score >= 45) "warn" else "bad"
   domains <- unique(vapply(items, function(i) i$domain, ""))
   dom <- lapply(domains, function(d) {

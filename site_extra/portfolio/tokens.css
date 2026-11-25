@@ -96,18 +96,18 @@
   --tracking-display: -0.015em;
   --tracking-normal: 0;
 
-  /* type scale, small screens first */
-  --display-1: 42px;
-  --display-2: 36px;
-  --headline-1: 32px;
-  --headline-2: 30px;
-  --headline-3: 28px;
-  --headline-4: 23px;
-  --headline-5: 20px;
-  --headline-6: 17px;
-  --body-large-1: 22px;
-  --body-large-2: 20px;
-  --body-1: 19px;
+  /* type scale: each step runs in a straight line from a 390px window to a 1280px window, then holds */
+  --display-1: clamp(42px, 28.85px + 3.371vw, 72px);
+  --display-2: clamp(36px, 23.73px + 3.146vw, 64px);
+  --headline-1: clamp(32px, 23.24px + 2.247vw, 52px);
+  --headline-2: clamp(30px, 23.87px + 1.573vw, 44px);
+  --headline-3: clamp(28px, 24.49px + 0.899vw, 36px);
+  --headline-4: clamp(23px, 19.06px + 1.011vw, 32px);
+  --headline-5: clamp(20px, 17.81px + 0.562vw, 25px);
+  --headline-6: clamp(17px, 16.12px + 0.225vw, 19px);
+  --body-large-1: clamp(22px, 20.69px + 0.337vw, 25px);
+  --body-large-2: clamp(20px, 18.69px + 0.337vw, 23px);
+  --body-1: clamp(19px, 18.56px + 0.112vw, 20px);
   --body-2: 17px;
   --body-3: 15px;
   --body-4: 12px;
@@ -115,14 +115,14 @@
 
   /* ---------- grid and layout ---------- */
   --grid-columns: 4;
-  --grid-margin: 32px;
+  --grid-margin: clamp(32px, 10.97px + 5.393vw, 80px);
   --grid-gutter: 16px;
   --container-max-width: 1200px;
   --grid-reading-max-width: 720px;
   --text-column-max-width: 640px;
-  --section-space-sm: 24px;
-  --section-space-md: 32px;
-  --section-space-lg: 48px;
+  --section-space-sm: clamp(24px, 13.48px + 2.697vw, 48px);
+  --section-space-md: clamp(32px, 17.98px + 3.596vw, 64px);
+  --section-space-lg: clamp(48px, 26.97px + 5.393vw, 96px);
   --header-nav-height: 72px;
   --card-padding-sm: 16px;
   --card-padding-md: 24px;
@@ -137,6 +137,14 @@
   --marker-size: 11px;
   --logo-size: 96px;
   --logo-max-width: 360px;
+  --portrait-width: 400px;
+  --portrait-share: 36vw;
+  --portrait-share-sm: 34vw;
+  --display-hero-sm: clamp(30px, 9.6vw, 36px);
+  --hero-gap: clamp(16px, 5vw, 80px);
+  --hero-text: 30rem;
+  --mode-size: 36px;
+  --shadow-bar: 0 4px 24px var(--color-tint-10);
   --figure-max-width: 900px;
   --table-min-width: 860px;
   --rail-width: 200px;
@@ -144,10 +152,41 @@
   --z-index-nav: 100;
 
   /* ---------- motion ---------- */
-  --ease-out-quart: cubic-bezier(.165, .84, .44, 1);
-  --duration-fast: .15s;
-  --duration-base: .25s;
-  --duration-slow: .6s;
+  /* the scale follows transitions.dev by Jakub Antalik: one duration per job, one curve for movement */
+  --ease-smooth-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-in-out: ease-in-out;
+  --duration-stagger: 40ms;
+  --duration-micro: 80ms;
+  --duration-quick: 150ms;
+  --duration-fast: 250ms;
+  --duration-medium: 350ms;
+  --duration-slow: 400ms;
+  --duration-very-slow: 500ms;
+  --distance-micro: 4px;
+  --distance-base: 8px;
+  --distance-medium: 12px;
+  --scale-medium: .97;
+  --scale-small: .98;
+  --scale-hover: 1.02;
+  --scale-icon: .25;
+  --blur-small: 2px;
+  --blur-medium: 3px;
+  --arrow-shift: 2px;
+  /* slow, editorial steps for pictures and blocks, after the Maison template */
+  --ease-editorial: cubic-bezier(.25, .46, .45, .94);
+  --duration-page: .4s;
+  --duration-lift: .5s;
+  --duration-reveal: .8s;
+  --duration-picture: 1s;
+  --duration-zoom: 1.5s;
+  --duration-drift: 20s;
+  --stagger-reveal: .12s;
+  --distance-reveal: 40px;
+  --scale-page-out: .98;
+  --scale-page-in: 1.02;
+  --scale-zoom: 1.05;
+  --scale-drift: 1.08;
+  --blur-nav: 20px;
 
   /* ---------- theme roles, light ---------- */
   color-scheme: light;
@@ -158,7 +197,7 @@
   --theme-background-inverse: var(--color-slate-950);
   --theme-background-figure-dark: var(--color-slate-1000);
   --theme-background-figure-light: var(--color-slate-000);
-  --theme-background-header: var(--color-slate-050);
+  --theme-background-header: color-mix(in srgb, var(--color-slate-000) 94%, transparent);
   --theme-background-footer: var(--color-slate-950);
   --theme-foreground-primary: var(--color-slate-950);
   --theme-foreground-secondary: var(--color-slate-750);
@@ -187,41 +226,7 @@
 @media (min-width: 768px) {
   :root {
     --grid-columns: 12;
-    --grid-margin: 48px;
     --mosaic-row: 190px;
-    --section-space-sm: 32px;
-    --section-space-md: 48px;
-    --section-space-lg: 64px;
-    --display-1: 58px;
-    --display-2: 48px;
-    --headline-1: 44px;
-    --headline-2: 36px;
-    --headline-3: 30px;
-  }
-}
-
-@media (min-width: 1024px) {
-  :root {
-    --display-1: 72px;
-    --display-2: 64px;
-    --headline-1: 52px;
-    --headline-2: 44px;
-    --headline-3: 36px;
-    --headline-4: 32px;
-    --headline-5: 25px;
-    --headline-6: 19px;
-    --body-large-1: 25px;
-    --body-large-2: 23px;
-    --body-1: 20px;
-  }
-}
-
-@media (min-width: 1280px) {
-  :root {
-    --grid-margin: 80px;
-    --section-space-sm: 48px;
-    --section-space-md: 64px;
-    --section-space-lg: 96px;
   }
 }
 
@@ -235,7 +240,7 @@ html[data-theme="dark"] {
   --theme-background-inverse: var(--color-slate-850);
   --theme-background-figure-dark: var(--color-slate-1000);
   --theme-background-figure-light: var(--color-slate-000);
-  --theme-background-header: var(--color-slate-950);
+  --theme-background-header: color-mix(in srgb, var(--color-slate-850) 94%, transparent);
   --theme-background-footer: var(--color-slate-1000);
   --theme-foreground-primary: var(--color-slate-050);
   --theme-foreground-secondary: var(--color-slate-200);

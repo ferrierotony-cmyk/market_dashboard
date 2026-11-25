@@ -20,3 +20,5 @@ All styling lives in two files under styles/. The build copies them into the out
 build_site3.py and the psky modules write no style attributes. A photo that needs a focal point gets a class from fp, and the build adds the matching rule to the end of style.css.
 
 mk_tender_banner.py redraws the Tender Tracker banner and thumbnail from the tender run's events.csv.
+
+Motion uses the duration, easing, distance and blur tokens in styles/tokens.css. The scale follows transitions.dev by Jakub Antalik. A case file picture travels from its tile to its page through a class from vt, and the build adds the matching rule to the end of style.css.

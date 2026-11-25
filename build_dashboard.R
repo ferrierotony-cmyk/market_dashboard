@@ -240,8 +240,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
     score_rows <- c(score_rows, sprintf("<div class='score'><span>%s</span><span class='num'>%s</span>%s</div>",
                                         esc(r$name), vtxt, status_chip(g, grade_label[[g]])))
   }
-  valid <- !is.na(pts)
-  window <- if (!any(valid)) "na" else { ratio <- sum(pts[valid]) / (2 * sum(valid)); if (ratio >= 0.8) "good" else if (ratio >= 0.5) "warn" else "bad" }
+  window <- window_state(pts, cfg$ISSUANCE_MIN_INPUTS %||% 5)
   window_txt <- c(good = cfg$WINDOW_LABELS[["open"]], warn = cfg$WINDOW_LABELS[["selective"]],
                   bad = cfg$WINDOW_LABELS[["closed"]], na = "UNKNOWN")[[window]]
 
@@ -277,6 +276,7 @@ build_dashboard <- function(cfg, raw, inputs, dash_dir) {
   cal_table <- html_table(cal_rows, c("When", "ET", "Event", "Imp."), aligns = c("l", "l", "l", "r"))
   window_html <- paste0("<div class='window'><span>Window:</span><span class='big ", window, "'>", STATUS_ICON[[window]], " ", window_txt, "</span>",
                         if (event_today) chip("bad", "High-impact event today") else "", "</div>",
+                        if (nz(S[["BAMLC0A0CM"]]$date)) paste0("<div class='muted pad'>Spreads as of ", format(as.Date(S[["BAMLC0A0CM"]]$date), "%b %d"), ", the latest close on FRED.</div>") else "",
                         paste(score_rows, collapse = "\n"), "<div class='gap'></div>", cal_table)
 
   # public demo mode (set by the GitHub workflow) labels the sample portfolio and explains the empty desk cards

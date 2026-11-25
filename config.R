@@ -128,6 +128,7 @@ ISSUANCE_RULES <- list(
   list(name = "IG OAS vs 1-yr range",     metric = "ig_pct1y",    good = 0.5,  warn = 0.8,  dir = "below")
 )
 WINDOW_LABELS <- c(open = "OPEN", selective = "SELECTIVE", closed = "CHALLENGING")
+ISSUANCE_MIN_INPUTS <- 5   # fewer readings than this and the window is UNKNOWN. The backtest uses the same floor.
 
 # -----------------------------------------------------------------------------
 #  Market health composite: ~12 indicators across six domains.
@@ -148,6 +149,7 @@ HEALTH_RULES <- list(
   list(domain = "Funding & conditions", name = "Chicago Fed NFCI",  metric = "nfci",         good = -0.30,warn = 0,    dir = "below", fmt = "%.2f"),
   list(domain = "Funding & conditions", name = "SOFR minus EFFR (bp)", metric = "sofr_effr",  good = 3,    warn = 8,    dir = "below", fmt = "%+.0f")
 )
+HEALTH_MIN_INPUTS <- 7   # more than half of the 13 rules. Fewer and the score is UNKNOWN.
 HEALTH_LABELS <- c(good = "STABLE", warn = "CAUTION", bad = "STRESS")
 
 # -----------------------------------------------------------------------------
