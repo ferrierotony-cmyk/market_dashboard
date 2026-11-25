@@ -2,9 +2,9 @@ name: Refresh public dashboard
 
 on:
   schedule:
-    # Weekdays, every 30 minutes from 12:00 to 21:30 UTC (8:00 to 17:30 Eastern in summer, 7:00 to 16:30 in winter).
-    # GitHub may start a scheduled run a few minutes late and can skip runs under load.
-    - cron: "0,30 12-21 * * 1-5"
+    # Weekdays, about every two hours, off the hour. Twenty runs a day on the hour and half hour were asked for before
+    # and GitHub ran one or two of them. The live feed job and the tender job also start this one.
+    - cron: "13 12,14,16,18,20,21 * * 1-5"
   workflow_dispatch:
   push:
     branches: [public-live, main]

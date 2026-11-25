@@ -1,0 +1,94 @@
+name: Live feed and health check
+
+# Builds live.json for the portfolio pages and checks that everything is up and current.
+# A failed check fails the job, and GitHub emails the owner. Minutes are off the hour on purpose,
+# because GitHub drops many jobs scheduled on the hour and the half hour.
+
+on:
+  schedule:
+    - cron: "23 11 * * 1-5"
+    - cron: "52 20 * * 1-5"
+    - cron: "37 23 * * 4"   # Thursday evening, after the Fed's balance sheet
+    - cron: "41 15 * * 0"   # one look at the weekend
+  workflow_dispatch:
+    inputs:
+      window:
+        description: "Rerun the long test now (yes or no)"
+        default: "no"
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: live-feed
+
+jobs:
+  feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: fed-liquidity-lab
+          path: lab
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q "pandas>=2.2" "numpy>=1.26" "fredapi>=0.5.2" matplotlib scipy openpyxl
+      - name: Tests first
+        run: |
+          python tools/live/test_live.py
+          python tools/credit_toolkit/test_toolkit.py
+          node tools/live/test_quotes.js
+      - name: Last feed and tender data
+        run: |
+          if git fetch --depth=1 origin live-results; then git show FETCH_HEAD:live.json > prev.json || true; fi
+          mkdir -p tend
+          if git fetch --depth=1 origin tender-results; then
+            git show FETCH_HEAD:events.csv > tend/events.csv
+            git show FETCH_HEAD:offers.csv > tend/offers.csv
+          else
+            rm -rf tend
+          fi
+      - name: Long test, once a month
+        run: |
+          if [ "${{ github.event.inputs.window }}" = "yes" ] || python - <<'PY'
+          import json, sys
+          from datetime import datetime, timezone
+          try:
+              b = json.load(open("prev.json"))["sections"]["window"]["built"]
+              age = (datetime.now(timezone.utc) - datetime.fromisoformat(b.replace("Z", "+00:00"))).days
+          except Exception:
+              age = 999
+          sys.exit(0 if age >= 27 else 1)
+          PY
+          then
+            python tools/dashboard_backtest/fetch_data.py ltdata && mkdir -p lt && cp tools/dashboard_backtest/long_test.py lt/ && python lt/long_test.py ltdata > /dev/null && cp lt/long_test_summary.json window.json || echo "long test failed, the last one stands"
+          fi
+      - name: Build the feed
+        id: build
+        continue-on-error: true
+        env:
+          SEC_USER_AGENT: "CreditResearchToolkit ${{ secrets.SEC_CONTACT_EMAIL }}"
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: python tools/live/build_live.py --out live.json --prev prev.json --tender-dir tend --lab-dir lab --window-file window.json
+      - name: Publish to the live-results branch
+        run: |
+          test -s live.json
+          mkdir -p pub/site_extra/portfolio && cp live.json pub/ && cd pub
+          # Vercel builds every branch from site_extra/portfolio. This one only holds data.
+          echo '{"git":{"deploymentEnabled":false}}' > site_extra/portfolio/vercel.json
+          git init -q && git checkout -q -b live-results && git add .
+          git -c user.name=github-actions -c user.email=actions@users.noreply.github.com commit -qm "Live feed ${GITHUB_RUN_ID}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" live-results
+      - name: Refresh the dashboard
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run refresh.yml --repo "${{ github.repository }}" --ref public-live || true
+      - name: Health check
+        run: sleep 60 && python tools/live/health.py
+      - name: Say so if a section failed
+        if: steps.build.outcome == 'failure'
+        run: echo "One or more sections failed. The last good data is still served." && exit 1
