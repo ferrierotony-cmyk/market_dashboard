@@ -53,6 +53,8 @@ jobs:
             rm -rf tend
           fi
       - name: Long test, once a month
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: |
           if [ "${{ github.event.inputs.window }}" = "yes" ] || python - <<'PY'
           import json, sys

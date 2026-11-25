@@ -1,7 +1,8 @@
 """Downloads the free data long_test.py needs.
 
 Run: python fetch_data.py <data dir>
-FRED series come from the public CSV download. MOVE and the S&P 500 come from Yahoo Finance, the same source the dashboard uses."""
+FRED series come from its API when FRED_API_KEY is set, and from the public CSV download otherwise.
+The CSV download hangs when a data center asks for it, so the GitHub job needs the key. MOVE and the S&P 500 come from Yahoo Finance, the same source the dashboard uses."""
 import csv, io, json, os, sys, time, urllib.parse, urllib.request
 
 AGENT = "portfolio-live-data/1.0"
@@ -20,10 +21,23 @@ def get(url, tries=3):
             time.sleep(5 * (k + 1))
 
 
+def fred_csv(j):
+    """The API's JSON as the same two columns the CSV download gives. A dot means no print that day."""
+    return "observation_date,value
+" + "".join("%s,%s
+" % (o["date"], "" if o["value"] == "." else o["value"]) for o in j["observations"])
+
+
+def fred(s):
+    key = os.environ.get("FRED_API_KEY", "").strip()
+    if not key: return get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=" + s)
+    return fred_csv(json.loads(get("https://api.stlouisfed.org/fred/series/observations?file_type=json&series_id=%s&api_key=%s" % (s, urllib.parse.quote(key)))))
+
+
 def main(d):
     os.makedirs(d, exist_ok=True)
     for s in FRED:
-        t = get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=" + s)
+        t = fred(s)
         n = sum(1 for _ in csv.reader(io.StringIO(t))) - 1
         if n < MIN_ROWS[s]: raise SystemExit("%s has only %d rows" % (s, n))
         open(os.path.join(d, "fred_%s.csv" % s), "w", encoding="utf-8", newline="").write(t); print(s, n)
