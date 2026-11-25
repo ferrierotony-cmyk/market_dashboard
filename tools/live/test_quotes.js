@@ -2,7 +2,7 @@
 const path = require("path");
 const file = path.join(__dirname, "..", "..", "site_extra", "portfolio", "api", "quotes.js");
 const handler = require(file);
-const { fromYahoo, fromStooq, fromFred } = handler.parts;
+const { fromYahoo, fromStooq } = handler.parts;
 let n = 0;
 function check(name, ok) { n++; console.log((ok ? "pass " : "FAIL ") + name); if (!ok) process.exit(1); }
 function throws(f) { try { f(); return false; } catch (e) { return true; } }
@@ -13,9 +13,6 @@ check("yahoo zero is refused", throws(() => fromYahoo(Y(0))));
 check("yahoo error body is refused", throws(() => fromYahoo({ chart: { result: null, error: {} } })));
 check("stooq price", fromStooq("Symbol,Date,Time,Open,High,Low,Close,Volume\nSKYD.US,2026-11-24,22:00:00,6.4,6.6,6.3,6.5,1000").price === 6.5);
 check("stooq missing is refused", throws(() => fromStooq("Symbol,Date,Time,Open,High,Low,Close,Volume\nSKYD.US,N/D,N/D,N/D,N/D,N/D,N/D,N/D")));
-const f = fromFred("observation_date,X\n2026-11-17,0.92\n2026-11-18,0.93\n2026-11-19,0.94\n2026-11-20,0.98\n2026-11-23,0.97\n2026-11-24,.");
-check("fred skips blanks and takes the last print", f.value === 0.97 && f.date === "2026-11-23");
-check("fred empty is refused", throws(() => fromFred("observation_date,X\n2026-11-24,.")));
 
 function call(fake, method) {
   const keep = global.fetch; global.fetch = fake;
@@ -27,9 +24,9 @@ const ok = (b) => Promise.resolve({ ok: true, status: 200, json: () => Promise.r
   let seen = [];
   let r = await call((u) => { seen.push(u); return /yahoo/.test(u) ? ok(Y(10)) : ok("observation_date,X\n2026-11-23,0.97"); });
   let j = JSON.parse(r.body);
-  check("all symbols and series answered", r.statusCode === 200 && Object.keys(j.quotes).length === 9 && Object.keys(j.fred).length === 3 && j.missing.length === 0);
+  check("all symbols answered", r.statusCode === 200 && Object.keys(j.quotes).length === 9 && j.missing.length === 0);
   check("answer is cacheable and open to the page", /s-maxage=300/.test(r.headers["Cache-Control"]) && r.headers["Access-Control-Allow-Origin"] === "*");
-  check("only the three known hosts are called", seen.every((u) => /^https:\/\/(query1\.finance\.yahoo\.com|stooq\.com|fred\.stlouisfed\.org)\//.test(u)));
+  check("only the two known hosts are called", seen.every((u) => /^https:\/\/(query1\.finance\.yahoo\.com|stooq\.com)\//.test(u)));
   r = await call((u) => /yahoo/.test(u) ? Promise.resolve({ ok: false, status: 429 }) : /stooq/.test(u) ? ok("Symbol,Date,Time,Open,High,Low,Close,Volume\nA,2026-11-24,22:00:00,1,1,1,9,1") : ok("observation_date,X\n2026-11-23,0.97"));
   j = JSON.parse(r.body);
   check("stocks fall back when Yahoo refuses, indexes go missing", j.quotes.SKYD.source === "Stooq" && j.missing.includes("^VIX") && r.statusCode === 200);

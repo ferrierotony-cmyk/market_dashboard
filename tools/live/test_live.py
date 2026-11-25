@@ -44,11 +44,15 @@ open(prev, "w").write("not json")
 check("a broken old feed does not stop the run", bl.main(["--out", out, "--prev", prev, "--only", "tender"]) == 0)
 
 now = datetime(2026, 11, 25, 16, 0, tzinfo=timezone.utc)
-good = {"quotes": {k: {"price": 1.0, "time": "2026-11-25T15:00:00.000Z"} for k in h.WANT}, "fred": {k: {"date": "2026-11-24"} for k in ("DGS10", "BAMLC0A0CM", "BAMLH0A0HYM2")}}
+good = {"quotes": {k: {"price": 1.0, "time": "2026-11-25T15:00:00.000Z"} for k in h.WANT}}
 check("good quotes pass", h.check_quotes(good, now) == [])
 check("a missing quote is a problem", h.check_quotes(dict(good, quotes={}), now)[0].startswith("no quote"))
 old = json.loads(json.dumps(good)); old["quotes"]["SKYD"]["time"] = "2026-11-10T15:00:00.000Z"
 check("an old quote is a problem", any("SKYD" in x for x in h.check_quotes(old, now)))
+snap = {"built_at": "2026-11-25 15:28:47", "fred": {k: {"last": 1, "date": "2026-11-24"} for k in ("DGS10", "BAMLC0A0CM", "BAMLH0A0HYM2")}}
+check("a fresh snapshot passes", h.check_snapshot(snap, now) == [])
+snap["built_at"] = "2026-11-20 15:28:47"; snap["fred"]["DGS10"]["last"] = None
+check("an old snapshot with a missing print is two problems", len(h.check_snapshot(snap, now)) == 2)
 feed = {"sections": {k: {"ok": True, "built": "2026-11-25T10:00Z", "data": {"a": 1}} for k in h.MAX_AGE}}
 check("a fresh feed passes", h.check_feed(feed, now) == [])
 feed["sections"]["toolkit"]["built"] = "2026-11-10T10:00Z"; feed["sections"]["lab"]["ok"] = False

@@ -42,9 +42,17 @@ def check_quotes(j, now):
         if s not in q: out.append("no quote for " + s)
         elif not q[s].get("price", 0) > 0: out.append("bad quote for " + s)
         elif age_days(q[s]["time"], now) > business_gap(now) + 2: out.append("%s quote is %.1f days old" % (s, age_days(q[s]["time"], now)))
+    return out
+
+
+def check_snapshot(j, now):
+    out = []
+    d = age_days(j["built_at"], now)
+    if d > business_gap(now) + .5: out.append("dashboard snapshot is %.1f days old" % d)
     for s in ("DGS10", "BAMLC0A0CM", "BAMLH0A0HYM2"):
-        if s not in j.get("fred", {}): out.append("no FRED print for " + s)
-        elif age_days(j["fred"][s]["date"], now) > 7: out.append("%s print is %.0f days old" % (s, age_days(j["fred"][s]["date"], now)))
+        x = j.get("fred", {}).get(s)
+        if not x or x.get("last") is None: out.append("no print for " + s)
+        elif age_days(x["date"], now) > 7: out.append("%s print is %.0f days old" % (s, age_days(x["date"], now)))
     return out
 
 
@@ -95,7 +103,7 @@ def main(argv=None):
     for u in ("", "portfolio/index.html", "tender/", "tender/data.json"): tryit("github pages " + u, lambda u=u: (get(a.pages + u), [])[1])
     tryit("quotes", lambda: check_quotes(json.loads(get(a.site + "api/quotes")), now))
     tryit("feed", lambda: check_feed(json.loads(get(a.feed)), now))
-    tryit("dashboard snapshot", lambda: ["dashboard snapshot is %.1f days old" % d for d in [age_days(json.loads(get(a.pages + "market_snapshot.json"))["built_at"], now)] if d > business_gap(now) + .5])
+    tryit("dashboard snapshot", lambda: check_snapshot(json.loads(get(a.pages + "market_snapshot.json")), now))
     print("%d checks, %d problems" % (n, len(bad)))
     for b in bad: print("PROBLEM " + b)
     return 1 if bad else 0

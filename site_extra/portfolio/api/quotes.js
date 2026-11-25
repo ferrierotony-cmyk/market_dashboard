@@ -1,7 +1,7 @@
-// Delayed quotes and FRED prints for the portfolio pages. Vercel runs this when a page asks for it.
-// Free public data only. The symbol list is fixed, so nobody can use this to fetch anything else.
+// Delayed quotes for the portfolio pages. Vercel runs this when a page asks for it.
+// Free public data only. FRED does not answer Vercel's servers, so spreads come from the dashboard snapshot instead.
+// The symbol list is fixed, so nobody can use this to fetch anything else.
 const SYMBOLS = { SKYD: "stock", NFLX: "stock", DIS: "stock", CMCSA: "stock", FOXA: "stock", FOX: "stock", "^VIX": "index", "^MOVE": "index", "^TNX": "index" };
-const SERIES = ["DGS10", "BAMLC0A0CM", "BAMLH0A0HYM2"];
 const AGENT = "portfolio-live-data/1.0";
 const TIMEOUT = 6000;
 
@@ -26,13 +26,6 @@ function fromStooq(text) {
   return { price: price, prev: null, time: date, source: "Stooq" };
 }
 
-function fromFred(text) {
-  const rows = text.trim().split(/\r?\n/).slice(1).map((l) => l.split(",")).filter((r) => r[1] && r[1] !== "." && !isNaN(Number(r[1])));
-  if (!rows.length) throw new Error("no rows");
-  const last = rows[rows.length - 1], week = rows[Math.max(0, rows.length - 6)], prev = rows[Math.max(0, rows.length - 2)];
-  return { value: Number(last[1]), date: last[0], d1: Number(last[1]) - Number(prev[1]), w1: Number(last[1]) - Number(week[1]), source: "FRED" };
-}
-
 async function quote(sym, kind) {
   try {
     return fromYahoo(await get("https://query1.finance.yahoo.com/v8/finance/chart/" + encodeURIComponent(sym) + "?range=1d&interval=1d", "json"));
@@ -42,15 +35,9 @@ async function quote(sym, kind) {
   }
 }
 
-async function series(id) {
-  const from = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
-  return fromFred(await get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=" + id + "&cosd=" + from, "text"));
-}
-
 async function build() {
-  const out = { asof: new Date().toISOString(), quotes: {}, fred: {}, missing: [] };
-  const jobs = Object.keys(SYMBOLS).map((s) => quote(s, SYMBOLS[s]).then((q) => { out.quotes[s] = q; }, () => out.missing.push(s)))
-    .concat(SERIES.map((s) => series(s).then((q) => { out.fred[s] = q; }, () => out.missing.push(s))));
+  const out = { asof: new Date().toISOString(), quotes: {}, missing: [] };
+  const jobs = Object.keys(SYMBOLS).map((s) => quote(s, SYMBOLS[s]).then((q) => { out.quotes[s] = q; }, () => out.missing.push(s)));
   await Promise.all(jobs);
   return out;
 }
@@ -66,4 +53,4 @@ module.exports = async (req, res) => {
   res.statusCode = any ? 200 : 502;
   res.end(JSON.stringify(out));
 };
-module.exports.parts = { fromYahoo, fromStooq, fromFred, build, SYMBOLS, SERIES };
+module.exports.parts = { fromYahoo, fromStooq, build, SYMBOLS };

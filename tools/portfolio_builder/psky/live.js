@@ -155,7 +155,7 @@
   var pq = any('model', 'five', 'tape') ? load(API) : Promise.resolve(null), ps = any('tape') ? load(SNAP) : Promise.resolve(null);
   var pf = any('model', 'five', 'tender', 'tender-chart', 'lab', 'lab-chart', 'window', 'kit') ? load(FEED) : Promise.resolve(null);
   Promise.all([pq, ps]).then(function (r) {
-    var Q = (r[0] && r[0].quotes) || {}, F = (r[0] && r[0].fred) || {};
+    var Q = (r[0] && r[0].quotes) || {}, F = {};
     by('model').forEach(function (b) { modelStrip(b, Q); }); by('five').forEach(function (b) { fiveStrip(b, Q); }); by('tape').forEach(function (b) { tape(b, Q, F, r[1]); });
     if (Object.keys(Q).length) explorer(Q);
   });
