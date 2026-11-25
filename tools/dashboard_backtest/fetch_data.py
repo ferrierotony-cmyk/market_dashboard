@@ -23,9 +23,7 @@ def get(url, tries=3):
 
 def fred_csv(j):
     """The API's JSON as the same two columns the CSV download gives. A dot means no print that day."""
-    return "observation_date,value
-" + "".join("%s,%s
-" % (o["date"], "" if o["value"] == "." else o["value"]) for o in j["observations"])
+    return "observation_date,value\n" + "".join("%s,%s\n" % (o["date"], "" if o["value"] == "." else o["value"]) for o in j["observations"])
 
 
 def fred(s):

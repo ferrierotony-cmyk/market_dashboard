@@ -60,8 +60,5 @@ check("a fresh feed passes", h.check_feed(feed, now) == [])
 feed["sections"]["toolkit"]["built"] = "2026-11-10T10:00Z"; feed["sections"]["lab"]["ok"] = False
 check("an old section and a failed one are problems", len(h.check_feed(feed, now)) == 2)
 check("an inline style is a problem", h.check_page("a.html", '<h1>x</h1><p style="x">') == ["a.html has an inline style"])
-check("the FRED API answer reads like the CSV download, with a blank for no print", fd.fred_csv({"observations": [{"date": "2026-11-23", "value": "4.1"}, {"date": "2026-11-24", "value": "."}]}) == "observation_date,value
-2026-11-23,4.1
-2026-11-24,
-")
+check("the FRED API answer reads like the CSV download, with a blank for no print", fd.fred_csv({"observations": [{"date": "2026-11-23", "value": "4.1"}, {"date": "2026-11-24", "value": "."}]}) == "observation_date,value\n2026-11-23,4.1\n2026-11-24,\n")
 print(N, "checks passed")
