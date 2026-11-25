@@ -288,13 +288,22 @@ HOME_PHOTOS = mosaic([
     ("ccr-elward", "With Nick Elward of Natixis after the CCR fireside chat.", "", "ccr.html"),
     ("fs-fireside", "After our fireside chat, The Future of Trading on Wall Street, November 19.", "", "finance-society.html"),
 ])
+ABOUT = P(
+    "I'm studying finance and marketing at UMass Lowell, with a minor in quantitative economics. I originally came to college focused on marketing because I've always been passionate about sports. But by the end of my sophomore year, I wanted to challenge myself with something more quantitative, so I added finance. The more I learned, the more it clicked.",
+    "That interest eventually led me to <a href=\"finsight.html\">Finsight</a>, a platform that tracks new bond deals. I worked with more than 30 syndicate desks, following order books across 15 to 20 deals a day. One example was Alphabet's $25 billion bond offering across ten tranches. A big part of the job was building relationships with bankers and getting information from people who weren't obligated to help me. I had to earn their trust and show them I could add value.",
+    "Since then, I've continued building on that experience. I train students on the <a href=\"bloomberg.html\">Bloomberg Terminal</a>, research <a href=\"research.html\">green bond pricing</a>, and build my own <a href=\"projects.html\">market tools</a>. Outside the classroom, I'm president of the <a href=\"finance-society.html\">Finance Society</a> and captain of the <a href=\"sales-team.html\">sales team</a>.",
+    "I'm looking to build a career in fixed income, particularly in credit research, syndicate, or debt capital markets. I enjoy understanding what's happening in the market, following the details behind a deal, and seeing how the different pieces come together. I want to keep learning, contribute to a team, and become someone people can count on to know the details and get the numbers right the first time.")
 index_main = f"""<section class="hero" id="top"><div class="wrap">
   <div class="hero-text">
     <h1>{split("Anthony Ferriero")}</h1>
     <p class="tag">Fixed income. Credit research, syndicate and debt capital markets.</p>
-    <p class="sub">Nine months on a primary bond desk at Finsight. UMass Lowell, class of 2027.</p>
+    <p class="sub">Nine months covering the primary bond market at Finsight. UMass Lowell, class of 2027.</p>
   </div>
   <figure class="hero-portrait"><img src="assets/headshot.jpg" width="720" height="720" alt="Anthony Ferriero" fetchpriority="high"></figure>
+</div></section>
+<section class="section" id="about"><div class="wrap">
+  <h2>About me</h2>
+  {ABOUT}
 </div></section>
 <section class="section" id="case-files"><div class="wrap">
   <h2>Work</h2>
