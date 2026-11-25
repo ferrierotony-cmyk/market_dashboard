@@ -10,7 +10,7 @@ def explorer_html():
     return f"""<div class="xp" id="xp">
   <div class="panel">
     <div class="seg" id="xp-seg" role="group" aria-label="Company"></div>
-    <div class="ctl"><label>Cost of capital, WACC <b id="xp-w-v"></b></label><input type="range" id="xp-w" min="5" max="14" step="0.001"><p class="hint" id="xp-w-h"></p></div>
+    <div class="ctl"><label>Cost of capital, WACC <b id="xp-w-v"></b></label><input type="range" id="xp-w" min="5" max="14" step="0.0001"><p class="hint" id="xp-w-h"></p></div>
     <div class="ctl"><label>Long term growth <b id="xp-g-v"></b></label><input type="range" id="xp-g" min="-3" max="5" step="0.1"><p class="hint" id="xp-g-h"></p></div>
     <div class="ctl"><label>Exit multiple, EV to EBITDA <b id="xp-m-v"></b></label><input type="range" id="xp-m" min="3" max="20" step="0.5"><p class="hint" id="xp-m-h"></p></div>
     <div class="ctl"><label>EBITDA against the base case <b id="xp-e-v"></b></label><input type="range" id="xp-e" min="-50" max="20" step="1"><p class="hint">Scales every year of cash flow and the terminal value. The credit view below uses the same miss.</p></div>
@@ -36,7 +36,7 @@ var seg=document.getElementById('xp-seg');names.forEach(function(n){{var b=docum
 var W=document.getElementById('xp-w'),G=document.getElementById('xp-g'),M=document.getElementById('xp-m'),E=document.getElementById('xp-e');
 function $(i){{return document.getElementById(i);}}
 function money(x){{return (x<0?'-$':'$')+Math.abs(x).toFixed(2);}}
-function load(){{var d=D[cur];W.value=(d.wacc*100).toFixed(3);G.value=(d.g*100).toFixed(1);M.value=d.mult;E.value=0;
+function load(){{var d=D[cur];W.value=(d.wacc*100).toFixed(4);G.value=(d.g*100).toFixed(1);M.value=d.mult;E.value=0;
 seg.querySelectorAll('button').forEach(function(b){{b.setAttribute('aria-pressed',b.textContent===cur);}});
 $('xp-w-h').textContent='My base case: '+(d.wacc*100).toFixed(1)+'%';$('xp-g-h').textContent='My base case: '+(d.g*100).toFixed(1)+'%';$('xp-m-h').textContent='My base case: '+d.mult.toFixed(1)+'x. Market pays '+d.mktmult.toFixed(1)+'x today';calc();}}
 function calc(){{var d=D[cur];var w=W.value/100,g=G.value/100,m=parseFloat(M.value),e=1+E.value/100;
