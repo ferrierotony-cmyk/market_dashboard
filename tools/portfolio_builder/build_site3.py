@@ -12,7 +12,8 @@ LAB_CODE = "https://github.com/ferrierotony-cmyk/market_dashboard/tree/fed-liqui
 
 import sys as _sys
 _sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "psky"))
-from widgets import explorer_html, POWER_HTML, day_html
+from widgets import EXPLORER, explorer_html, POWER_HTML, day_html
+import json
 from cine import split, page_head, fp, focal_css, vt, vt_css
 import cine as _cine
 _cine.AI_DIR = OUT
@@ -37,22 +38,6 @@ if(mq&&mq.addEventListener)mq.addEventListener('change',function(e){if(!saved())
 var els=[].filter.call(document.querySelectorAll('.section h2, .group, .cards > li, .figs > li, .photos > li, .mosaic > li, .more'),function(el){return el.getBoundingClientRect().top>window.innerHeight*.9;});
 var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting||x.boundingClientRect.top<0){x.target.classList.add('in');io.unobserve(x.target);}});},{rootMargin:'0px 0px -80px 0px'});
 els.forEach(function(el){el.classList.add('rv');io.observe(el);});})();
-(function(){var t=document.getElementById('tape');if(!t)return;
-fetch('https://ferrierotony-cmyk.github.io/market_dashboard/market_snapshot.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(s){
-function find(o,keys){if(!o)return null;var ks=Object.keys(o);for(var i=0;i<keys.length;i++){for(var j=0;j<ks.length;j++){if(ks[j].toUpperCase().indexOf(keys[i].toUpperCase())>=0)return o[ks[j]];}}return null;}
-function num(x,d,suf){return (x==null||isNaN(x))?null:(Number(x).toFixed(d)+(suf||''));}
-var items=[];
-if(s.window){var w=String(s.window);var cls=/open/i.test(w)?'good':(/closed|shut/i.test(w)?'bad':'warn');items.push(['New issue window',w,cls,'my score']);}
-if(s.health&&s.health.score!=null){items.push(['Market health',s.health.score,'',s.health.label||'']);}
-var f=s.fred||{},y=s.yahoo||{};
-var r10=find(f,['DGS10','10Y']);if(r10&&r10.last!=null)items.push(['UST 10Y',num(r10.last,2,'%%'),'',r10.d1!=null?('1d '+(r10.d1>=0?'+':'')+num(r10.d1*100,0,' bp')):'']);
-var ig=find(f,['BAMLC0A0CM','IG OAS','US IG']);if(ig&&ig.last!=null)items.push(['IG OAS',num(ig.last,0,' bp'),'',(ig.w1!=null?('1w '+(ig.w1>=0?'+':'')+num(ig.w1,0,' bp')):'')+(ig.date?(', '+new Date(ig.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})):'')]);
-var hy=find(f,['BAMLH0A0HYM2','HY OAS','US HY']);if(hy&&hy.last!=null)items.push(['HY OAS',num(hy.last,0,' bp'),'',hy.w1!=null?('1w '+(hy.w1>=0?'+':'')+num(hy.w1,0,' bp')):'']);
-var vix=find(y,['^VIX','VIX']);if(vix&&vix.last!=null)items.push(['VIX',num(vix.last,1),'',vix.d1_pct!=null?('1d '+(vix.d1_pct>=0?'+':'')+num(vix.d1_pct,1,'%%')):'']);
-var mv=find(y,['MOVE']);if(mv&&mv.last!=null)items.push(['MOVE',num(mv.last,0),'',mv.d1_pct!=null?('1d '+(mv.d1_pct>=0?'+':'')+num(mv.d1_pct,1,'%%')):'']);
-if(items.length<3)return;
-document.getElementById('tape-ul').innerHTML=items.map(function(i){return '<li>'+i[0]+'<b class="'+i[2]+'">'+i[1]+'</b><small>'+i[3]+'</small></li>';}).join('');
-document.getElementById('tape-when').textContent=s.built_at?('built '+String(s.built_at).slice(0,16)):'';t.classList.add('on');}).catch(function(){});})();
 """ % (THEME_DARK, THEME_LIGHT)
 
 
@@ -72,6 +57,7 @@ def shell(fname, title, desc, main):
         return '<li%s><a href="%s"%s%s>%s</a></li>' % (' class="nav-wide"' if f == LINKEDIN else "", f, here, ' rel="noopener"' if f == LINKEDIN else "", l)
     name, nav = link(*NAV[0]).replace("<li>", "").replace("</li>", ""), "".join(link(f, l) for f, l in NAV[1:])
     pageurl = "" if fname == "index.html" else fname
+    live = '<script src="live.js" defer></script>' if "data-live=" in main else ""
     full_title = "Anthony Ferriero" if fname == "index.html" else "%s | Anthony Ferriero" % title
     return f"""<!doctype html>
 <html lang="en">
@@ -87,13 +73,13 @@ def shell(fname, title, desc, main):
 <meta property="og:description" content="{e(desc)}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://anthonyferriero.vercel.app/{pageurl}">
-<meta property="og:image" content="https://anthonyferriero.vercel.app/assets/og-card.png">
+<meta property="og:image" content="https://anthonyferriero.vercel.app/assets/og-card-2.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{e(full_title)}">
 <meta name="twitter:description" content="{e(desc)}">
-<meta name="twitter:image" content="https://anthonyferriero.vercel.app/assets/og-card.png">
+<meta name="twitter:image" content="https://anthonyferriero.vercel.app/assets/og-card-2.png">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="canonical" href="https://anthonyferriero.vercel.app/{pageurl}">
@@ -120,9 +106,28 @@ def shell(fname, title, desc, main):
   <p>Research figures are preliminary. Nothing here is investment advice or comes from an employer.</p>
 </div></footer>
 <script>{JS}</script>
+{live}
 </body>
 </html>
 """
+
+
+def strip(kind, head, foot="", co=""):
+    """A live strip. Empty and hidden until live.js fills it, so a page without feeds loses nothing."""
+    return '<div class="tape live" data-live="%s"%s><div class="tape-head"><span>%s</span><b class="live-when"></b></div><ul aria-live="polite"></ul>%s</div>' % (kind, ' data-co="%s"' % co if co else "", head, '<div class="tape-foot">%s</div>' % foot if foot else "")
+
+
+def model_data(*names):
+    """The model inputs the live strip needs, the same ones the calculator uses."""
+    return '<script type="application/json" id="model-data">%s</script>' % json.dumps({n: EXPLORER[n] for n in names or EXPLORER}, separators=(",", ":"))
+
+
+def model_strip(co):
+    return model_data(co) + strip("model", "The price now, against the model", 'The model is from November 25, 2026. Only the price moves. <span data-flag="%s"></span>' % co, co)
+
+
+def plot(kind, head, foot):
+    return '<div class="tape live" data-live="%s"><div class="tape-head"><span>%s</span><b class="live-when"></b></div><div class="plot"></div><div class="tape-foot">%s</div></div>' % (kind, head, foot)
 
 
 def P(*paras):
@@ -296,7 +301,7 @@ index_main = f"""<section class="hero" id="top"><div class="wrap">
   {WORK}
   <p class="more"><a class="btn outline" href="projects.html">See all work</a></p>
 </div></section>
-<div class="wrap data-block"><div class="tape" id="tape"><div class="tape-head"><span>Live from my dashboard &middot; free data that can be 15 minutes delayed</span><b id="tape-when"></b></div><ul id="tape-ul"></ul><div class="tape-foot">From the <a href="dashboard.html">Morning Market Dashboard</a>. Not a trading tool.</div></div></div>
+<div class="wrap data-block">{strip("tape", "Read when you open this page. Each number shows its own time.", 'Free data. From the <a href="dashboard.html">Morning Market Dashboard</a>. Not a trading tool.')}</div>
 <section class="section" id="desks"><div class="wrap">
   <h2>One body of work, four desks</h2>
   <dl class="story">
@@ -390,7 +395,7 @@ DFIGS = [
 dfigs_html = '<ul class="figs">' + "".join(
     '<li class="dark"><figure><a class="img" href="assets/figures/%s"><img src="assets/figures/%s" alt="%s" loading="lazy"></a><figcaption><b>%s</b>%s</figcaption></figure></li>' % (f, f, e(t), e(t), e(c)) for f, t, c in DFIGS) + "</ul>"
 case_page("dcf.html", "Skydance DCF model", "A pro forma discounted cash flow model of Skydance Corporation, formerly Paramount Skydance, after its purchase of Warner Bros. Discovery. Public filings only.",
-          "Project", "Skydance DCF model", "Built October 24, updated November 25, 2026. Excel, 425 formulas, 23 sources. Prices as of November 24.",
+          "Project", "Skydance DCF model", "Built October 24, updated November 25, 2026. Excel, 450 formulas, 24 sources. Prices as of November 24.",
           "What is the company that bought Warner Bros. Discovery worth?",
           [("In short", "In short",
             story("What is Skydance worth, and can it carry $87 billion of debt?",
@@ -400,7 +405,7 @@ case_page("dcf.html", "Skydance DCF model", "A pro forma discounted cash flow mo
            ("Why this company", "I covered its tender at Finsight",
             P("I covered the Paramount Skydance tender at Finsight and wanted to value a company whose bonds I had watched trade. By the time I built it, Paramount Skydance had closed its $110 billion purchase of Warner Bros. Discovery and become Skydance Corporation, SKYD on the NYSE. So the model values the combined company: about $67 billion of revenue, $87 billion of gross debt and 5.04 billion shares.",
               "The deal was paid for with $47 billion of new equity at $12 a share and $57 billion of new secured debt. S&P cut the company to BB, and in October Debtwire had the old Paramount bonds yielding 10 to 13 percent. With that capital structure, the discount rate is a harder judgment than the forecast.")),
-           ("The result", "The price sits between the two methods", dstat_html +
+           ("The result", "The price sits between the two methods", model_strip("Skydance") + dstat_html +
             P("These are model outputs under stated assumptions. Nothing on this page is a recommendation to buy or sell anything.")),
            ("How it is built", "Pro forma from two companies' filings, with every input on one sheet",
             bul(["<b>Base year.</b> Paramount Skydance's fiscal 2025 results plus Warner Bros. Discovery's, giving $66 billion of revenue and $12 billion of adjusted EBITDA, which matches the pro forma 8-K and the Street's 2026 consensus.",
@@ -426,11 +431,13 @@ case_page("dcf.html", "Skydance DCF model", "A pro forma discounted cash flow mo
                  "<b>The third quarter.</b> Paramount alone, with $7.03 billion of revenue. Management expects $3.9 billion of adjusted EBITDA for it in 2026. I had $3.85 billion.",
                  "<b>Synergies.</b> Management now says 30 percent of at least $6 billion in year one and 70 percent through year two. I have $1.75 billion in 2027 and $3.75 billion in 2028, a little below that.",
                  "<b>Cost to get there.</b> About $4 billion, per management. I spend $7.1 billion, so my base case is the harsher one.",
+                 "<b>Interest.</b> The company expects about $6 billion a year. I built it tranche by tranche from the 8-Ks and got $5.75 billion, so coverage is between 2.0 and 2.1 times. A point on the floating debt is $145 million.",
+                 "<b>The covenant.</b> The term loans A and the revolver cap leverage at 5.5 times. I measure 6.6. Debtwire says their EBITDA adds back synergies with no cap. Add all $6 billion and I get 4.4. The notes have no such test.",
                  "<b>Equity.</b> Elon Musk put in about $1 billion on October 22, per Semafor and CNBC. Reaching 3.0 times at today's EBITDA means cutting about $44 billion of net debt.",
                  "<b>What is missing.</b> Public counts of the debt run from $80 billion to $89 billion. The fourth quarter balance sheet should settle it."])),
            ("Download", "The model and its sources",
             '<p class="links"><a href="assets/Skydance_DCF_Model.xlsx">Download the Excel model</a></p>' +
-            P("Blue cells are inputs. 23 numbered sources, mostly SEC filings. October and November sit side by side on their own sheet. Nothing from a Bloomberg Terminal or any employer."))], banner=("assets/banners/skypath.jpg", "Skydance net leverage if every free dollar pays down debt. Grey is my October model, orange is the reported debt. The target is 3.0 times by 2029."))
+            P("Blue cells are inputs. 24 numbered sources, mostly SEC filings. October and November sit side by side on one sheet, and the interest is built on another. Nothing from a Bloomberg Terminal or any employer."))], banner=("assets/banners/skypath.jpg", "Skydance net leverage if every free dollar pays down debt. Grey is my October model, orange is the reported debt. The target is 3.0 times by 2029."))
 
 # ---------- media five ----------
 def dfig(items):
@@ -449,7 +456,7 @@ m5_table = '<div class="tablewrap"><table class="cmp"><thead><tr><th>Company</th
     "".join('<tr><td><a href="%s">%s</a></td>' % (f, e(n)) + "".join("<td>%s</td>" % e(v) for v in vals) + "</tr>" for n, f, *vals in M5) + "</tbody></table></div>"
 m5_stats = [
     ("5", "Companies on one DCF template, with the same rules."),
-    ("2,088", "Formulas across the models and the comps workbook, zero errors."),
+    ("2,113", "Formulas across the models and the comps workbook, zero errors."),
     ("6.6x", "Skydance net debt to EBITDA. Fox is next at 3.3, now that it owns Roku."),
     ("2.0x", "Skydance EBITDA to interest. The other four cover 4 to 22 times."),
     ("-29%", "EBITDA miss that wipes out Skydance's equity at the November 24 price."),
@@ -466,7 +473,7 @@ CREDIT = [
 credit_table = '<div class="tablewrap"><table class="cmp"><thead><tr><th>Company</th><th>Net debt to EBITDA</th><th>EBITDA to interest</th><th>Free cash flow after interest to net debt</th><th>Net debt share of enterprise value</th><th>DCF equity over net debt</th><th>EBITDA miss that wipes out the equity</th><th>Spread to Treasury on the cost of debt</th><th>S&amp;P rating, where sourced</th></tr></thead><tbody>' + \
     "".join('<tr><td><a href="%s">%s</a></td>' % (f, e(n)) + "".join("<td>%s</td>" % e(v) for v in vals) + "</tr>" for n, f, *vals in CREDIT) + "</tbody></table></div>"
 case_page("media.html", "Media DCF models and credit comps", "Five discounted cash flow models of Skydance, Netflix, Disney, Comcast and Fox on one template, then a credit comparison built the way a credit analyst or a debt capital markets desk would build it.",
-          "Project", "Media DCF models and credit comps", "Built October 24 and 25, updated November 25, 2026. Five Excel models plus a credit comps workbook. 2,088 formulas, 76 sources. Prices as of November 24.",
+          "Project", "Media DCF models and credit comps", "Built October 24 and 25, updated November 25, 2026. Five Excel models plus a credit comps workbook. 2,113 formulas, 77 sources. Prices as of November 24.",
           "Five media companies, valued the same way and read as credits.",
           [("In short", "In short",
             story("Which of five media companies can carry its debt?",
@@ -475,7 +482,7 @@ case_page("media.html", "Media DCF models and credit comps", "Five discounted ca
                   "Cash flow alone does not get Skydance to 3.0 times. Fox gets there by fiscal 2028, but only if it holds off on buybacks.")),
            ("Why I built this", "One tender, then the whole capital structure",
             P("I covered the Paramount Skydance tender at Finsight, then watched the market reprice every bond it had when the Warner Bros. Discovery debt was sold. One company on its own does not tell you whether that price is fair. So I built four peers the same way and read all five as credits.")),
-           ("The five models", "One template, five companies, and what each price already assumes", m5_stat_html + m5_table +
+           ("The five models", "One template, five companies, and what each price already assumes", model_data() + strip("five", "Prices now, and how far each value sits from them", "Perpetuity value first, then exit value. The models and the table below are from November 25, 2026.") + m5_stat_html + m5_table +
             P("Reversing each DCF gives the growth and multiple the price already assumes. Comcast is priced as if cash flow shrinks 5 percent a year forever. The Fox price is the average of its two share classes. Nothing here is a recommendation to buy or sell anything.")),
            ("Try it", "Move the inputs and watch the value move", explorer_html()),
            ("The credit comps", "The same five, read the way a desk reads them", credit_table +
@@ -527,7 +534,7 @@ def company_dcf_page(fname, name, h1, meta, lede, why, stats, build, charts, wro
               "Project", h1, meta, lede,
               ([("In short", "In short", story(*short))] if short else []) +
               [("Why this company", why[0], P(*why[1])),
-               ("The result", "The numbers", stat_html + P("These are model outputs under stated assumptions. Nothing on this page is a recommendation to buy or sell anything.")),
+               ("The result", "The numbers", model_strip(name) + stat_html + P("These are model outputs under stated assumptions. Nothing on this page is a recommendation to buy or sell anything.")),
                ("How it is built", "Inputs that differ from the template", bul(build)),
                ("Charts", "In pictures", dfig(charts)),
                ("What I got wrong first", wrong[0], P(*wrong[1])),
@@ -680,7 +687,7 @@ company_dcf_page("dcf-foxa.html", "Fox", "Fox and Roku DCF model", "Built Octobe
     since=["<b>The notes.</b> $8.4 billion in seven parts on November 10, from 85 bp over Treasuries at 3 years to 200 bp at 40. The 10 year came at 145 bp and yielded 6.435 percent.",
            "<b>The first quarter.</b> Revenue rose 22 percent to $4.6 billion. Free cash flow was $503 million, against negative $234 million a year earlier. The 10-Q credits the World Cup, so one quarter does not settle the weak fiscal 2026.",
            "<b>Ratings.</b> Baa2 and BBB, both stable, per the 10-K. I have not found a new action since the deal closed.",
-           "<b>The advisers.</b> In the proxy they valued Fox at 5.5 to 7.5 times EBITDA and Roku at 10 to 20 times. My 8 times is on the two together, after stock compensation."])
+           "<b>The advisers.</b> In the proxy, Roku's adviser put 8 to 11 times on the two together, before stock compensation. My 8 times is after it. Fox's adviser used 5.5 to 7.5 on Fox alone and 15 to 20 on Roku."])
 
 # ---------- tender ----------
 case_page("tender.html", "Tender Tracker", "A daily tracker of bond tender and exchange offers built from SEC filings and newswires, with its error rates published.",
@@ -693,9 +700,9 @@ case_page("tender.html", "Tender Tracker", "A daily tracker of bond tender and e
                   "The fast tender is a refinancing. The slow one is a negotiation. Type and dates are right about nine times in ten, securities and caps three in four.")),
            ("What it does", "One row per offer, with a link to the filing",
             P("One row per offer, with its terms, its status and a link to the filing. It rebuilds every day from public filings and newswires.") +
-            P() +
-            '<p class="links"><a href="https://ferrierotony-cmyk.github.io/market_dashboard/tender/">Open the tracker</a> &nbsp;&middot;&nbsp; <a href="%s" rel="noopener">Code</a></p>' % TENDER_CODE +
-            '<a class="shot" href="https://ferrierotony-cmyk.github.io/market_dashboard/tender/"><img src="assets/tender-tracker.jpg" alt="The Tender Tracker page on a dark background, showing a table of offers with their status, securities, caps and expiration dates, with panels for offers by status, filings read by day and the offers expiring next" width="1920" height="960" loading="lazy"></a>'),
+            strip("tender", "The tracker now", "Read from the tracker's own feed. The analysis below is dated.") +
+            '<span data-live="tender-chart" hidden></span>' +
+            '<p class="links"><a href="https://ferrierotony-cmyk.github.io/market_dashboard/tender/">Open the tracker</a> &nbsp;&middot;&nbsp; <a href="%s" rel="noopener">Code</a></p>' % TENDER_CODE),
            ("How often it is right", "Nine in ten on type and dates, three in four on securities and caps",
             P("AI reviewers graded it against the filings on releases the rules had never seen. Offer type and dates were right about nine times in ten. Securities and caps were right about three times in four. Nobody has checked these rows by hand.") +
             P("The most common mistake is counting new notes being issued, or notes being redeemed, as the notes targeted. On the period the rules were built on, it found 32 of 33 offer releases. That is a best case. On October 26 I fixed the redeemed notes case and a few grouping errors. Those fixes have not been tested on new filings yet, so I do not claim a new number for them.") +
@@ -718,10 +725,12 @@ case_page("dashboard.html", "Morning Market Dashboard", "A market dashboard that
                   "No direction. Spreads were tighter 43 percent of the time, against 50. The five day move was bigger, 11.9 bp against 4.5.",
                   "It tells you how big the next move is likely to be. I would not use it to call spreads.")),
            ("What it does", "A score built from the inputs a syndicate desk watches",
+            strip("tape", "Read when you open this page", "Each number shows its own time. Not a trading tool.") +
             P("Seven readings: VIX, MOVE, the one week move in IG and HY spreads, stock futures, the 10 year, and where spreads sit in their one year range. Built in R.") +
             '<p class="links"><a href="https://ferrierotony-cmyk.github.io/market_dashboard/">Open the dashboard</a> &nbsp;&middot;&nbsp; <a href="%s" rel="noopener">Code</a></p>' % REPO +
             '<a class="shot" href="https://ferrierotony-cmyk.github.io/market_dashboard/"><img src="https://ferrierotony-cmyk.github.io/market_dashboard/market_dashboard.png" alt="Dashboard snapshot: Treasury curve, 2, 10 and 30 year history, curve slope and credit spreads" loading="lazy" onerror="this.parentNode.style.display=\'none\'"></a><p class="note">The snapshot is rebuilt with the dashboard on weekdays.</p>'),
            ("Does the score mean anything", "It tells you size. It cannot tell you direction.",
+            strip("window", "The long test, rerun each month", "Mornings after a challenging reading. The findings below are from November 25, 2026.") +
             '<div class="stats">' + "".join('<div class="stat"><div class="n">%s</div><p>%s</p></div>' % (n, e(t)) for n, t in [
                 ('43%', "Challenging mornings followed by tighter spreads. Other mornings, 50 percent."),
                 ('11.9 bp', "Average five day move after a challenging morning. Otherwise 4.5 bp."),
@@ -755,10 +764,12 @@ case_page("lab.html", "Fed Liquidity Lab", "A weekly tracker of the Fed's balanc
                   "No. 6.0 percent a year against 8.1 for buy and hold. The second design failed its own test.",
                   "A fair gauge of conditions and a poor timing signal. I would not trade on it.")),
            ("What it does", "A weekly tracker with alerts",
+            strip("lab", "The latest reading", "FRED, read by the lab's own code. The tests below are dated.") +
             P("It pulls the Fed's balance sheet every week, tracks seven measures of inflation and the main gauges of output, and alerts me when a trigger is crossed. The scenarios replay past episodes. I would not read them as forecasts.") +
+            plot("lab-chart", "Net liquidity, weekly since 2021", "The Fed's balance sheet less the Treasury's cash and reverse repo. FRED.") +
             '<p class="links"><a href="%s" rel="noopener">Code</a></p>' % LAB_CODE +
-            dfig([("lab_liquidity.png", "Net liquidity, and what two past episodes would do to it", "Net liquidity since 2021, and two past episodes replayed. Source: FRED.", True),
-                  ("lab_inflation.png", "Inflation, seven ways", "Left, year over year. Right, 3 month annualized. Source: FRED, Cleveland Fed.", True)])),
+            dfig([("lab_liquidity.png", "Net liquidity, and what two past episodes would do to it", "As of November 2026. Net liquidity since 2021, and two past episodes replayed. Source: FRED.", True),
+                  ("lab_inflation.png", "Inflation, seven ways", "As of November 2026. Left, year over year. Right, 3 month annualized. Source: FRED, Cleveland Fed.", True)])),
            ("What the tests say", "Two designs against buy and hold",
             '<div class="stats">' + "".join('<div class="stat"><div class="n">%s</div><p>%s</p></div>' % (n, e(t)) for n, t in [
                 ('6.0%', "A year for the rules since 2020, against 8.1 percent for buy and hold."),
@@ -782,10 +793,10 @@ case_page("lab.html", "Fed Liquidity Lab", "A weekly tracker of the Fed's balanc
 
 # ---------- credit toolkit ----------
 KIT = [("AT&T", "3.7x", "5.8x", "Re-underwrite", "Leverage over my 3.5x limit"),
-       ("Carnival", "3.4x", "6.2x", "Re-underwrite", "New debt in an 8-K filed November 4"),
+       ("Carnival", "3.3x", "6.2x", "Intact", "Nothing new since the 8-K of November 4"),
        ("Ford", "not read", "6.1x", "Intact", "Debt uses company tags, so it is flagged as a gap"),
        ("Apple", "0.5x", "not tagged", "Intact", "No triggers")]
-kit_table = '<div class="tablewrap"><table class="cmp"><thead><tr><th>Issuer</th><th>Gross debt to EBITDA</th><th>EBITDA to interest</th><th>Route</th><th>Why</th></tr></thead><tbody>' + \
+kit_table = '<div class="tablewrap" data-kit><table class="cmp"><thead><tr><th>Issuer</th><th>Gross debt to EBITDA</th><th>EBITDA to interest</th><th>Route</th><th>Why</th></tr></thead><tbody>' + \
     "".join("<tr>" + "".join("<td>%s</td>" % e(v) for v in row) + "</tr>" for row in KIT) + "</tbody></table></div>"
 case_page("creditkit.html", "Credit Research Toolkit", "Two Python scripts that spread an issuer from SEC filings and check a watchlist for credit triggers.",
           "Project", "Credit Research Toolkit", "Personal project. November 2026. Python and SEC EDGAR.",
@@ -793,25 +804,26 @@ case_page("creditkit.html", "Credit Research Toolkit", "Two Python scripts that 
           [("In short", "In short",
             story("Can the routine half of credit work come straight from the filings?",
                   "Tagged SEC data, five fiscal years and the last twelve months, for any company that files in US GAAP.",
-                  "AT&T's debt matched its release at $159.6 billion. Carnival's came out $0.6 billion too high, and I know why.",
+                  "AT&T at $159.6 billion and Carnival at $23.9 billion, both matching what the companies report. The first version had Carnival wrong.",
                   "Good for a first pass and for noticing a change. Someone still has to read the filing.")),
            ("What it does", "Spread, then watch",
             bul(["<b>Spread.</b> Revenue, EBITDA, free cash flow, leverage and coverage, with a sheet that names the tag and the filing behind every number.",
                  "<b>Watch.</b> It checks each name against limits I set for leverage, coverage and covenant room, and reads new 10-Ks, 10-Qs and 8-Ks.",
                  "<b>Route.</b> Every name comes out as broken, re-underwrite or intact, with the reason."])),
-           ("The first run", "Four names on November 17", kit_table +
+           ("The latest run", "Four names, checked every weekday", kit_table +
+            '<p class="note" data-live="kit">Run on November 25, 2026.</p>' +
             P("The limits are samples I set to test the rules. Nothing here is a recommendation to buy or sell anything.")),
-           ("Checked against the releases", "One match, one miss",
-            P("I checked the debt against what each company reports. AT&amp;T came out at $159.6 billion in both. Carnival came out at $24.6 billion against $23.9 billion. The script took the principal tag for Carnival and the carrying value for AT&amp;T. Two bases in one comparison is a mistake, and the fix is carrying value for both.")),
+           ("Checked against the releases", "One match, one miss, one fix",
+            P("I checked the debt against what each company reports. AT&amp;T came out at $159.6 billion in both. Carnival came out at $24.6 billion against $23.9 billion. The script took the principal tag for Carnival and the carrying value for AT&amp;T. Two bases in one comparison is a mistake. It now uses carrying value for every issuer, and Carnival comes out at $23.9 billion. Four offline tests cover the rule.")),
            ("How it is built", "Two scripts and a map",
-            P("Python, with no paid data. I first drew a buy side credit process from idea to exit, then built the two steps that repeat most, spreading and surveillance. It caches what it pulls and remembers what it has already seen, so the second run only reports what is new.")),
+            '<p class="links"><a href="%s/tree/public-live/tools/credit_toolkit" rel="noopener">Code</a></p>' % REPO + P("Python, with no paid data. I first drew a buy side credit process from idea to exit, then built the two steps that repeat most, spreading and surveillance. It caches what it pulls and remembers what it has already seen, so the second run only reports what is new.")),
            ("What it does not show", "The limits",
-            bul(["<b>Reported EBITDA.</b> Nothing is added back. AT&amp;T's 2022 shows 10.0 times because of impairments.",
+            bul(["<b>Reported EBITDA.</b> Nothing is added back. AT&amp;T's 2022 shows 10.1 times because of impairments.",
                  "<b>US GAAP only.</b> Some companies use their own debt tags. Ford does, so its leverage is blank.",
                  "<b>Finance arms.</b> They are consolidated. An analyst would split them out.",
                  "<b>Spreads and ratings.</b> There is no free feed, so spreads are typed in and rating actions are not read.",
-                 "<b>The schedule.</b> It is set for 7am. Only the November 17 run has finished, so for now I run it by hand."]))],
-          banner=("assets/banners/creditkit.jpg", "Gross debt to reported EBITDA, straight from the filings. The 10.0x is AT&T's 2022 impairments. The dashed line is my limit."))
+                 "<b>The schedule.</b> It runs on weekdays. It failed for a week after I moved the folder, and nothing told me. A job that fails quietly is worse than no job, so it now keeps a log with an exit code."]))],
+          banner=("assets/banners/creditkit.jpg", "Gross debt to reported EBITDA, straight from the filings. The 10.1x is AT&T's 2022 impairments. The dashed line is my limit."))
 
 # ---------- roles ----------
 case_page("finsight.html", "Finsight", "Debt Capital Markets Analyst Intern at Finsight, December 2025 to September 2026.",
@@ -885,27 +897,27 @@ case_page("valuation.html", "2026 Valuation Challenge", "Valuation Analyst on th
           "Competition", "2026 Valuation Challenge", "Valuation Analyst. UMass Lowell team led by Professor Sangphil Kim. September to October 2026.",
           "We valued a Gulf Coast engineering contractor for an ESOP. I was responsible for the discount rate, the DCF, the LBO and the public comparables.",
           [("In short", "In short",
-            story("What is a $132MM revenue contractor worth to an ESOP?",
+            story("What is a private engineering contractor worth to an ESOP?",
                   "A 16.8 percent discount rate, a five year DCF, an LBO check, and public peers for beta only.",
-                  "The two DCF methods landed within half a million dollars of each other. The LBO came close.",
+                  "The two DCF methods landed within 1 percent of each other. The LBO came close.",
                   "The size premium is the whole gap between public and private multiples, so public multiples got zero weight.")),
            ("The competition", "A 25 minute recorded valuation, no questions allowed",
             P("The competition is run out of Georgia State University. Round 1 is a recorded presentation of up to 25 minutes with no live questions, and the top five teams advance to the in person final. We submitted on October 19, 2026.",
               "With no question period, every judgment has to hold up inside the video. Each of my four slides is built to answer the question a judge would otherwise ask.")),
            ("My four slides", "Risk, value, a buyer's check, and what public peers can and cannot tell you",
             bul(["<b>Discount rate.</b> What return does a buyer need to own this risk? I built the cost of capital in layers and landed at 16.8 percent.",
-                 "<b>Discounted cash flow.</b> What are the cash flows worth at that rate? A five year forecast to 2031, tested two ways, growing forever at 2 to 3 percent or selling at 4.5 to 5.5 times EBITDA. The two methods landed within half a million dollars of each other.",
+                 "<b>Discounted cash flow.</b> What are the cash flows worth at that rate? A five year forecast to 2031, tested two ways, growing forever at 2 to 3 percent or selling at 4.5 to 5.5 times EBITDA. The two methods landed within 1 percent of each other.",
                  "<b>Leveraged buyout.</b> Could a real buyer pay that? I modeled a private equity purchase at 2.5 times EBITDA of debt, kept low because a bonded contractor cannot carry heavy leverage, and solved for the most a fund could pay at its target return. It landed close to the DCF, so the LBO became a floor and a check, with zero weight in the conclusion.",
                  "<b>Guideline public companies.</b> What do public peers tell you? They tell you about risk. They tell you much less about price. I used the peer set for beta only. Companies worth $4.7 billion to $16.8 billion with hundreds of projects and liquid stock say little about a control sale of a private contractor with two owners, so their multiples carried zero weight."])),
            ("The discount rate build", "Six inputs and one big judgment", wacc_html +
             '<ul class="figs"><li class="full light"><figure><a class="img" href="assets/figures/val_discount_rate.png"><img src="assets/figures/val_discount_rate.png" alt="Discount rate slide: cost of debt 5.93 percent after tax, cost of equity 17.06 percent, WACC 16.80 percent" loading="lazy"></a><figcaption><b>The slide as submitted</b>My discount rate page from the deck. The company, its figures and the conclusion stay off this site.</figcaption></figure></li></ul>' +
             P("Without the size premium the implied multiple goes from about 5 times to about 10.")),
            ("Where I disagreed with management", "The disagreement was about growth",
-            P("Management projected revenue growth of 6.5 to 7.5 percent a year. The company had missed its own 2025 budget by 14 percent and new orders had been flat for two years. I accepted 2026 because backlog supported it, then faded growth to 2.5 percent by 2031. All of the difference between our value and management's case comes from that growth call. None of it is margins. The DCF runs on a 6.5 percent mid cycle margin, a normal year.")),
+            P("Management projected revenue growth of 6.5 to 7.5 percent a year. The company had missed its own 2025 budget and new orders had been flat. I accepted 2026 because backlog supported it, then faded growth to 2.5 percent by 2031. All of the difference between our value and management's case comes from that growth call. None of it is margins. The DCF runs on a 6.5 percent mid cycle margin, a normal year.")),
            ("What I would do differently", "Three things the judges could have pushed on",
             bul(["<b>Four betas is thin.</b> Four clean betas beat eleven noisy ones, but every reasonable change to the beta still kept the value inside our range, and I should have shown that range on the slide.",
-                 "<b>The 10 year or the 20 year Treasury.</b> Kroll pairs its 5 percent premium with the 20 year yield, which was 4.65 percent. Using it would have raised the WACC to about 17.2 percent and cut the value by about $1.4 million, still inside the range. I used 4.2 percent and should have footnoted the choice.",
-                 "<b>Bonding caps leverage harder than I modeled.</b> At 2.5 times EBITDA the contractor's tangible net worth goes negative, which a surety would not accept. A 1.5 times case changes the LBO ceiling by a few million and does not change the conclusion, but it is the more defensible figure."])),
+                 "<b>The 10 year or the 20 year Treasury.</b> Kroll pairs its 5 percent premium with the 20 year yield, which was 4.65 percent. Using it would have raised the WACC to about 17.2 percent and cut the value by under 3 percent, still inside the range. I used 4.2 percent and should have footnoted the choice.",
+                 "<b>Bonding caps leverage harder than I modeled.</b> At 2.5 times EBITDA the contractor's tangible net worth goes negative, which a surety would not accept. A 1.5 times case lowers the LBO ceiling and does not change the conclusion, but it is the more defensible figure."])),
            ("Process", "Three mock presentations and a content freeze",
             P("We held three mock presentations between September 18 and early October, froze the content on October 9 and recorded on October 10 and 11. My segment ran six minutes fifty in the second mock against a target of four and a half, so I spent the last two weeks cutting the script.",
               "The company and the data room are confidential, so the dollar figures stay off this page. The method and the judgment calls are mine."))], banner=("assets/banners/valuation.jpg", "The cost of capital build, from a 4.2 percent risk free rate to a 16.8 percent WACC. Every input here is already on the public slide."))
@@ -1008,6 +1020,7 @@ case_page("leadership.html", "Leadership", "Finance Society and Sales Team leade
           [("Roles", "Finance Society and Sales Team", lead),
            ("Photos", "With the teams", photos([("fintech-rooftop-2", "Boston Fintech Week, on the roof of the Boston Fed.", ""), ("resume-recharge-2", "Resume Recharge, with the Finance Society and campus partners.", ""), ("club-fair", "The involvement fair table in the Honors College.", ""), ("fs-social", "Members at a Finance Society event.", ""), ("fs-lunch", "At a Finance Society event with a member.", "")]))], banner=("fs-group", "The Finance Society at an event by the water."))
 
+open(os.path.join(OUT, "live.js"), "w", encoding="utf-8", newline="\n").write(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "psky", "live.js"), encoding="utf-8").read())
 open(os.path.join(OUT, "tokens.css"), "w", encoding="utf-8", newline="\n").write(TOKENS_CSS)
 open(os.path.join(OUT, "style.css"), "w", encoding="utf-8", newline="\n").write(SITE_CSS + focal_css() + vt_css())
 print("built", sorted(os.listdir(OUT)))

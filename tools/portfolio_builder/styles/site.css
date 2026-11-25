@@ -188,10 +188,10 @@ html[data-motion="off"] .motion-btn .i-still { opacity: 1; transform: none; filt
 .tape ul { display: grid; grid-template-columns: 1fr 1fr; margin: 0; padding: 0; list-style: none; text-align: center; }
 .tape li:last-child:nth-child(odd) { grid-column: 1 / -1; }
 @media (min-width: 768px) {
-  .tape ul { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+  .tape ul { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(min-content, 1fr); }
   .tape li:last-child:nth-child(odd) { grid-column: auto; }
 }
-.tape li { min-width: 0; padding: var(--sp-16) var(--sp-12); font-size: var(--caption); color: var(--theme-foreground-tertiary); }
+.tape li { min-width: 0; padding: var(--sp-16) var(--sp-6); font-size: var(--caption); color: var(--theme-foreground-tertiary); }
 .tape li b {
   display: block; font-family: var(--font-serif); font-weight: var(--weight-regular);
   font-size: var(--headline-5); color: var(--theme-foreground-primary);
@@ -205,6 +205,24 @@ html[data-motion="off"] .motion-btn .i-still { opacity: 1; transform: none; filt
   font-size: var(--caption); color: var(--theme-foreground-tertiary);
   border-top: var(--border-sm) solid var(--theme-border-primary);
 }
+
+/* live strips and plots. Hidden until a feed answers. */
+.section .tape { margin-bottom: var(--sp-32); }
+.section > .wrap > p + .tape { margin-top: var(--sp-32); }
+.tape .warn, .tape .warn a { color: var(--theme-accent-strong); }
+.plot { padding: var(--sp-24) var(--card-padding-md); }
+.spark { display: block; width: 100%; height: auto; }
+.spark .step { fill: var(--theme-accent); }
+.spark .other { fill: var(--theme-foreground-tertiary); opacity: var(--opacity-quiet); }
+.spark .hit { fill: transparent; }
+.spark.stage { border-radius: var(--radius-xl); }
+.spark.stage .back { fill: var(--color-stage); }
+.spark.stage .step { fill: var(--color-stage-accent); }
+.spark.stage .other { fill: var(--color-stage-quiet); opacity: 1; }
+@media (max-width: 360px) { .tape li b { font-size: var(--body-2); } }
+.spark g:hover .other { opacity: 1; }
+.spark .trend { fill: none; stroke: var(--theme-accent); stroke-width: var(--stroke-trend); }
+.spark .dot { fill: var(--theme-accent); }
 
 /* ---------- sections ---------- */
 .section { padding: 0 0 var(--section-space-lg); }

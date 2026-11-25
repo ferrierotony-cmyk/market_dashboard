@@ -144,6 +144,11 @@
   --hero-gap: clamp(16px, 5vw, 80px);
   --hero-text: 30rem;
   --mode-size: 36px;
+  --opacity-quiet: .55;
+  --color-stage: #0b0b0c;
+  --color-stage-accent: #f36a1d;
+  --color-stage-quiet: #55555c;
+  --stroke-trend: 2px;
   --shadow-bar: 0 4px 24px var(--color-tint-10);
   --figure-max-width: 900px;
   --table-min-width: 860px;

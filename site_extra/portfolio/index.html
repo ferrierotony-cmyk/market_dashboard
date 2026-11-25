@@ -12,13 +12,13 @@
 <meta property="og:description" content="Finance student at UMass Lowell, class of 2027, working in fixed income: credit research, syndicate and debt capital markets. Primary market experience at Finsight, five DCF models with a credit comparison, green bond pricing research, a bond tender tracker and a new issue window dashboard.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://anthonyferriero.vercel.app/">
-<meta property="og:image" content="https://anthonyferriero.vercel.app/assets/og-card.png">
+<meta property="og:image" content="https://anthonyferriero.vercel.app/assets/og-card-2.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Anthony Ferriero">
 <meta name="twitter:description" content="Finance student at UMass Lowell, class of 2027, working in fixed income: credit research, syndicate and debt capital markets. Primary market experience at Finsight, five DCF models with a credit comparison, green bond pricing research, a bond tender tracker and a new issue window dashboard.">
-<meta name="twitter:image" content="https://anthonyferriero.vercel.app/assets/og-card.png">
+<meta name="twitter:image" content="https://anthonyferriero.vercel.app/assets/og-card-2.png">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="canonical" href="https://anthonyferriero.vercel.app/">
@@ -44,7 +44,7 @@
   <ul class="cards"><li><a class="card feature" href="finsight.html"><span class="card-body"><b>Finsight</b><em>Order books on 15 to 20 new deals a day.</em></span><span class="strip"><span class="num">25+<small>liability management headlines</small></span><span class="go">Open</span></span></a></li></ul><ul class="cards"><li><a class="card" href="media.html"><span class="card-body"><b>Media DCF models and credit comps</b><em>Five media companies on one template, compared as credits.</em></span><span class="thumb vt-media"><img src="assets/thumbs/media.jpg" alt="" loading="lazy"></span><span class="strip"><span class="num">6.6x<small>Skydance net leverage</small></span><span class="go">Open</span></span></a></li><li><a class="card" href="research.html"><span class="card-body"><b>Green bond pricing</b><em>Do green bonds price tighter at issue? 153 matched pairs.</em></span><span class="thumb vt-research"><img src="assets/thumbs/research.jpg" alt="" loading="lazy"></span><span class="strip"><span class="num">2.4 bps<small>average gap, not significant</small></span><span class="go">Open</span></span></a></li><li><a class="card" href="tender.html"><span class="card-body"><b>Tender Tracker</b><em>A daily tracker of bond tender and exchange offers.</em></span><span class="thumb vt-tender"><img src="assets/thumbs/tender.jpg" alt="" loading="lazy"></span><span class="strip"><span class="num">9 in 10<small>types and dates right on unseen filings</small></span><span class="go">Open</span></span></a></li><li><a class="card" href="dashboard.html"><span class="card-body"><b>Morning Market Dashboard</b><em>Is the new issue window open? One score, every morning.</em></span><span class="thumb vt-dashboard"><img src="assets/thumbs/dashboard.jpg" alt="" loading="lazy"></span><span class="strip"><span class="num">7 inputs<small>from VIX to the 10 year</small></span><span class="go">Open</span></span></a></li><li><a class="card" href="creditkit.html"><span class="card-body"><b>Credit Research Toolkit</b><em>Spreads an issuer from SEC filings and flags what changed.</em></span><span class="thumb vt-creditkit"><img src="assets/thumbs/creditkit.jpg" alt="" loading="lazy"></span><span class="strip"><span class="num">$159.6bn<small>AT&amp;T debt, matched to its release</small></span><span class="go">Open</span></span></a></li><li><a class="card" href="valuation.html"><span class="card-body"><b>2026 Valuation Challenge</b><em>Discount rate, DCF and LBO for an ESOP sale.</em></span><span class="thumb vt-valuation"><img src="assets/thumbs/valuation.jpg" alt="" loading="lazy"></span><span class="strip"><span class="num">16.8%<small>cost of capital I built</small></span><span class="go">Open</span></span></a></li></ul>
   <p class="more"><a class="btn outline" href="projects.html">See all work</a></p>
 </div></section>
-<div class="wrap data-block"><div class="tape" id="tape"><div class="tape-head"><span>Live from my dashboard &middot; free data that can be 15 minutes delayed</span><b id="tape-when"></b></div><ul id="tape-ul"></ul><div class="tape-foot">From the <a href="dashboard.html">Morning Market Dashboard</a>. Not a trading tool.</div></div></div>
+<div class="wrap data-block"><div class="tape live" data-live="tape"><div class="tape-head"><span>Read when you open this page. Each number shows its own time.</span><b class="live-when"></b></div><ul aria-live="polite"></ul><div class="tape-foot">Free data. From the <a href="dashboard.html">Morning Market Dashboard</a>. Not a trading tool.</div></div></div>
 <section class="section" id="desks"><div class="wrap">
   <h2>One body of work, four desks</h2>
   <dl class="story">
@@ -80,22 +80,7 @@ if(mq&&mq.addEventListener)mq.addEventListener('change',function(e){if(!saved())
 var els=[].filter.call(document.querySelectorAll('.section h2, .group, .cards > li, .figs > li, .photos > li, .mosaic > li, .more'),function(el){return el.getBoundingClientRect().top>window.innerHeight*.9;});
 var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting||x.boundingClientRect.top<0){x.target.classList.add('in');io.unobserve(x.target);}});},{rootMargin:'0px 0px -80px 0px'});
 els.forEach(function(el){el.classList.add('rv');io.observe(el);});})();
-(function(){var t=document.getElementById('tape');if(!t)return;
-fetch('https://ferrierotony-cmyk.github.io/market_dashboard/market_snapshot.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(s){
-function find(o,keys){if(!o)return null;var ks=Object.keys(o);for(var i=0;i<keys.length;i++){for(var j=0;j<ks.length;j++){if(ks[j].toUpperCase().indexOf(keys[i].toUpperCase())>=0)return o[ks[j]];}}return null;}
-function num(x,d,suf){return (x==null||isNaN(x))?null:(Number(x).toFixed(d)+(suf||''));}
-var items=[];
-if(s.window){var w=String(s.window);var cls=/open/i.test(w)?'good':(/closed|shut/i.test(w)?'bad':'warn');items.push(['New issue window',w,cls,'my score']);}
-if(s.health&&s.health.score!=null){items.push(['Market health',s.health.score,'',s.health.label||'']);}
-var f=s.fred||{},y=s.yahoo||{};
-var r10=find(f,['DGS10','10Y']);if(r10&&r10.last!=null)items.push(['UST 10Y',num(r10.last,2,'%'),'',r10.d1!=null?('1d '+(r10.d1>=0?'+':'')+num(r10.d1*100,0,' bp')):'']);
-var ig=find(f,['BAMLC0A0CM','IG OAS','US IG']);if(ig&&ig.last!=null)items.push(['IG OAS',num(ig.last,0,' bp'),'',(ig.w1!=null?('1w '+(ig.w1>=0?'+':'')+num(ig.w1,0,' bp')):'')+(ig.date?(', '+new Date(ig.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})):'')]);
-var hy=find(f,['BAMLH0A0HYM2','HY OAS','US HY']);if(hy&&hy.last!=null)items.push(['HY OAS',num(hy.last,0,' bp'),'',hy.w1!=null?('1w '+(hy.w1>=0?'+':'')+num(hy.w1,0,' bp')):'']);
-var vix=find(y,['^VIX','VIX']);if(vix&&vix.last!=null)items.push(['VIX',num(vix.last,1),'',vix.d1_pct!=null?('1d '+(vix.d1_pct>=0?'+':'')+num(vix.d1_pct,1,'%')):'']);
-var mv=find(y,['MOVE']);if(mv&&mv.last!=null)items.push(['MOVE',num(mv.last,0),'',mv.d1_pct!=null?('1d '+(mv.d1_pct>=0?'+':'')+num(mv.d1_pct,1,'%')):'']);
-if(items.length<3)return;
-document.getElementById('tape-ul').innerHTML=items.map(function(i){return '<li>'+i[0]+'<b class="'+i[2]+'">'+i[1]+'</b><small>'+i[3]+'</small></li>';}).join('');
-document.getElementById('tape-when').textContent=s.built_at?('built '+String(s.built_at).slice(0,16)):'';t.classList.add('on');}).catch(function(){});})();
 </script>
+<script src="live.js" defer></script>
 </body>
 </html>

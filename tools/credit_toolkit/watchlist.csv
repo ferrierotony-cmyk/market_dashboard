@@ -1,0 +1,5 @@
+ticker,analyst,max_gross_leverage,min_interest_coverage,covenant_max_leverage,current_spread_bp,peer_spread_bp,spread_move_trigger_bp,last_review_date,notes
+T,,3.50,5.00,,,,,2025-12-15,Sample limits
+CCL,,3.75,4.00,4.00,,,,2026-01-20,Sample limits and a sample covenant
+F,,,3.00,,,,,2026-11-30,Debt uses company tags so leverage is blank
+AAPL,,1.00,,,,,,2026-03-01,Sample limits

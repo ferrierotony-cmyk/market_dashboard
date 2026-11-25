@@ -31,7 +31,7 @@ def explorer_html():
   </div>
 </div>
 <script>
-(function(){{var D={data};var names=Object.keys(D);var cur=names[0];
+(function(){{var D={data};window.xpModels=D;var names=Object.keys(D);var cur=names[0];
 var seg=document.getElementById('xp-seg');names.forEach(function(n){{var b=document.createElement('button');b.type='button';b.textContent=n;b.setAttribute('aria-pressed',n===cur);b.onclick=function(){{cur=n;load();}};seg.appendChild(b);}});
 var W=document.getElementById('xp-w'),G=document.getElementById('xp-g'),M=document.getElementById('xp-m'),E=document.getElementById('xp-e');
 function $(i){{return document.getElementById(i);}}
@@ -51,7 +51,7 @@ $('xp-tv').textContent=isNaN(tvp)?'n/a':(tvp/(pv+tvp)*100).toFixed(0)+'%';
 var lev=d.netdebt/(d.ebitda1*e);$('xp-lev').textContent=lev.toFixed(1)+'x';$('xp-lev').className='n'+(lev>4?' neg':'');
 var eqm=Math.max(0,d.ebitda1*e*d.mktmult-d.netdebt-d.nci),eq0=d.ebitda1*d.mktmult-d.netdebt-d.nci;var c=eq0>0?eqm/eq0:0;$('xp-cush').textContent=(c*100).toFixed(0)+'%';$('xp-cush').className='n'+(c<0.5?' neg':'');
 var mx=Math.max(d.price*2.2,(isNaN(vp)?0:vp)*1.1,ve*1.1);$('xp-fill').style.width=Math.max(0,Math.min(100,(isNaN(vp)?ve:vp)/mx*100))+'%';$('xp-mk').style.left=(d.price/mx*100)+'%';$('xp-mkt').textContent='market $'+d.price.toFixed(2);$('xp-max').textContent='$'+mx.toFixed(0);}}
-[W,G,M,E].forEach(function(r){{r.addEventListener('input',calc);}});$('xp-reset').onclick=load;load();}})();
+[W,G,M,E].forEach(function(r){{r.addEventListener('input',function(){{window.xpTouched=true;calc();}});}});$('xp-reset').onclick=load;window.xpLoad=function(){{if(window.xpTouched)calc();else load();}};load();}})();
 </script>"""
 
 

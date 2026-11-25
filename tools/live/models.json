@@ -1,0 +1,7 @@
+{
+  "Skydance": {"cik": "0002041610", "model_date": "2026-11-25", "page": "dcf.html"},
+  "Netflix": {"cik": "0001065280", "model_date": "2026-11-25", "page": "dcf-nflx.html"},
+  "Disney": {"cik": "0001744489", "model_date": "2026-11-25", "page": "dcf-dis.html"},
+  "Comcast": {"cik": "0001166691", "model_date": "2026-11-25", "page": "dcf-cmcsa.html"},
+  "Fox": {"cik": "0001754301", "model_date": "2026-11-25", "page": "dcf-foxa.html"}
+}
