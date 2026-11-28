@@ -1,0 +1,66 @@
+query "cash tender offer" "notes" -> unique hits so far 53
+query "cash tender offers" "notes" -> unique hits so far 84
+query "tender offer" "senior notes" -> unique hits so far 339
+query "tender offers" "senior notes" -> unique hits so far 347
+query "tender offer" "notes due" -> unique hits so far 433
+query "tender offers" "notes due" -> unique hits so far 436
+query "early tender" "expiration" "notes" -> unique hits so far 444
+query "early tender date" -> unique hits so far 444
+query "early tender deadline" -> unique hits so far 446
+query "early tender premium" -> unique hits so far 446
+query "early tender payment" -> unique hits so far 446
+query "early participation payment" -> unique hits so far 446
+query "early participation date" -> unique hits so far 454
+query "announces" "exchange offer" "notes" -> unique hits so far 507
+query "announces" "exchange offers" "notes" -> unique hits so far 509
+query "offer to exchange" "notes" -> unique hits so far 552
+query "offers to exchange" "notes" -> unique hits so far 569
+query "exchange offer" "consent solicitation" -> unique hits so far 632
+query "exchange offers" "consent solicitations" -> unique hits so far 633
+query "announces" "tender offer" "any and all" -> unique hits so far 689
+query "any and all" "tender offer" -> unique hits so far 1061
+query "any and all" "tender offers" -> unique hits so far 1113
+query "announces" "tender offers" "notes" -> unique hits so far 1115
+query "announces" "tender offer" "notes" -> unique hits so far 1118
+query "announces" "offer to purchase" "notes" -> unique hits so far 1164
+query "offer to purchase for cash" -> unique hits so far 1170
+query "offers to purchase for cash" -> unique hits so far 1172
+query "tender offer consideration" -> unique hits so far 1173
+query "total consideration" "tender offer" -> unique hits so far 1204
+query "total consideration" "tender offers" -> unique hits so far 1205
+query "tender cap" -> unique hits so far 1205
+query "maximum tender amount" -> unique hits so far 1208
+query "aggregate maximum tender" -> unique hits so far 1208
+query "maximum aggregate purchase price" -> unique hits so far 1214
+query "results of" "tender offer" -> unique hits so far 1413
+query "results of" "tender offers" -> unique hits so far 1427
+query "expiration" "tender offer" "notes" -> unique hits so far 1469
+HTTP 500 https://efts.sec.gov/LATEST/search-index?q=%22expiration%22%20%22tender%20offers%22%20%22notes%22&forms=8-K,6-K&dateRang
+query "expiration" "tender offers" "notes" -> unique hits so far 1469
+query "final results" "tender" -> unique hits so far 1493
+query "extends" "tender offer" -> unique hits so far 1524
+query "extends" "tender offers" -> unique hits so far 1525
+query "extends" "exchange offer" -> unique hits so far 1561
+query "commencement of" "tender offer" -> unique hits so far 1616
+query "commencement of" "tender offers" -> unique hits so far 1620
+HTTP 500 https://efts.sec.gov/LATEST/search-index?q=%22commenced%22%20%22tender%20offer%22%20%22notes%22&forms=8-K,6-K&dateRange=
+query "commenced" "tender offer" "notes" -> unique hits so far 1625
+HTTP 500 https://efts.sec.gov/LATEST/search-index?q=%22debentures%22%20%22tender%20offer%22&forms=8-K,6-K&dateRange=custom&startd
+query "debentures" "tender offer" -> unique hits so far 1628
+query "acceptance priority level" -> unique hits so far 1628
+query "waterfall" "tender" -> unique hits so far 1691
+query "dealer manager" "tender offer" -> unique hits so far 1691
+query "dealer managers" "tender offers" -> unique hits so far 1691
+query "dealer manager" "exchange offer" -> unique hits so far 1691
+query "information agent" "tender" -> unique hits so far 1724
+query "consent solicitation" "consent payment" "notes" -> unique hits so far 1727
+query "consent solicitation statement" -> unique hits so far 1748
+total unique documents 1748
+press release style documents 595 of 1748
+fetched 1 of 595
+fetched 101 of 595
+fetched 201 of 595
+fetched 301 of 595
+fetched 401 of 595
+fetched 501 of 595
+cached 595 documents

@@ -1,0 +1,91 @@
+bing release links 95
+HTTP 403 https://www.globenewswire.com/RssFeed/keyword/%22tender%20offer%22%20notes/feedTitle/tender
+HTTP 403 https://www.globenewswire.com/RssFeed/keyword/%22tender%20offer%22%20notes/feedTitle/tender
+globenewswire_rss release links 0
+prnewswire release links 890
+HTTP 403 https://www.globenewswire.com/search/keyword/tender%20offer%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/tender%20offer%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/tender%20offers%20senior%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/tender%20offers%20senior%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/exchange%20offer%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/exchange%20offer%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/any%20and%20all%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/any%20and%20all%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/consent%20solicitation%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/consent%20solicitation%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/early%20tender%20results?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/early%20tender%20results?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/offer%20to%20purchase%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/offer%20to%20purchase%20notes?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/cash%20tender%20offer?pageSize=50&page=1
+HTTP 403 https://www.globenewswire.com/search/keyword/cash%20tender%20offer?pageSize=50&page=1
+globenewswire release links 0
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=tender%20offer%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=tender%20offer%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=tender%20offers%20senior%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=tender%20offers%20senior%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=exchange%20offer%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=exchange%20offer%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=any%20and%20all%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=any%20and%20all%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=consent%20solicitation%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=consent%20solicitation%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=early%20tender%20results&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=early%20tender%20results&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=offer%20to%20purchase%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=offer%20to%20purchase%20notes&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=cash%20tender%20offer&page=1
+HTTP 403 https://www.businesswire.com/newsroom?searchTerm=cash%20tender%20offer&page=1
+businesswire release links 0
+newswire links total 985
+HTTP 403 https://www.marketscreener.com/news/london-stock-exchange-group-plc-and-lseg-netherlands-b-v-announce-tender-offer-for-g
+HTTP 403 https://www.streetinsider.com/PRNewswire/ALLEGIANT+TRAVEL+COMPANY+ANNOUNCES+LAUNCH+OF+TENDER+OFFER+AND+CONSENT+SOLICITAT
+HTTP 403 https://www.businesswire.com/news/home/20260218032317/en/Genesis-Energy-L.P.-Announces-Increase-to-Previously-Announced-
+HTTP 403 https://www.marketscreener.com/news/eutelsat-communications-to-repurchase-eur497-million-under-notes-tender-offer-ce7851
+HTTP 403 https://www.marketwatch.com/press-release/nestle-holdings-inc-announces-commencement-of-cash-tender-offers-for-any-and-a
+HTTP 403 https://www.streetinsider.com/Globe+Newswire/SCOR%3A+Results+of+the+cash+tender+offer+on+subordinated+notes/26604263.htm
+HTTP 403 https://www.marketscreener.com/news/dana-incorporated-announces-pricing-expiration-and-results-of-tender-offers-for-any-
+HTTP 403 https://www.marketscreener.com/news/avery-dennison-announces-pricing-terms-of-cash-tender-offers-for-its-senior-notes-ce
+HTTP 404 https://www.morningstar.com/news/pr-newswire/20260810de22594/borgwarner-announces-cash-tender-offers-for-its-senior-note
+HTTP 429 https://www.rutlandherald.com/news/business/general-mills-announces-pricing-terms-expiration-and-results-of-cash-tender-
+HTTP 403 https://www.marketscreener.com/news/community-health-systems-announces-early-tender-results-to-previously-announced-exch
+HTTP 403 https://www.marketscreener.com/news/pyxus-announces-the-commencement-of-exchange-offer-and-consent-solicitation-with-res
+HTTP 403 https://www.businesswire.com/news/home/20260310773357/en/Greenidge-Generation-Announces-Commencement-of-Exchange-Offer-f
+HTTP 403 https://www.streetinsider.com/Corporate+News/Alibaba+completes+exchange+offer+for+%242.6+billion+in+senior+notes/2543546
+HTTP 403 https://www.businesswire.com/news/home/20260322634073/en/Coeur-Mining-Inc.-Announces-Commencement-of-Exchange-Offer-and-
+HTTP 403 https://www.streetinsider.com/PRNewswire/FirstEnergy+Pennsylvania+Electric+Company+Announces+Launch+of+Exchange+Offer+fo
+HTTP 404 https://www.morningstar.com/news/pr-newswire/20260526hs68000/borr-drilling-limited-announces-any-and-all-cash-tender-off
+HTTP 403 https://www.streetinsider.com/PRNewswire/Fannie+Mae+Announces+Tender+Offer+for+Any+and+All+of+Certain+CAS+Notes/27111106
+HTTP 403 https://www.marketscreener.com/news/crh-announces-cash-tender-offers-exchange-offers-and-consent-solicitations-for-arcos
+HTTP 403 https://www.marketwatch.com/press-release/banco-macro-s-a-announces-cash-tender-offer-for-any-and-all-of-its-outstanding
+wire releases kept 25
+HTTP 403 https://www.marketscreener.com/news/rakuten-announces-commencement-of-consent-solicitation-with-respect-to-its-9-75-seni
+HTTP 403 https://www.businesswire.com/news/home/20240916243296/en/Finance-of-America-Announces-Exchange-Offer-and-Consent-Solicit
+HTTP 202 https://www.morningstar.com/news/business-wire/20260909868190/dream-finders-homes-inc-announces-consent-solicitation-for
+HTTP 403 https://www.streetinsider.com/PRNewswire/Blazing+Star+Merger+Sub%2C+Inc.+announces+Tender+Offer+and+Consent+Solicitation
+HTTP 403 https://www.marketwatch.com/press-release/avianca-group-announces-exchange-offer-for-any-and-all-of-its-9-000-tranche-a-
+HTTP 403 https://www.businesswire.com/news/home/20260323642574/en/Nexstar-Media-Inc.-Announces-Early-Settlement-Date-for-the-Prev
+HTTP 202 https://www.morningstar.com/news/pr-newswire/20260820cl30206/corteva-announces-early-tender-results-and-extension-of-exp
+HTTP 403 https://www.businesswire.com/news/home/20260612380184/en/QXO-Announces-Early-Tender-Results-of-Cash-Tender-Offers-and-Co
+HTTP 403 https://www.streetinsider.com/Globe+Newswire/MC+Brazil+Downstream+Trading+S.%C3%A0+r.l.+Announces+Early+Tender+Results+a
+HTTP 202 https://www.morningstar.com/news/pr-newswire/20261102ny86403/cloud-software-group-commences-offer-to-purchase-for-cash-u
+HTTP 403 https://www.marketscreener.com/news/exxonmobil-cash-tender-offers-to-purchase-certain-outstanding-notes-ce785edfdb89f22d
+HTTP 202 https://www.morningstar.com/news/pr-newswire/20260923la54641/opentext-announces-cash-tender-offer-for-a-portion-of-its-o
+HTTP 403 https://www.marketscreener.com/news/metso-to-increase-size-of-cash-tender-offer-for-2027-2028-notes-ce785eddd98af123
+HTTP 403 https://www.marketscreener.com/news/occidental-announces-cash-tender-offers-and-consent-solicitations-for-certain-of-its
+HTTP 403 https://njbiz.com/toys-r-us-begins-tender-offer-for-debentures/
+HTTP 403 https://www.streetinsider.com/PRNewswire/Cash+Tender+Offer+for+7.00%25+BellSouth+Debentures%2C+Corporate-Backed+Trust+Se
+HTTP 403 https://wgno.com/business/press-releases/cision/20230313NY40687/extension-of-cash-tender-offer-for-structured-products-c
+HTTP 403 https://ktla.com/business/press-releases/globenewswire/8715377/pactiv-llc-announces-results-of-its-debt-tender-offer-for
+HTTP 403 https://www.businesswire.com/news/home/20251114500890/en/Global-Atlantic-Fin-Company-Announces-Any-And-All-Cash-Tender-O
+HTTP 403 https://www.streetinsider.com/Globe+Newswire/TRC+Capital+Investment+Corporation+Announces+Cash+Tender+Offer+for+4.350%25
+HTTP 403 https://www.businesswire.com/news/home/20251121543741/en/Global-Atlantic-Fin-Company-Announces-Expiration-and-Results-of
+HTTP 202 https://www.morningstar.com/news/globe-newswire/9814464/brandywine-realty-trust-announces-expiration-of-tender-offer-for
+HTTP 403 https://www.businesswire.com/news/home/20240926382670/en/Aethon-United-Announces-Final-Results-and-Expiration-of-Tender-
+HTTP 403 https://www.businesswire.com/news/home/20260305084912/en/Matador-Resources-Company-Announces-Expiration-and-Results-of-C
+HTTP 403 https://www.marketwatch.com/press-release/pampa-energia-s-a-announces-the-expiration-and-tender-results-for-its-cash-ten
+HTTP 403 https://www.marketscreener.com/news/avery-dennison-announces-cash-tender-offer-for-its-senior-notes-ce785fdcde8cf22d
+wire releases kept 50
+wire releases kept 75
+wire releases kept 100
+wire releases added 112 meta rows now 707
