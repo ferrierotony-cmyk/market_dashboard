@@ -1,0 +1,33 @@
+[2026-11-28 09:43:38] ==== dashboard build (morning) started in /home/runner/work/market_dashboard/market_dashboard ==== 
+[2026-11-28 09:43:39] FRED: 49 series 
+[2026-11-28 09:44:40] Treasury.gov: fetched, curve through 2026-11-27 
+[2026-11-28 09:44:40] Yahoo daily: 527 symbols (parallel) 
+[2026-11-28 09:44:45] Yahoo daily: 527 fetched, 0 from cache, 0 failed 
+[2026-11-28 09:44:45] Yahoo candles: 24 detail symbols (intraday + weekly bars) 
+[2026-11-28 09:45:14]   Cboe TLT: failed 
+[2026-11-28 09:45:21]   Cboe LQD: failed 
+[2026-11-28 09:45:27]   Cboe HYG: failed 
+[2026-11-28 09:45:33]   Cboe T: failed 
+[2026-11-28 09:45:39]   Cboe VZ: failed 
+[2026-11-28 09:45:45]   Cboe DIS: failed 
+[2026-11-28 09:45:52]   Cboe AMZN: failed 
+[2026-11-28 09:45:58]   Cboe CCL: failed 
+[2026-11-28 09:46:04]   Cboe F: failed 
+[2026-11-28 09:46:10]   Cboe XOM: failed 
+[2026-11-28 09:46:17]   Cboe BAC: failed 
+[2026-11-28 09:46:23]   Cboe JPM: failed 
+[2026-11-28 09:46:29]   Cboe JNJ: failed 
+[2026-11-28 09:46:35]   Cboe PFE: failed 
+[2026-11-28 09:46:41]   Cboe BA: failed 
+[2026-11-28 09:46:48]   Cboe AAPL: failed 
+[2026-11-28 09:46:54]   Cboe MSFT: failed 
+[2026-11-28 09:47:00]   Cboe NVDA: failed 
+[2026-11-28 09:47:00] Market universe: Nasdaq screener 
+[2026-11-28 09:47:03]   5611 common stocks from Nasdaq screener 
+[2026-11-28 09:47:03] Market universe: Yahoo quotes for 5611 symbols in batches of 200 
+[2026-11-28 09:47:20]   5611 of 5611 quoted 
+[2026-11-28 09:47:32] FRED calendar: 933 release dates 
+[2026-11-28 09:47:32] FRED calendar: no release named 'Employment Cost Index' in the next 45 days. Closest FRED names: ADP National Employment Report | Metropolitan Area Employment and Unemployment | Quarterly Census of Employment and Wages | Unemployment in States and Local Areas (all other areas) | Unemployment Insurance Weekly Claims Report 
+[2026-11-28 09:47:35] Alert rules: 21 enabled, 8 fired 
+[2026-11-28 09:47:41] Built /home/runner/work/market_dashboard/market_dashboard/output/market_dashboard.html  (window: SELECTIVE, health: 62 CAUTION, alerts: 20) 
+[2026-11-28 09:47:41] ==== finished OK ==== 
